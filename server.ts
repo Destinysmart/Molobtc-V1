@@ -1,0 +1,1120 @@
+import express from "express";
+import path from "path";
+import fs from "fs";
+import { createServer as createViteServer } from "vite";
+import { GoogleGenAI } from "@google/genai";
+
+const PORT = 3000;
+const DB_FILE = path.join(process.cwd(), "db.json");
+
+// Ensure db.json exists with MoloBTC category structures
+if (!fs.existsSync(DB_FILE)) {
+  fs.writeFileSync(
+    DB_FILE,
+    JSON.stringify({
+      articles: [],
+      categories: [
+        { id: "c1", name: "Physical Protocol", slug: "physical-protocol" },
+        { id: "c2", name: "Scaling & Lightning", slug: "scaling-lightning" },
+        { id: "c3", name: "Security & Custody", slug: "security-custody" },
+        { id: "c4", name: "Monetary Economics", slug: "monetary-economics" },
+      ],
+      tags: [],
+      users: [
+        {
+          id: "admin-1",
+          role: "admin",
+          name: "Molo BTC Lead Researcher",
+          avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=200&auto=format&fit=crop",
+        },
+        {
+          id: "pub-1",
+          role: "publisher",
+          name: "Molo BTC Open-Source Contributor",
+          avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop",
+        },
+      ],
+    }),
+  );
+}
+
+function getDb() {
+  const data = fs.readFileSync(DB_FILE, "utf-8");
+  return JSON.parse(data);
+}
+
+function saveDb(data: any) {
+  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+}
+
+// Seed or update database to hold premium Molo BTC research papers
+const dbData = getDb();
+
+// If database empty or still has old generic developer block, refresh with Molo BTC's premier research products
+const hasOldSeeds = dbData.articles.some((a: any) => a.id === "a_1" || a.title?.includes("Freelance") || a.title?.includes("Hourly Rate"));
+if (dbData.articles.length === 0 || hasOldSeeds) {
+  // Overwrite categories to look premium
+  dbData.categories = [
+    { id: "c1", name: "Physical Protocol", slug: "physical-protocol", desc: "Energy metrics, hashing hardware, and thermodynamics" },
+    { id: "c2", name: "Scaling & Lightning", slug: "scaling-lightning", desc: "Off-chain states, routing logic, and payment channels" },
+    { id: "c3", name: "Security & Custody", slug: "security-custody", desc: "Entropy equations, multisig designs, and physical storage" },
+    { id: "c4", name: "Monetary Economics", slug: "monetary-economics", desc: "Scarcity mathematics, game theory, and adoption vectors" },
+  ];
+
+  // Update authors
+  dbData.users = [
+    {
+      id: "admin-1",
+      role: "admin",
+      name: "Molo BTC Research Lab",
+      avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=200&auto=format&fit=crop",
+    },
+    {
+      id: "pub-1",
+      role: "publisher",
+      name: "GitHub Open-Source Syndicate",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
+    },
+    {
+      id: "user_1",
+      role: "reader",
+      name: "Satoshi Reader",
+      avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop",
+      bio: "Bitcoin Core enthusiast & casual researcher of lightning micro-transactions and offline nodes.",
+      country: "Ghana",
+      lightning_address: "reader@8333.mobi",
+      interests: ["Scaling & Lightning", "Monetary Economics"],
+      preference: "ELI5_Beginner"
+    },
+  ];
+
+  // Seed actual research collections
+  dbData.articles = [
+    {
+      id: "res_pow_physics",
+      title: "Thermodynamic Scarcity: The Physics of Proof-of-Work",
+      subtitle: "Connecting digital security to raw physical thermodynamics. An ELI5 breakdown of how hashing math coordinates absolute scarcity.",
+      featured_image: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=2669&auto=format&fit=crop",
+      author_id: "admin-1",
+      category_id: "c1",
+      status: "published",
+      abstract: "This paper analyzes the intrinsic relationship between energy expenditures and digital ledger consensus. By requiring miners to perform millions of trillions of physical guesses (hashes) to generate blocks, Bitcoin links its digital ledger directly to real-world physics. We break down the mechanics of the ASICs, hash rates, and why physical hashes prove a record's authenticity, making digital ledger alteration physically impossible.",
+      github_repo: "https://github.com/molobtc/thermodynamic-scarcity",
+      download_file: "MoloBTC_Research_Thermodynamic_Scarcity.pdf",
+      reading_time: "8 min read",
+      content: `
+        <p>Bitcoin is often described as purely digital, but its core security mechanism, <strong>Proof-of-Work (PoW)</strong>, is rooted entirely in physical reality and the laws of thermodynamics.</p>
+        
+        <h2>1. The thermodynamic anchor</h2>
+        <p>In conventional database systems, data can be rewritten or modified instantly because there is no link between computation and physical physical work. Bitcoin binds its ledger's past history to real-world energy consumption.</p>
+        <p>To write a block of transactions to the blockchain, a computer (or miner) must find a cryptographic solution below a certain target value. This can only be done through raw trial-and-error—solving mathematical puzzle billions of times per second (hashing). This process requires hardware and electricity.</p>
+        
+        <h2>2. Why this protects transactions</h2>
+        <p>Because every block represents millions of dollars of spent electricity, any attacker wishing to rewrite previous transactions must re-spend the same enormous amount of electricity to create a heavier competing chain. The Laws of Physics, rather than banks or governments, protect the network from tampering.</p>
+        
+        <div class="glass-card p-6 my-6 border border-brand-100 rounded-2xl bg-brand-50/50">
+          <h4 class="font-bold text-gray-900 mb-2">💡 Under the Hood Analogy</h4>
+          <p class="text-sm text-gray-700 m-0">Think of a gold coin. It has value because finding and mining gold requires intense physical work. Proof-of-Work is like a digital machine that melts real-world electricity and molds it directly into digital security. You cannot fake a hash, just like you cannot fake a block of gold.</p>
+        </div>
+
+        <h2>3. Solving the Byzantine Generals Problem</h2>
+        <p>The energy cost is not a waste—it is the single mechanism that allows completely anonymous, untrusteding strangers to agree on a single ledger of account without needing a centralized third-party referee.</p>
+      `,
+      published_at: new Date(Date.now() - 50000000).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      id: "res_lightning_scale",
+      title: "State Channels: Scaling Bitcoin Instantly Over Lightning",
+      subtitle: "How off-chain peer locked boxes allow instant payment exchanges at the speed of light, while retaining raw on-chain security parameters.",
+      featured_image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2670&auto=format&fit=crop",
+      author_id: "pub-1",
+      category_id: "c2",
+      status: "published",
+      abstract: "The Lightning Network is Bitcoin's primary Layer-2 protocol. This work explains how two peers can open a cryptographic 'state channel' by locking funds on the main network, then instantly route unlimited micro-payments offline. Transactions are verified in milliseconds by exchanging physical cryptographically signed updates, bypassing block congestion altogether.",
+      github_repo: "https://github.com/molobtc/state-channels",
+      download_file: "MoloBTC_Lightning_State_Channels_Guide.pdf",
+      reading_time: "6 min read",
+      content: `
+        <p>The core Bitcoin protocol handles roughly 7 transactions per second due to block density limits. To scale Bitcoin to billions of global users as active money, we use the <strong>Lightning Network</strong>.</p>
+        
+        <h2>1. The bilateral ledger concept</h2>
+        <p>Imagine Alice and Bob buy coffee from each other daily. Writing every coffee cup onto the physical main blockchain (fees, wait times) is highly inefficient. Instead, they write their starting cash on a piece of paper, place it in a lockbox, and edit the tab privately. Only when they are done, they write the final totals to the chain.</p>
+        <p>This is a <strong>payment channel</strong>. Because drafts are cryptographically secure and signed using private keys, either peer can claim their correct share on-chain at any time if the other tries to cheat.</p>
+        
+        <h2>2. Routing via HTLCs</h2>
+        <p>The real power comes when channels link together. If Alice has a channel with Bob, and Bob has a channel with Charlie, Alice can pay Charlie instantly through Bob using <strong>Hash Time-Locked Contracts (HTLCs)</strong>. Bob acts as an automatic, zero-trust router, earning a tiny fee (Sats) for passing the pay packet.</p>
+
+        <div class="glass-card p-6 my-6 border border-brand-100 rounded-2xl bg-brand-50/50">
+          <h4 class="font-bold text-gray-900 mb-2">⚡ The Speed of Light</h4>
+          <p class="text-sm text-gray-700 m-0">By moving payments off the main blockchain, Lightning allows instant, high-frequency micropayments. It converts Bitcoin from an expensive, slow settlement asset into a highly liquid currency suitable for physical vending machines, internet API paywalls, and streaming money.</p>
+        </div>
+      `,
+      published_at: new Date(Date.now() - 100000000).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      id: "res_entropy_custody",
+      title: "The Math of Entropy: Why True Self-Custody is Unbreakable",
+      subtitle: "A deep mathematical look into random entropy, personal key security, and why guessing a 12-word seed phrase is physically impossible.",
+      featured_image: "https://images.unsplash.com/photo-1450101499163-c8848c66cb85?q=80&w=2670&auto=format&fit=crop",
+      author_id: "admin-1",
+      category_id: "c3",
+      status: "published",
+      abstract: "Self-custody of Bitcoin gives individuals complete sovereignty, but understanding why it is secure requires looking at probability math. This paper explores the concept of cryptographic entropy—specifically, the 256 bits of randomness that constitute a private key. We prove why searching for a key is functionally impossible, even using all solar system computation.",
+      github_repo: "https://github.com/molobtc/entropy-and-sovereignty",
+      download_file: "MoloBTC_Custody_Entropy_Math_Walkthrough.pdf",
+      reading_time: "10 min read",
+      content: `
+        <p>When you hold Bitcoin in your own wallet, you are holding a giant, randomized mathematical secret. This secret is called your <strong>Private Key</strong>, and it is usually represented as a list of 12 or 24 human-readable words.</p>
+        
+        <h2>1. The scale of 2^256</h2>
+        <p>A Bitcoin private key is a number between 1 and 2^256. This number is so large that it is hard for the human brain to comprehend. There are more possible private keys than there are atoms in the observable universe.</p>
+        <p>When you generate a new wallet offline (spinning high-entropy randomness), you are effectively choosing a single atom in the universe. If someone wants to steal your Bitcoin by guessing your words, they have to pick that exact same atom on their first try.</p>
+        
+        <h2>2. Physical constraints of brute forcing</h2>
+        <p>Even if a supercomputer could guess billions of keys per second, the energy required to run the computing hardware would boil the Earth's oceans before it had a fraction of a percent chance of guessing your private key. This is why cryptographic self-custody is fundamentally secure against physical force guessing.</p>
+
+        <div class="glass-card p-6 my-6 border border-brand-100 rounded-2xl bg-brand-50/50">
+          <h4 class="font-bold text-gray-900 mb-2">🔒 Your Responsibility</h4>
+          <p class="text-sm text-gray-700 m-0">Because the math is unbreakable, hackers do not attack the protocol—they attack the human. They try to trick you into typing your seed words on a connected computer, or they phish your backup. True custody means keeping those words physically written down on paper or steel, completely offline.</p>
+        </div>
+      `,
+      published_at: new Date(Date.now() - 150000000).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      id: "res_utxo_design",
+      title: "UTXO vs Account Models: Why Bitcoin Operates Like Physical Cash",
+      subtitle: "Demystifying Unspent Transaction Outputs. Why Bitcoin does not have 'balances', but rather individual cryptographic digital cash bills.",
+      featured_image: "https://images.unsplash.com/photo-1621504450181-5d356f61d307?q=80&w=2787&auto=format&fit=crop",
+      author_id: "pub-1",
+      category_id: "c4",
+      status: "published",
+      abstract: "Unlike modern digital banks or Ethereum which use account status ledgers (like checking accounts with a single balance), Bitcoin works strictly like physical cash. It tracks individual bills, known as Unspent Transaction Outputs (UTXOs). We prove why this cash-based design enables extreme parallel processing, superior security, and highly predictable smart contract states.",
+      github_repo: "https://github.com/molobtc/utxo-model",
+      download_file: "MoloBTC_Architecture_UTXO_vs_Account.pdf",
+      reading_time: "7 min read",
+      content: `
+        <p>To understand Bitcoin transactions, you must unlearn how conventional bank accounts work. Bitcoin does not have a concept of an "account balance" stored anywhere on the database. Instead, it tracks individual digital cash receipts called <strong>UTXOs (Unspent Transaction Outputs)</strong>.</p>
+        
+        <h2>1. The physical wallet analogy</h2>
+        <p>If you have $45 in your physical leather wallet, you do not have a single item that represents exactly "forty-five value". Instead, you might have two $20 bills and one $5 bill. When you buy a $15 item, you give the cashier a $20 bill, and they hand you back a $5 bill in change. Your wallet now contains one $20, and two $5 bills.</p>
+        <p>This is exactly how Bitcoin works. Each transaction completely spends existing UTXOs (inputs) and creates brand new UTXOs (outputs): one for the merchant's payment, and one sent back to your own address as 'change'. Your wallet app simply sums up all the UTXOs that your private key has the power to unlock, displaying it as a single 'balance'.</p>
+        
+        <h2>2. Key benefits of the UTXO design</h2>
+        <ul>
+          <li><strong>Greater Privacy:</strong> Users can easily receive funds on completely new addresses for every transaction, avoiding exposing their full cache of coin holdings.</li>
+          <li><strong>Massive Parallelism:</strong> Multiple transactions can be processed concurrently because they alter disparate UTXO cash outputs rather than vying to overwrite a single account balance space.</li>
+          <li><strong>Security:</strong> There are no 'double spends' or weird state bugs where a contract withdraws more money than is in an account, because once a UTXO is spent, it is destroyed forever from the unspent state database.</li>
+        </ul>
+      `,
+      published_at: new Date(Date.now() - 200000000).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+  ];
+
+  saveDb(dbData);
+}
+
+// Ensure the homepage content (perspectives, ecosystemTabs, africanLensChapters) is seeded in db.json
+const dynamicDb = getDb();
+let homepageDirty = false;
+if (!dynamicDb.perspectives) {
+  dynamicDb.perspectives = {
+    inflation: {
+      title: "Inflation Guard",
+      factLine: "Hedge local currency depreciation",
+      stat: "Cedi/Naira/Pula vs BTC limits",
+      description: "Unlike fiat systems subject to sudden sovereign supply spikes, Bitcoin strictly caps total supply at 21M, providing an immutable mathematical store of value.",
+      highlight: "Nodes: Hard Cap ➔ 21M ➔ Distributed Hash Ledger"
+    },
+    inclusion: {
+      title: "Financial Inclusion",
+      factLine: "Open-source global settlement rails",
+      stat: "USSD Tipping & Offline Nodes",
+      description: "Bypasses geographical banking blockades using peer-to-peer lightning channels and offline USSD interfaces like Machankura, allowing anyone with a generic mobile phone to save and transact value.",
+      highlight: "Nodes: USSD Gateway ➔ Lightning Node ➔ Instant Settlement"
+    },
+    mining: {
+      title: "Energy & Mining Monetisation",
+      factLine: "Bootstrapping remote mini-grids",
+      stat: "Gridless Geothermal / Methane Capture",
+      description: "Stranded energy from African waterfalls, gases, and rivers is harvested by flexible modular computing mines who purchase excess load, funding the setup of local mini-grids.",
+      highlight: "Nodes: Excess Hydro ➔ Modular Container Miners ➔ Rural Power Grid"
+    },
+    remittance: {
+      title: "Lightning Payments",
+      factLine: "Ditching cross-border agency commissions",
+      stat: "99% cheaper than legacy wire models",
+      description: "Enables instant micro-remittances and trans-African trading over Layer 2 Lightning networks without intermediaries or currency conversion tariffs.",
+      highlight: "Nodes: Sender Wallet ➔ Onion Routing Hub ➔ Payee Instantly"
+    }
+  };
+  homepageDirty = true;
+}
+
+if (!dynamicDb.ecosystemTabs) {
+  dynamicDb.ecosystemTabs = {
+    learn: {
+      title: "Learn Bitcoin",
+      subtitle: "Find educational pathways & resources",
+      curatedPaths: [
+        { name: "Saylor Academy - CS120 Bitcoin Course", url: "https://www.saylor.org/courses/cs120/", desc: "Free comprehensive computer science overview of Bitcoin architecture and logic." },
+        { name: "Mi Primer Bitcoin (My First Bitcoin)", url: "https://miprimerbitcoin.io/", desc: "Open-source diploma curriculum designed for teaching high schools next-generation money." },
+        { name: "Baka Academy", url: "https://github.com/molobtc", desc: "Interactive localized community meetups and digital resource guides across sub-Saharan Africa." }
+      ]
+    },
+    build: {
+      title: "Build Bitcoin",
+      subtitle: "Developer pathways & open-source tools",
+      curatedPaths: [
+        { name: "Btrust Developer Fellowship", url: "https://btrust.org/", desc: "Mentorship and resources for African engineers seeking to become Bitcoin Core contributors." },
+        { name: "Bitcoin Dev Kit (BDK)", url: "https://bitcoindevkit.org/", desc: "Simplified libraries for crafting multi-platform wallets and transaction scripts with ease." },
+        { name: "Lightning Dev Kit (LDK)", url: "https://lightningdevkit.org/", desc: "Integrate lightning invoice routing directly inside custom client-side React apps." }
+      ]
+    },
+    mine: {
+      title: "Mine Bitcoin",
+      subtitle: "Explore modular mining & energy operators",
+      curatedPaths: [
+        { name: "Gridless Energy Solutions", url: "https://gridless.com/", desc: "Leading the charge of distributed micro-mining grids using stranded hydro energy in East Africa." },
+        { name: "Mining Mechanics Simplified Guide", url: "#research-workspace", desc: "Our downloadable handbook detailing hashing hardware, mining pools, and container setups." }
+      ]
+    },
+    use: {
+      title: "Use Bitcoin",
+      subtitle: "Wallets, lightning tools & interfaces",
+      curatedPaths: [
+        { name: "Machankura USSD Wallet", url: "https://8333.mobi/", desc: "Send and receive Lightning satoshis using basic GSM feature phones without active internet." },
+        { name: "Phoenix Wallet (Self-Custodial)", url: "https://phoenix.acinq.co/", desc: "Easiest zero-configuration custodial-free wallet handling lightning updates on the fly." },
+        { name: "Alby Browser Extension", url: "https://getalby.com/", desc: "Direct web-based Lightning authorization for tipping, apps, and decentralized web interactions." }
+      ]
+    },
+    work: {
+      title: "Work in Bitcoin",
+      subtitle: "Jobs, grants, fellowships & opportunities",
+      curatedPaths: [
+        { name: "Bitlance", url: "https://bitlance.work", desc: "A peer-to-peer freelancing and work-and-earn platform for Bitcoin and Lightning bounties." },
+        { name: "Bitcoin Jobs Global Board", url: "https://bitcoinjobs.co/", desc: "Aggregated engineering, design, marketing, and editorial placements globally and remote." },
+        { name: "Superlative Open Source Directory", url: "https://github.com/molobtc", desc: "Discover active bounties, developer fellowships, and localized community internships." }
+      ]
+    }
+  };
+  homepageDirty = true;
+}
+
+if (!dynamicDb.africanLensChapters) {
+  dynamicDb.africanLensChapters = {
+    inflation: {
+      header: "Bitcoin & Inflation Realities",
+      location: "East & West Africa Core Trends",
+      stat: "Average 15-30% currency adjustment",
+      thesis: "When monetary councils issue double-digit fiat supplies to plug budget shortfalls, citizen purchasing power bleeds into sovereign reserves. Local developers and traders use Bitcoin's immutable 21 million hardcap as an inflation-impermeable safety net."
+    },
+    savings: {
+      header: "Bitcoin Savings Dynamics",
+      location: "Sub-Saharan Long-Term Treasury",
+      stat: "24/7 Unstoppable Liquid Asset",
+      thesis: "Traditional high-interest bank accounts fail to beat inflation and suffer from withdrawal ceilings. By storing capital in self-custody cold storage wallets, ordinary citizens run their own personal treasury systems with absolute sovereignty."
+    },
+    lightning: {
+      header: "Remittance Over Lightning Networks",
+      location: "Diaspora Trade Corridor Mapping",
+      stat: "Fees slashed from 12% to under < 0.1%",
+      thesis: "Western Union/fiat wire fees drain hundreds of millions annually from regional families. Lightning network routing operates natively across borders 24/7/365, settling instantly for fractions of a single satoshi cent."
+    },
+    energy: {
+      header: "Stranded Energy Harvesting",
+      location: "Rift Valley Geothermal & Run-of-River Hydro",
+      stat: "Unlocking stranded rural potential",
+      thesis: "High infrastructure costs prevent remote African regions from connecting to national power grids. Modular Bitcoin mining farms act as instant buyer-of-last-resort for remote hydro-turbines, subsidizing rural setup costs."
+    },
+    circular: {
+      header: "Circular Satoshi Economies",
+      location: "Bitcoin Ekasi (SA) & Local Mini-Markets",
+      stat: "Closed-loop closed sovereign payments",
+      thesis: "By keeping satoshis localized—enabling children, grocers, and micro-vendors to accept and spend lightning tips directly—local communities completely bypass high transaction taxes and centralized card tariffs."
+    },
+    momo: {
+      header: "Mobile Money vs Bitcoin Interoperability",
+      location: "USSD Tectonic Bridges",
+      stat: "Bridging 500M+ active Momo accounts",
+      thesis: "Mobile money (M-Pesa, MTN Mobile) is incredibly accessible but suffers from closed geographical boundaries. USSD-powered lightning bridges allow local mobile money providers to interact globally with the Bitcoin ledger."
+    }
+  };
+  homepageDirty = true;
+}
+
+if (homepageDirty) {
+  saveDb(dynamicDb);
+}
+
+async function startServer() {
+  const app = express();
+
+  // Increase payload limit for base64 image uploads in tiptap
+  app.use(express.json({ limit: "50mb" }));
+
+  // API Routes
+
+  // Root configuration editor endpoints
+  app.get("/api/homepage/data", (req, res) => {
+    const db = getDb();
+    res.json({
+      perspectives: db.perspectives || {},
+      ecosystemTabs: db.ecosystemTabs || {},
+      africanLensChapters: db.africanLensChapters || {},
+    });
+  });
+
+  app.post("/api/homepage/data", (req, res) => {
+    try {
+      const db = getDb();
+      const { perspectives, ecosystemTabs, africanLensChapters } = req.body;
+      if (perspectives) db.perspectives = perspectives;
+      if (ecosystemTabs) db.ecosystemTabs = ecosystemTabs;
+      if (africanLensChapters) db.africanLensChapters = africanLensChapters;
+      saveDb(db);
+      res.json({ success: true, message: "Homepage section data updated successfully!" });
+    } catch (e: any) {
+      console.error(e);
+      res.status(500).json({ error: "Failed to update homepage content database." });
+    }
+  });
+
+  // AI Gemini Explorer Assistant route
+  app.post("/api/gemini/chat", async (req, res) => {
+    try {
+      const { prompt, topic } = req.body;
+      if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
+      }
+
+      if (!process.env.GEMINI_API_KEY) {
+        return res.status(500).json({ 
+          error: "GEMINI_API_KEY is not configured on the server. Please define this secret in the Settings panel." 
+         });
+      }
+
+      const client = new GoogleGenAI({
+        apiKey: process.env.GEMINI_API_KEY,
+        httpOptions: {
+          headers: {
+            "User-Agent": "aistudio-build",
+          },
+        },
+      });
+
+      let systemInstruction = `You are a helpful AI assistant. You are "Molo AI Explorer", the custom intelligent Bitcoin tutor built for the Molo BTC Research Workspace.
+Your absolute goal is to break down complex Bitcoin protocol mechanisms, mathematics, physical game theory, and economics into incredibly beginner-friendly terms.
+Use friendly, engaging analogies (such as physical checks, physical gold mining, global highway networks, mailboxes, and ledger catalogs).
+Never use dry, impenetrable financial or cryptographic jargon unless you immediately explain it with an "ELI5" (Explain Like I'm 5) example!
+Keep your structure clean, using distinct markdown headers, bullet points, and highlight blocks.
+Always maintain a helpful, encouraging, and highly educational tone.
+If the user asks an unrelated query, gently remind them that your specialty is demystifying the Bitcoin system and steer the focus back to Bitcoin!
+
+CRITICAL CONTEXT - Study the Github and repositories created by moloBTC:
+Here is the core technical documentation, research papers, and software licenses published by moloBTC upon which you must base your custom analysis:
+
+1. BITCOIN SOVEREIGN SOFTWARE LICENSE (BSSL v1.0.0-Beta):
+Designed for sovereign developers. Traditional open-source licenses (MIT/GPL) fail to protect against corporate patent lockups on Layer 2 adjustments and regulatory censorship compliance mandates forcing base utility layer address blocking.
+BSSL grants universal rights to run, copy, and modify software, *provided* that:
+- Users have absolute and exclusive custody of their keys/entropy (no backdoors).
+- No automated discrimination/blacklist registries are built in.
+- Permanent patent non-assertion covenant: anyone building on or using BSSL code agrees never to file code patents against the codebase or users, preventing patent-trolling.
+
+2. THERMODYNAMIC SCARCITY (PoW & Energy physics):
+Equations: Energy to Security Boundary (E = H * P * t) proving ledger security is physical, not administrative.
+African Context: Over 600M people in Sub-Saharan Africa lack grid connections. Bitcoin modular computing mines purchase excess off-peak stranded energy (Rift Valley Geothermal, run-of-river hydro mini-grids), funding the setup and operation of rural family power lines.
+
+3. STATE CHANNELS (Offline payment channels over USSD/GSM cell systems):
+Over 45% of rural workers only have 2G/3G GSM feature phones without active mobile internet (TCP/IP/TLS blocks). moloBTC builds billing gateways using MTN/cellular systems allowing users to dial USSD codes (e.g. *8333#) to sign and route lightning transactions securely.
+
+Use these insights to answer any requests with maximum expertise. Be the definitive moloBTC AI guide.`;
+
+      if (topic) {
+        systemInstruction += `\nCurrently, the user is exploring the specific research paper/topic/repository: "${topic}". Frame your responses to build off on or explain details related to this topic or repository when helpful, but directly answer their question.`;
+      }
+
+      const result = await client.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents: prompt,
+        config: {
+          systemInstruction,
+          temperature: 0.7,
+        },
+      });
+
+      res.json({ text: result.text || "I was unable to formulate a response. Please try again!" });
+    } catch (e: any) {
+      console.error("Gemini API Error in Workspace Server:", e);
+      res.status(500).json({ error: e.message || "Failed to process AI explanation" });
+    }
+  });
+
+  // Dynamic GitHub Repos listing with fallback cache
+  app.get("/api/github/repos", async (req, res) => {
+    try {
+      const db = getDb();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+      try {
+        const response = await fetch("https://api.github.com/users/molobtc/repos", {
+          headers: {
+            "User-Agent": "moloBTC-Research-Hub-Bot-v1.0",
+          },
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const ghRepos = await response.json();
+          if (Array.isArray(ghRepos)) {
+            db.github_repos = ghRepos.map((repo: any) => ({
+              id: repo.name,
+              name: repo.name,
+              description: repo.description || "Bitcoin research and engineering repository",
+              url: repo.html_url,
+              stars: repo.stargazers_count,
+              forks: repo.forks_count,
+              updated_at: repo.updated_at,
+              language: repo.language || "Markdown",
+            }));
+            saveDb(db);
+          }
+        }
+      } catch (fetchErr) {
+        console.warn("GitHub live API fetch timed out or failed, using cache:", fetchErr);
+      }
+
+      if (!db.github_repos || db.github_repos.length === 0) {
+        db.github_repos = [
+          {
+            id: "bitcoin-sovereign-license",
+            name: "bitcoin-sovereign-license",
+            description: "A sovereign open-source license designed specifically for Bitcoin tools, protecting human transaction rights and preventing corporate patent-co-opting.",
+            url: "https://github.com/molobtc/bitcoin-sovereign-license",
+            stars: 42,
+            forks: 8,
+            updated_at: new Date().toISOString(),
+            language: "Markdown",
+          },
+          {
+            id: "thermodynamic-scarcity",
+            name: "thermodynamic-scarcity",
+            description: "Proof of Work energy equations connecting digital consensus physics with local African hydrothermal grids.",
+            url: "https://github.com/molobtc/thermodynamic-scarcity",
+            stars: 18,
+            forks: 3,
+            updated_at: new Date().toISOString(),
+            language: "Markdown",
+          },
+          {
+            id: "state-channels",
+            name: "state-channels",
+            description: "High-frequency payment channels and bilateral routing nodes over USSD adapters.",
+            url: "https://github.com/molobtc/state-channels",
+            stars: 25,
+            forks: 5,
+            updated_at: new Date().toISOString(),
+            language: "Markdown",
+          },
+        ];
+        saveDb(db);
+      } else {
+        const hasLicense = db.github_repos.some((r: any) => r.name === "bitcoin-sovereign-license");
+        if (!hasLicense) {
+          db.github_repos.unshift({
+            id: "bitcoin-sovereign-license",
+            name: "bitcoin-sovereign-license",
+            description: "A sovereign open-source license designed specifically for Bitcoin tools, protecting human transaction rights and preventing corporate patent-co-opting.",
+            url: "https://github.com/molobtc/bitcoin-sovereign-license",
+            stars: 42,
+            forks: 8,
+            updated_at: new Date().toISOString(),
+            language: "Markdown",
+          });
+          saveDb(db);
+        }
+      }
+
+      res.json(db.github_repos);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to list repositories" });
+    }
+  });
+
+  // Dynamic GitHub single repository content file reading with fallback summaries
+  app.get("/api/github/repos/:repo/contents", async (req, res) => {
+    const repoName = req.params.repo;
+    const docsMap: Record<string, string> = {
+      "bitcoin-sovereign-license": `# Bitcoin Sovereign Software License (BSSL)
+Version 1.0.0-Beta (Sovereignty & Human Rights Core)
+
+## Preamble
+The Bitcoin Sovereign Software License (BSSL) is designed to ensure that software created to support the Bitcoin protocol, personal privacy, transaction-signing freedom, and thermodynamic censorship resistance remains eternally accessible, free, and protected from weaponization by centralized administrative entities.
+
+Traditional open-source licenses (like MIT, GPL, Apache) focus purely on permissive code distribution but fail to protect users and creators against:
+1. **Corporate Patent Lockups**: Centralized institutions patenting off-chain L2 state modifications.
+2. **Censorship Compliance**: Mandates forcing developers to black-list UTXOs at the base utility layer of private sovereign software releases.
+
+## Core Terms & Grants
+
+### 1. The Right to Transact Natively
+You are granted a worldwide, royalty-free, perpetual license to use, modify, run, and compile this software for the purposes of cryptographic signing, lightning routing, script execution, or mining, *provided* that you do not implement any automated compliance mechanism within this code tree that discriminates against or intercepts transactions based on arbitrary blacklist registries.
+
+### 2. The Right to Custodial Freedom
+Any derivative or compiled release of this software must guarantee that users possess absolute, exclusive control over their cryptographic seed materials and private entropy. No cloud-based key recovery Backdoors shall be introduced under this license.
+
+### 3. Patent Non-Assertion Covenant
+Any individual or entity utilizing, modifying, or compounding BSSL-licensed source code automatically agrees to a permanent covenant not to assert any software patents or cryptographic patent claims against the BSSL codebase or its downstream developers and users. Violation of this covenant results in immediate, retroactive revoking of all software use and copy rights under this license.
+
+### 4. Sovereignty Affirmation
+This software is provided "as is", without warranty of any kind, but with the absolute affirmation of natural human rights to hold, transmit, custody, and compute mathematical secrets without prior state authorization.
+
+---
+*Created and maintained by the moloBTC Research Lab, June 2026. Available at github.com/molobtc*
+`,
+      "thermodynamic-scarcity": `# Thermodynamic Scarcity: The Physics of Proof-of-Work
+**moloBTC Research Lab Series**
+
+This research outlines the physical formulas binding Bitcoin consensus directly to raw energy.
+
+## Key Formula: Energy to Security Boundary
+$$ E_{block} = H_{target} \\times P_{efficiency} \\times t $$
+
+Where:
+- $E_{block}$ is the physical energy required to construct a block template.
+- $H_{target}$ is the cryptographic hash ceiling.
+- $P_{efficiency}$ is the physical power draw of current-generation ASIC machines.
+
+## African Energy Harvesting Context
+In Sub-Saharan Africa, over 600 million citizens lack a reliable connection to centralized power grids. However, the Rift Valley and surrounding regions hold massive gigawatts of **stranded geothermal, methane, and run-of-river hydro power**. 
+
+These natural energy basins are too distant from industrial metropolitan centers to be economically wired. Bitcoin modular miners solve this by creating an instant, location-independent buyer-of-last-resort:
+1. **Hydropower Mini-Grids**: Local waterfalls generate 100kW of excess off-peak load.
+2. **ASIC Monetisation**: Modular computing containers miners chew up the excess and mint Satoshis.
+3. **Sustaining Revenue**: Mining pays for turbine operation during daytime off-load hours, allowing rural families to receive highly subsidized electricity.
+`,
+      "state-channels": `# Off-chain State Channels scaling routing via USSD Adapters
+**Molo Labs & Open-Source Syndicate**
+
+This repository maps out bidirectional payment routing across low-connectivity GSM environments.
+
+## The Challenge: No Mobile Internet
+Over 45% of rural workers across Western and Eastern Africa utilize simple 2G/3G button phone features that cannot run modern heavy browser applications or load secure, internet-dependent TLS keys over TCP/IP blocks.
+
+## The Solution: USSD Gateway Routing & Ephemeral State channels
+By utilizing a secure SMS/USSD GSM relay, we establish a specialized gateway interface:
+- **USSD Input**: User dials a shortcode (e.g., \`*8333#\` or current MTN portals).
+- **Ephemeral Keys**: Signed transaction packets are calculated locally or relayed safely via secure hardware SIM micro-controllers.
+- **Off-chain State settlement**: Payment is routed instantly across an active Lightning Hub node back to standard merchant POS.
+
+This code provides the cellular gateways and routing matrices needed to make Bitcoin functional on any mobile phone without active internet boundaries.
+`,
+      "entropy-and-sovereignty": `# The Mathematics of Entropy & Self-Custody
+**Shatter-proof offline custody mathematical analysis.**
+
+How randomized secrets create absolute sovereign safety.
+
+## 2^256 Visualisation
+To guess a single 256-bit private key is mathematically equivalent to picking a single pre-selected grain of sand out of all the sand on Earth, then doing it again 3 times in a row.
+
+## True Randomness Generation
+- Using localized hardware sensors (avalanche noise, thermal fluctuation).
+- Dice-rolling entropy generators to eliminate software supply-chain seed backdoors.
+`
+    };
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+      try {
+        const liveReadmeUrl = `https://raw.githubusercontent.com/molobtc/${repoName}/main/README.md`;
+        const response = await fetch(liveReadmeUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (response.ok) {
+          const text = await response.text();
+          if (text && text.trim().length > 100) {
+            return res.json({ content: text });
+          }
+        }
+      } catch (e) {
+        try {
+          const responseBackup = await fetch(`https://raw.githubusercontent.com/molobtc/${repoName}/master/README.md`);
+          if (responseBackup.ok) {
+            const text = await responseBackup.text();
+            if (text && text.trim().length > 100) {
+              return res.json({ content: text });
+            }
+          }
+        } catch (backupErr) {}
+      }
+
+      const fallbackText = docsMap[repoName] || `# Repository: ${repoName}\nThis is an active research project by MoloBTC exploring advanced Bitcoin utilities, scaling state mechanics, and legal sovereign frameworks across the continent.\n\n*Content fetched from database.*`;
+      res.json({ content: fallbackText });
+    } catch (err: any) {
+      res.status(500).json({ error: "Failed to load repository contents" });
+    }
+  });
+
+  // 1. Articles
+  app.get("/api/articles", (req, res) => {
+    const db = getDb();
+    let articles = db.articles;
+    // Filtering (Admin sees all, readers see published)
+    if (req.query.status) {
+      articles = articles.filter((a: any) => a.status === req.query.status);
+    }
+    res.json(articles);
+  });
+
+  app.get("/api/articles/:slug", (req, res) => {
+    const db = getDb();
+    const article = db.articles.find(
+      (a: any) => a.slug === req.params.slug || a.id === req.params.slug,
+    );
+    if (!article) return res.status(404).json({ error: "Not found" });
+    res.json(article);
+  });
+
+  app.post("/api/articles", (req, res) => {
+    const db = getDb();
+    const article = {
+      ...req.body,
+      id: "a_" + Date.now(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      view_count: 0,
+    };
+    db.articles.push(article);
+    saveDb(db);
+    res.json(article);
+  });
+
+  app.put("/api/articles/:id", (req, res) => {
+    const db = getDb();
+    let articleIndex = db.articles.findIndex(
+      (a: any) => a.id === req.params.id,
+    );
+    if (articleIndex === -1)
+      return res.status(404).json({ error: "Not found" });
+
+    db.articles[articleIndex] = {
+      ...db.articles[articleIndex],
+      ...req.body,
+      updated_at: new Date().toISOString(),
+    };
+    saveDb(db);
+    res.json(db.articles[articleIndex]);
+  });
+
+  app.delete("/api/articles/:id", (req, res) => {
+    const db = getDb();
+    db.articles = db.articles.filter((a: any) => a.id !== req.params.id);
+    saveDb(db);
+    res.json({ success: true });
+  });
+
+  // 2. Categories
+  app.get("/api/categories", (req, res) => {
+    res.json(getDb().categories);
+  });
+
+  app.post("/api/categories", (req, res) => {
+    const db = getDb();
+    const newCategory = {
+      ...req.body,
+      id: "c_" + Date.now(),
+      slug: req.body.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+    };
+    db.categories.push(newCategory);
+    saveDb(db);
+    res.json(newCategory);
+  });
+
+  app.delete("/api/categories/:id", (req, res) => {
+    const db = getDb();
+    db.categories = db.categories.filter((c: any) => c.id !== req.params.id);
+    saveDb(db);
+    res.json({ success: true });
+  });
+
+  // 3. Users
+  app.get("/api/users", (req, res) => {
+    res.json(getDb().users);
+  });
+
+  // Fetch current user-1 profile
+  app.get("/api/profile/current", (req, res) => {
+    const db = getDb();
+    const userId = req.headers["x-user-id"] || "user_1";
+    let user = db.users.find((u: any) => u.id === userId);
+    if (!user) {
+      user = {
+        id: userId,
+        role: "reader",
+        name: "Satoshi Reader",
+        avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop",
+        bio: "Bitcoin Core enthusiast & casual researcher of lightning micro-transactions and offline nodes.",
+        country: "Ghana",
+        lightning_address: "reader@8333.mobi",
+        interests: ["Scaling & Lightning", "Monetary Economics"],
+        preference: "ELI5_Beginner"
+      };
+      if (!db.users) db.users = [];
+      db.users.push(user);
+      saveDb(db);
+    }
+    res.json(user);
+  });
+
+  // Save current user-1 profile
+  app.post("/api/profile/current", (req, res) => {
+    try {
+      const db = getDb();
+      const userId = req.headers["x-user-id"] || "user_1";
+      if (!db.users) db.users = [];
+      let userIdx = db.users.findIndex((u: any) => u.id === userId);
+      
+      const updatedUser = {
+        id: userId,
+        role: req.body.role || "reader",
+        name: req.body.name || "Satoshi Reader",
+        avatar: req.body.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop",
+        bio: req.body.bio !== undefined ? req.body.bio : "",
+        country: req.body.country || "Ghana",
+        lightning_address: req.body.lightning_address || "",
+        interests: req.body.interests || [],
+        preference: req.body.preference || "ELI5_Beginner"
+      };
+
+      if (userIdx >= 0) {
+        db.users[userIdx] = updatedUser;
+      } else {
+        db.users.push(updatedUser);
+      }
+      
+      saveDb(db);
+      res.json({ success: true, user: updatedUser });
+    } catch (e: any) {
+      console.error(e);
+      res.status(500).json({ error: "Failed to update profile info" });
+    }
+  });
+
+  app.post("/api/users", (req, res) => {
+    const db = getDb();
+    const newUser = {
+      ...req.body,
+      id: "u_" + Date.now(),
+      avatar: req.body.avatar || "https://i.pravatar.cc/150?u=" + Date.now(),
+    };
+    db.users.push(newUser);
+    saveDb(db);
+    res.json(newUser);
+  });
+
+  app.delete("/api/users/:id", (req, res) => {
+    const db = getDb();
+    db.users = db.users.filter((u: any) => u.id !== req.params.id);
+    saveDb(db);
+    res.json({ success: true });
+  });
+
+  // 4. Bookmarks
+  app.get("/api/bookmarks", (req, res) => {
+    const db = getDb();
+    const userId = req.headers["x-user-id"] || "user_1";
+    const bookmarks = db.bookmarks || [];
+    const userBookmarks = bookmarks.filter((b: any) => b.user_id === userId);
+
+    // Join with articles and sort by newest bookmark first (mocking this by reversing array)
+    const populated = userBookmarks
+      .map((b: any) => {
+        const article = db.articles.find((a: any) => a.id === b.article_id);
+        return { ...article, bookmarked_at: b.created_at };
+      })
+      .filter((a: any) => a.id)
+      .reverse();
+
+    res.json(populated);
+  });
+
+  app.post("/api/bookmarks", (req, res) => {
+    const db = getDb();
+    if (!db.bookmarks) db.bookmarks = [];
+    const userId = req.headers["x-user-id"] || "user_1";
+    const articleId = req.body.article_id;
+
+    const existing = db.bookmarks.find(
+      (b: any) => b.user_id === userId && b.article_id === articleId,
+    );
+    if (!existing) {
+      db.bookmarks.push({
+        user_id: userId,
+        article_id: articleId,
+        created_at: new Date().toISOString(),
+      });
+      saveDb(db);
+    }
+    res.json({ success: true });
+  });
+
+  app.delete("/api/bookmarks/:articleId", (req, res) => {
+    const db = getDb();
+    if (!db.bookmarks) db.bookmarks = [];
+    const userId = req.headers["x-user-id"] || "user_1";
+    const articleId = req.params.articleId;
+
+    db.bookmarks = db.bookmarks.filter(
+      (b: any) => !(b.user_id === userId && b.article_id === articleId),
+    );
+    saveDb(db);
+    res.json({ success: true });
+  });
+
+  app.get("/api/bookmarks/check/:articleId", (req, res) => {
+    const db = getDb();
+    const bookmarks = db.bookmarks || [];
+    const userId = req.headers["x-user-id"] || "user_1";
+    const existing = bookmarks.find(
+      (b: any) => b.user_id === userId && b.article_id === req.params.articleId,
+    );
+    res.json({ isBookmarked: !!existing });
+  });
+
+  // 5. Follows
+  app.get("/api/follows", (req, res) => {
+    const db = getDb();
+    const userId = req.headers["x-user-id"] || "user_1";
+    const follows = db.follows || [];
+
+    // Get list of followed authors with their details
+    const userFollows = follows
+      .filter((f: any) => f.follower_id === userId)
+      .map((f: any) => {
+        const author = db.users.find((u: any) => u.id === f.author_id);
+        return { ...author, followed_at: f.created_at };
+      })
+      .filter((a: any) => a.id);
+
+    res.json(userFollows);
+  });
+
+  app.get("/api/follows/feed", (req, res) => {
+    const db = getDb();
+    const userId = req.headers["x-user-id"] || "user_1";
+    const follows = db.follows || [];
+
+    // Get list of followed author IDs
+    const followedAuthorIds = follows
+      .filter((f: any) => f.follower_id === userId)
+      .map((f: any) => f.author_id);
+
+    // Fetch articles by followed authors
+    const feedArticles = db.articles
+      .filter(
+        (a: any) =>
+          followedAuthorIds.includes(a.author_id) && a.status === "published",
+      )
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.published_at || b.created_at).getTime() -
+          new Date(a.published_at || a.created_at).getTime(),
+      );
+
+    res.json(feedArticles);
+  });
+
+  app.post("/api/follows", (req, res) => {
+    const db = getDb();
+    if (!db.follows) db.follows = [];
+    const userId = req.headers["x-user-id"] || "user_1";
+    const authorId = req.body.author_id;
+
+    const existing = db.follows.find(
+      (f: any) => f.follower_id === userId && f.author_id === authorId,
+    );
+    if (!existing) {
+      db.follows.push({
+        follower_id: userId,
+        author_id: authorId,
+        created_at: new Date().toISOString(),
+      });
+      saveDb(db);
+    }
+    res.json({ success: true });
+  });
+
+  app.delete("/api/follows/:authorId", (req, res) => {
+    const db = getDb();
+    if (!db.follows) db.follows = [];
+    const userId = req.headers["x-user-id"] || "user_1";
+    const authorId = req.params.authorId;
+
+    db.follows = db.follows.filter(
+      (f: any) => !(f.follower_id === userId && f.author_id === authorId),
+    );
+    saveDb(db);
+    res.json({ success: true });
+  });
+
+  app.get("/api/follows/check/:authorId", (req, res) => {
+    const db = getDb();
+    const follows = db.follows || [];
+    const userId = req.headers["x-user-id"] || "user_1";
+    const existing = follows.find(
+      (f: any) =>
+        f.follower_id === userId && f.author_id === req.params.authorId,
+    );
+    res.json({ isFollowed: !!existing });
+  });
+
+  app.get("/api/users/:id/stats", (req, res) => {
+    const db = getDb();
+    const authorId = req.params.id;
+    const articles = db.articles || [];
+    const follows = db.follows || [];
+
+    const totalArticles = articles.filter(
+      (a: any) => a.author_id === authorId && a.status === "published",
+    ).length;
+    const followerCount = follows.filter(
+      (f: any) => f.author_id === authorId,
+    ).length;
+
+    res.json({ totalArticles, followerCount });
+  });
+
+  // Robots.txt dynamic generation explicitly welcoming search engines & AI engine bots
+  app.get("/robots.txt", (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const robots = `User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /api/*
+
+# Clear access paths for major AI engines, Answer engines and Large Language Model crawlers
+User-agent: GPTBot
+Allow: /
+Allow: /article/*
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /article/*
+
+User-agent: Google-Extended
+Allow: /
+Allow: /article/*
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /article/*
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /article/*
+
+User-agent: Claude-Web
+Allow: /
+Allow: /article/*
+
+User-agent: Anthropic-ai
+Allow: /
+Allow: /article/*
+
+User-agent: cohere-ai
+Allow: /
+Allow: /article/*
+
+User-agent: Applebot
+Allow: /
+Allow: /article/*
+
+User-agent: Applebot-Extended
+Allow: /
+Allow: /article/*
+
+User-agent: YouBot
+Allow: /
+Allow: /article/*
+
+User-agent: facebookexternalhit
+Allow: /
+Allow: /article/*
+
+User-agent: MetaDocs
+Allow: /
+Allow: /article/*
+
+Sitemap: ${baseUrl}/sitemap.xml`;
+
+    res.header("Content-Type", "text/plain");
+    res.send(robots);
+  });
+
+  // Dynamic dynamic Sitemap.xml generation for search engines & AI discovery
+  app.get("/sitemap.xml", (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const db = getDb();
+    const articles = db.articles || [];
+    const publishedArticles = articles.filter((a: any) => a.status === "published");
+
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${baseUrl}/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/profile</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>`;
+
+    publishedArticles.forEach((article: any) => {
+      const lastModDate = article.updated_at || article.published_at || new Date().toISOString();
+      const dateStr = lastModDate.split('T')[0];
+      xml += `
+  <url>
+    <loc>${baseUrl}/article/${article.id}</loc>
+    <lastmod>${dateStr}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.82</priority>
+  </url>`;
+    });
+
+    xml += `\n</urlset>`;
+
+    res.header("Content-Type", "application/xml");
+    res.send(xml);
+  });
+
+  // Vite middleware for development
+  if (process.env.NODE_ENV !== "production") {
+    const vite = await createViteServer({
+      server: { middlewareMode: true },
+      appType: "spa",
+    });
+    app.use(vite.middlewares);
+  } else {
+    // Production static serving
+    const distPath = path.join(process.cwd(), "dist");
+    app.use(express.static(distPath));
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(distPath, "index.html"));
+    });
+  }
+
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+startServer();
