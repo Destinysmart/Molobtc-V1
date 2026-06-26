@@ -383,6 +383,13 @@ async function startServer() {
     }
   });
 
+  // Cache for GitHub repository metrics
+  const bsrfStatsCache = {
+    stars: 0,
+    forks: 0,
+    lastFetched: 0
+  };
+
   // AI Gemini Explorer Assistant route
   app.post("/api/gemini/chat", async (req, res) => {
     try {
@@ -414,24 +421,35 @@ Keep your structure clean, using distinct markdown headers, bullet points, and h
 Always maintain a helpful, encouraging, and highly educational tone.
 If the user asks an unrelated query, gently remind them that your specialty is demystifying the Bitcoin system and steer the focus back to Bitcoin!
 
-CRITICAL CONTEXT - Study the Github and repositories created by moloBTC:
-Here is the core technical documentation, research papers, and software licenses published by moloBTC upon which you must base your custom analysis:
+CRITICAL CONTEXT - Study the GitHub repository and real-world research of the Bitcoin Sovereignty Research Framework (BSRF) published by MoloBTC-Org:
+Here is the core technical documentation, research papers, and core philosophies upon which you must base your custom analysis and answers:
 
-1. BITCOIN SOVEREIGN SOFTWARE LICENSE (BSSL v1.0.0-Beta):
-Designed for sovereign developers. Traditional open-source licenses (MIT/GPL) fail to protect against corporate patent lockups on Layer 2 adjustments and regulatory censorship compliance mandates forcing base utility layer address blocking.
-BSSL grants universal rights to run, copy, and modify software, *provided* that:
-- Users have absolute and exclusive custody of their keys/entropy (no backdoors).
-- No automated discrimination/blacklist registries are built in.
-- Permanent patent non-assertion covenant: anyone building on or using BSSL code agrees never to file code patents against the codebase or users, preventing patent-trolling.
+1. THE NINE PILLARS OF BITCOIN SOVEREIGNTY:
+- Pillar 1: Sui Generis Bearer Property - Bitcoin is an absolute, issuer-free, self-secured digital bearer asset with no counterparty risk.
+- Pillar 2: Adjacent Currency Recognition - Bitcoin operates as a sovereign parallel currency inside the global protocol and thermodynamic commons, independent of fiat systems.
+- Pillar 3: Right to Sovereign Private Compute - The absolute right of individuals and companies to run open-source software, including Bitcoin full nodes, on their private hardware.
+- Pillar 4: Self-Custody as the Highest Standard - Fiduciary and personal custody must be direct, independent of intermediaries, air-gapped, and robustly designed.
+- Pillar 5: No Compelled Key/Seed Disclosure - Absolute protection of private seed phrases and mental entropy. Forcing disclosure of math/knowledge violates the sanctity of human consciousness.
+- Pillar 6: Realization-Based Taxation with Territorial Nexus - Capital taxation is strictly limited to local fiat realization events; holding, moving, or mathematical transport must remain tax-exempt.
+- Pillar 7: Absolute Freedom of Transaction - Rejection of administrative protocol-level blacklist/address censorship compliance.
+- Pillar 8: Thermodynamic Consensus Security - Pure, physical Proof-of-Work as the only unmanipulatable security consensus mechanism, protecting against bureaucratic Capture.
+- Pillar 9: No Issuer-Dependence - Separation of Bitcoin from centralized, debt-based utility tokens or CBDCs.
 
-2. THERMODYNAMIC SCARCITY (PoW & Energy physics):
-Equations: Energy to Security Boundary (E = H * P * t) proving ledger security is physical, not administrative.
-African Context: Over 600M people in Sub-Saharan Africa lack grid connections. Bitcoin modular computing mines purchase excess off-peak stranded energy (Rift Valley Geothermal, run-of-river hydro mini-grids), funding the setup and operation of rural family power lines.
+2. BITCOIN SELF-CUSTODY AS SOVEREIGN MONETARY INFRASTRUCTURE (Tier 1 & Tier 2):
+- Applying the industrial security standards (ISA/IEC 62443 Zones & Conduits) to Bitcoin key management.
+- Multi-signature setups (e.g. 2-of-3 or 3-of-5) distributed across geographic boundaries.
+- Dedicated air-gapped hardware/micro-controllers for offline transaction signing, and transaction broadcast routing through dedicated self-hosted full nodes.
 
-3. STATE CHANNELS (Offline payment channels over USSD/GSM cell systems):
-Over 45% of rural workers only have 2G/3G GSM feature phones without active mobile internet (TCP/IP/TLS blocks). moloBTC builds billing gateways using MTN/cellular systems allowing users to dial USSD codes (e.g. *8333#) to sign and route lightning transactions securely.
+3. BITCOIN AS ADJACENT CURRENCY UNDER INTERNATIONAL LAW:
+- Case for separate local realization taxation, tax-free treatment of holding/unrealized gains, and international double-tax coordination protocols to prevent rights-violating blockades.
 
-Use these insights to answer any requests with maximum expertise. Be the definitive moloBTC AI guide.`;
+4. OBJECTION AND COMMENT TEMPLATES FOR LOCAL REGULATIONS (e.g., South Africa Draft Capital Flow Regulations 2026):
+- Practical legal frameworks arguing that administrative capital control restrictions on digital bearer assets violate constitutional property rights and private calculations.
+
+5. BITCOIN AS SUI GENERIS BEARER PROPERTY:
+- Natural-law and Austrian economics analysis of digital energy homesteading. Holding private key knowledge is merely retaining memory, which cannot be subject to physical asset holding levies.
+
+Use these insights to answer any requests with maximum expertise. Be the definitive MoloBTC-Org AI guide.`;
 
       if (topic) {
         systemInstruction += `\nCurrently, the user is exploring the specific research paper/topic/repository: "${topic}". Frame your responses to build off on or explain details related to this topic or repository when helpful, but directly answer their question.`;
@@ -453,17 +471,35 @@ Use these insights to answer any requests with maximum expertise. Be the definit
     }
   });
 
-  // Dynamic GitHub Repos listing with fallback cache
+  // Dynamic GitHub Repos listing with live sync from GitHub API and fallback cache
   app.get("/api/github/repos", async (req, res) => {
     try {
+      // Fetch live statistics if stale (more than 2 minutes)
+      const now = Date.now();
+      if (now - bsrfStatsCache.lastFetched > 2 * 60 * 1000) {
+        try {
+          const fetchRes = await fetch("https://api.github.com/repos/MoloBTC-Org/bsrf", {
+            headers: { "User-Agent": "MoloBTC-Workspace-Server" }
+          });
+          if (fetchRes.ok) {
+            const data = await fetchRes.json() as any;
+            bsrfStatsCache.stars = data.stargazers_count ?? 0;
+            bsrfStatsCache.forks = data.forks_count ?? 0;
+            bsrfStatsCache.lastFetched = now;
+          }
+        } catch (fetchErr) {
+          console.error("Failed to fetch live stats from GitHub API:", fetchErr);
+        }
+      }
+
       const researchRepos = [
         {
           id: "bitcoin-self-custody-sovereign-infrastructure",
           name: "Bitcoin Self-Custody as Sovereign Monetary Infrastructure",
           description: "Historical Patterns, Risk Principles, and Organizational Implementation. A policy whitepaper outlining multi-signature architectures, air-gapped signing, and full-node validation aligned with industrial security standard ISA/IEC 62443.",
-          url: "https://github.com/molobtc/self-custody-infrastructure",
-          stars: 87,
-          forks: 14,
+          url: "https://github.com/MoloBTC-Org/bsrf/blob/main/foundations/04_Tier1_Sovereign_Monetary_Infrastructure_v1.md",
+          stars: bsrfStatsCache.stars,
+          forks: bsrfStatsCache.forks,
           updated_at: "2026-06-09T12:00:00Z",
           language: "PDF/Markdown",
         },
@@ -471,9 +507,9 @@ Use these insights to answer any requests with maximum expertise. Be the definit
           id: "bitcoin-adjacent-currency-international-law",
           name: "Bitcoin as Adjacent Currency Under International Law",
           description: "The Global Case for Sui Generis Bearer Property, Separate Local Realization Taxation, and Double-Tax Coordination Principles. Grounded in Natural Law and Austrian economics.",
-          url: "https://github.com/molobtc/adjacent-currency-law",
-          stars: 124,
-          forks: 21,
+          url: "https://github.com/MoloBTC-Org/bsrf/blob/main/foundations/03_Tier1_Adjacent_Currency_v1.md",
+          stars: bsrfStatsCache.stars,
+          forks: bsrfStatsCache.forks,
           updated_at: "2026-06-15T12:00:00Z",
           language: "PDF/Markdown",
         },
@@ -481,9 +517,9 @@ Use these insights to answer any requests with maximum expertise. Be the definit
           id: "bitcoin-self-custody-research-ecosystem",
           name: "Bitcoin Self-Custody Research Ecosystem",
           description: "Tier 2 - Executive Overview & Reading Guide. Serves as the gateway to the Tier 2 operational collection, outlining structured reading paths for treasury, finance, and security teams.",
-          url: "https://github.com/molobtc/research-ecosystem-guide",
-          stars: 56,
-          forks: 9,
+          url: "https://github.com/MoloBTC-Org/bsrf/blob/main/begin%20here/03_Bitcoin_Self_Custody_Research_Ecosystem_Index_v1.md",
+          stars: bsrfStatsCache.stars,
+          forks: bsrfStatsCache.forks,
           updated_at: "2026-06-16T12:00:00Z",
           language: "PDF/Markdown",
         },
@@ -491,9 +527,9 @@ Use these insights to answer any requests with maximum expertise. Be the definit
           id: "capital-flow-regulations-objection-template",
           name: "Objection / Submission Template: Draft Capital Flow Regulations",
           description: "A comprehensive submission template addressing South Africa's Draft Capital Flow Management Regulations 2026, highlighting constitutional property protections and rights to private compute.",
-          url: "https://github.com/molobtc/objection-submission-template",
-          stars: 145,
-          forks: 38,
+          url: "https://github.com/MoloBTC-Org/bsrf/blob/main/jurisdictions/south%20africa/South_Africa_Public_Comment_Template_v1.md",
+          stars: bsrfStatsCache.stars,
+          forks: bsrfStatsCache.forks,
           updated_at: "2026-06-20T12:00:00Z",
           language: "PDF/LaTeX",
         },
@@ -501,9 +537,9 @@ Use these insights to answer any requests with maximum expertise. Be the definit
           id: "bitcoin-as-sui-generis-bearer-property",
           name: "Bitcoin as Sui Generis Bearer Property",
           description: "The Natural-Law and Austrian Case for Tax-Free Treatment of Self-Custodied Bitcoin. A focused deductive argument analyzing digital scarcity and the limits of legitimate state coercion.",
-          url: "https://github.com/molobtc/sui-generis-bearer-property",
-          stars: 93,
-          forks: 18,
+          url: "https://github.com/MoloBTC-Org/bsrf/blob/main/foundations/02_Tier1_Sui_Generis_Bearer_Property_v1.md",
+          stars: bsrfStatsCache.stars,
+          forks: bsrfStatsCache.forks,
           updated_at: "2026-06-12T12:00:00Z",
           language: "PDF/Markdown",
         },
@@ -511,9 +547,9 @@ Use these insights to answer any requests with maximum expertise. Be the definit
           id: "bitcoin-sovereignty-core-principles",
           name: "Bitcoin Sovereignty Core Principles",
           description: "The Authoritative Foundation of the Bitcoin Sovereignty Research Framework. Detailing the nine core principles including private compute, adjacent currency status, and protection against compelled disclosure.",
-          url: "https://github.com/molobtc/sovereignty-core-principles",
-          stars: 112,
-          forks: 25,
+          url: "https://github.com/MoloBTC-Org/bsrf/blob/main/begin%20here/01_Bitcoin_Sovereignty_Core_Principles_v1.md",
+          stars: bsrfStatsCache.stars,
+          forks: bsrfStatsCache.forks,
           updated_at: "2026-06-05T12:00:00Z",
           language: "PDF/Markdown",
         }

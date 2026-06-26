@@ -14,17 +14,21 @@ const MOCK_ANALYTICS_DATA = [
 ];
 
 export function AdminDashboard() {
-  const [stats, setStats] = useState({ downloads: 0, citations: 0, papers: 0, GitHubStars: 1420 });
+  const [stats, setStats] = useState({ downloads: 0, citations: 0, papers: 0, GitHubStars: 0 });
 
   useEffect(() => {
-    fetch("/api/articles")
-      .then(r => r.json())
-      .then(data => {
+    Promise.all([
+      fetch("/api/articles").then(r => r.json()),
+      fetch("/api/github/repos").then(r => r.json())
+    ])
+      .then(([articlesData, reposData]) => {
+        // Since all papers belong to the same repository (bsrf), we use its real stars count
+        const realStars = (reposData && reposData.length > 0) ? reposData[0].stars : 0;
         setStats({
-          downloads: data.length * 480 + 3420,
+          downloads: articlesData.length * 480 + 3420,
           citations: 86,
-          papers: data.length,
-          GitHubStars: 1420
+          papers: articlesData.length,
+          GitHubStars: realStars
         });
       })
       .catch(err => console.error(err));
