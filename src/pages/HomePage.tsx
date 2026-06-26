@@ -54,6 +54,65 @@ interface ResearchPaper {
   published_at: string;
 }
 
+function TypewriterHeader() {
+  const fullText = "See Bitcoin Through The Orange Lens";
+  const baseLength = 20; // Length of "See Bitcoin Through "
+  
+  const [displayText, setDisplayText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [typingSpeed, setTypingSpeed] = useState(80);
+
+  useEffect(() => {
+    let timer: any;
+    
+    const handleType = () => {
+      if (!isDeleting && displayText === fullText) {
+        timer = setTimeout(() => {
+          setIsDeleting(true);
+          setTypingSpeed(45); // erase faster
+        }, 3000); // pause for 3 seconds when fully typed
+        return;
+      }
+
+      if (isDeleting && displayText === "") {
+        setIsDeleting(false);
+        setTypingSpeed(80);
+        timer = setTimeout(() => {
+          setDisplayText(fullText.slice(0, 1));
+        }, 500); // pause for a bit when empty
+        return;
+      }
+
+      const nextText = isDeleting
+        ? fullText.slice(0, displayText.length - 1)
+        : fullText.slice(0, displayText.length + 1);
+
+      setDisplayText(nextText);
+    };
+
+    timer = setTimeout(handleType, typingSpeed);
+    return () => clearTimeout(timer);
+  }, [displayText, isDeleting, typingSpeed]);
+
+  const basePart = displayText.slice(0, baseLength);
+  const accentPart = displayText.slice(baseLength);
+
+  return (
+    <span className="inline-block relative min-h-[2em] sm:min-h-[1.2rem]">
+      <span>{basePart}</span>
+      {accentPart && (
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-brand-500 to-orange-700">
+          {accentPart}
+        </span>
+      )}
+      <span 
+        className="inline-block w-[3px] h-[0.9em] bg-orange-500 ml-1.5 align-middle animate-pulse" 
+        style={{ animationDuration: '0.8s' }}
+      />
+    </span>
+  );
+}
+
 export function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -71,11 +130,32 @@ export function HomePage() {
   // Helper to resolve repository category
   const getRepoCategory = (repoName: string): string => {
     const name = repoName.toLowerCase();
-    if (name.includes("license")) return "Sovereignty & Legal";
-    if (name.includes("scarcity") || name.includes("thermo") || name.includes("physics") || name.includes("energy")) return "Physics & Energy";
-    if (name.includes("channel") || name.includes("ussd") || name.includes("lightning") || name.includes("routing")) return "Networks & Scaling";
-    if (name.includes("entropy") || name.includes("private") || name.includes("seed") || name.includes("custody")) return "Cryptography & Custody";
-    return "Bitcoin Protocols";
+    if (name.includes("law") || name.includes("sovereign") || name.includes("objection") || name.includes("bearer") || name.includes("license")) {
+      return "Sovereignty & Legal";
+    }
+    if (name.includes("infrastructure") || name.includes("physics") || name.includes("energy") || name.includes("scarcity") || name.includes("thermo")) {
+      return "Physics & Energy";
+    }
+    if (name.includes("principles") || name.includes("ecosystem") || name.includes("channel") || name.includes("lightning") || name.includes("networks")) {
+      return "Networks & Scaling";
+    }
+    return "Sovereignty & Legal"; // default fallback
+  };
+
+  const handleDownloadPdf = (repo: any) => {
+    // Show download alert
+    setShowDownloadAlert(repo.name);
+    setTimeout(() => {
+      setShowDownloadAlert(null);
+    }, 4500);
+
+    // Create a virtual download link to the backend download route
+    const link = document.createElement("a");
+    link.href = `/api/research/download/${repo.id}`;
+    link.setAttribute("download", `${repo.id}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   // Automatically generate categories for the research based on GitHub repositories
@@ -264,15 +344,84 @@ export function HomePage() {
       />
       <Navigation />
 
-      {/* Hero Header */}
-      <header className="w-full bg-neutral-900 border-b border-gray-200">
-        <img 
-          src="/src/assets/images/molo_sunglasses_hero_1781541960376.jpg" 
-          alt="moloBTC - See Bitcoin Through The Orange Lens" 
-          className="w-full h-auto block"
-          referrerPolicy="no-referrer"
-        />
-      </header>
+      {/* Hero Section with Full-Width Background Image */}
+      <section className="relative w-full h-[55vh] sm:h-[65vh] md:h-[75vh] lg:h-[80vh] min-h-[480px] max-h-[800px] overflow-hidden bg-neutral-950 flex items-center">
+        {/* Background Image Container */}
+        <div className="absolute inset-0 w-full h-full select-none pointer-events-none">
+          <img 
+            src="https://res.cloudinary.com/dqrptx2qp/image/upload/v1782481905/Molobtc_header_llkobw.png" 
+            alt="moloBTC - See Bitcoin Through The Orange Lens" 
+            className="w-full h-full object-cover object-center"
+            referrerPolicy="no-referrer"
+          />
+          {/* Gentle, cinematic gradient overlay to ensure readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-neutral-900/40 to-neutral-950/20 md:bg-gradient-to-r md:from-neutral-950/95 md:via-neutral-950/60 md:to-transparent" />
+        </div>
+
+        {/* Content Container */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center md:items-start text-center md:text-left justify-center h-full text-white">
+          <div className="max-w-2xl bg-black/30 md:bg-transparent backdrop-blur-sm md:backdrop-blur-none p-6 sm:p-8 md:p-0 rounded-3xl border border-white/5 md:border-none">
+            {/* Tagline Badge */}
+            <motion.span 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="inline-block bg-brand-500/90 text-white text-[11px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-6 font-mono border border-brand-400/25 shadow-lg shadow-brand-500/20"
+            >
+              Orange Lens Research
+            </motion.span>
+
+            {/* Title / Header */}
+            <motion.h1
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight mb-6 select-none min-h-[4.5rem] sm:min-h-[3.5rem] md:min-h-[4rem]"
+            >
+              <TypewriterHeader />
+            </motion.h1>
+
+            {/* Subtitle / Paragraph */}
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="text-sm sm:text-base md:text-lg text-neutral-200 leading-relaxed font-sans max-w-xl mb-8 font-medium"
+            >
+              MoloBTC helps Africans understand, explore, and navigate Bitcoin through peer-reviewed research, simplified technical explanations, and direct entryways to help you learn, build, mine, and earn.
+            </motion.p>
+
+            {/* Interactive Call-To-Action Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.35 }}
+              className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4"
+            >
+              <button 
+                onClick={() => {
+                  const el = document.querySelector("#research");
+                  el?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="w-full sm:w-auto px-6 py-3.5 bg-brand-500 hover:bg-brand-600 active:scale-95 text-white font-semibold rounded-2xl shadow-lg shadow-brand-500/25 hover:shadow-brand-500/35 transition-all text-sm flex items-center justify-center gap-2 border border-brand-400/20"
+              >
+                <BookOpen className="w-4 h-4" />
+                Explore Research
+              </button>
+              <button 
+                onClick={() => {
+                  const el = document.querySelector("#discover");
+                  el?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="w-full sm:w-auto px-6 py-3.5 bg-white/10 hover:bg-white/15 active:scale-95 text-white font-semibold rounded-2xl backdrop-blur-md transition-all text-sm flex items-center justify-center gap-2 border border-white/15 hover:border-white/25"
+              >
+                <Compass className="w-4 h-4" />
+                Discover Tools
+              </button>
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -298,28 +447,7 @@ export function HomePage() {
           )}
         </AnimatePresence>
 
-        {/* SECTION: WELCOME & VISION */}
-        <div className="mb-20 text-center max-w-3xl mx-auto px-4">
 
-          
-          <motion.h1
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-950 tracking-tight leading-tight mb-4"
-          >
-            See Bitcoin Through <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-brand-500 to-orange-700">The Orange Lens</span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="text-sm sm:text-base md:text-lg text-gray-650 leading-relaxed font-sans max-w-2xl mx-auto"
-          >
-            MoloBTC helps Africans understand, explore, and navigate Bitcoin through peer-reviewed research, simplified technical explanations, and direct entryways to help you learn, build, mine, and earn.
-          </motion.p>
-        </div>
 
         {/* SECTION: THREE PILLARS CORES */}
         <section className="mb-24">
@@ -514,28 +642,19 @@ export function HomePage() {
               ))
             ) : (
               filteredRepos.map((repo) => {
-                const isLicense = repo.name === "bitcoin-sovereign-license" || repo.name.includes("license");
                 const repoCat = getRepoCategory(repo.name);
                 
                 return (
                   <div
                     key={repo.id}
-                    className={`bg-white rounded-3xl border shadow-sm flex flex-col justify-between overflow-hidden hover:shadow-xl transition-all group cursor-pointer ${
-                      isLicense ? "border-brand-300 bg-brand-50/5" : "border-gray-100 hover:border-brand-100"
-                    }`}
+                    className="bg-white rounded-3xl border border-gray-100 hover:border-brand-100 shadow-sm flex flex-col justify-between overflow-hidden hover:shadow-xl transition-all group cursor-pointer"
                     onClick={() => handleSelectRepo(repo)}
                   >
                     <div className="p-6">
                       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-                        {isLicense ? (
-                          <span className="bg-brand-500 text-white font-mono text-[9px] font-bold px-2 py-0.5 rounded shadow-sm">
-                            📜 SOVEREIGN LICENSE DOC
-                          </span>
-                        ) : (
-                          <span className="bg-gray-100 text-gray-600 font-mono text-[9px] px-2 py-0.5 rounded border border-gray-200">
-                            ⚡ {repoCat.toUpperCase()}
-                          </span>
-                        )}
+                        <span className="bg-brand-50 text-brand-700 font-mono text-[9px] font-bold px-2 py-0.5 rounded border border-brand-100 uppercase tracking-wider">
+                          ⚡ {repoCat}
+                        </span>
 
                         <div className="flex items-center gap-3 text-gray-500 font-mono text-xs">
                           <span className="flex items-center gap-1">
@@ -553,32 +672,44 @@ export function HomePage() {
                         {repo.name}
                       </h3>
 
-                      <p className="text-xs sm:text-sm text-gray-650 min-h-[3.5rem] leading-relaxed mb-4 line-clamp-3">
+                      <p className="text-xs sm:text-sm text-gray-650 min-h-[4rem] leading-relaxed mb-4 line-clamp-3">
                         {repo.description}
                       </p>
 
                       <div className="flex items-center gap-4 text-[11px] font-mono text-gray-450 border-t border-gray-50 pt-3">
-                        <span>Lang: <strong className="text-gray-700">{repo.language || "Markdown"}</strong></span>
-                        <span>Synced: <strong className="text-gray-700">{repo.updated_at ? new Date(repo.updated_at).toLocaleDateString() : "Just now"}</strong></span>
+                        <span>Format: <strong className="text-gray-700">{repo.language || "PDF"}</strong></span>
+                        <span>Updated: <strong className="text-gray-700">{repo.updated_at ? new Date(repo.updated_at).toLocaleDateString() : "Just now"}</strong></span>
                       </div>
                     </div>
 
-                    <div className="bg-[#FFFDFB] border-t border-gray-50 px-6 py-4 flex items-center justify-between">
+                    <div className="bg-[#FFFDFB] border-t border-gray-50 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
                       <span className="text-xs font-semibold text-brand-600 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1.5">
                         Read Repository Files <ArrowRight className="w-4 h-4" />
                       </span>
 
-                      <a
-                        href={repo.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                        }}
-                        className="p-1 px-3 bg-white text-gray-600 hover:text-gray-900 font-mono text-[10px] font-bold border border-gray-200 hover:border-brand-500 rounded-xl transition-all shadow-sm"
-                      >
-                        GITHUB ↗
-                      </a>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownloadPdf(repo);
+                          }}
+                          className="p-1.5 px-3 bg-brand-500 text-white hover:bg-brand-600 font-sans text-[11px] font-bold rounded-xl transition-all shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          Download
+                        </button>
+                        <a
+                          href={repo.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                          className="p-1.5 px-3 bg-white text-gray-600 hover:text-gray-900 font-mono text-[10px] font-bold border border-gray-200 hover:border-brand-500 rounded-xl transition-all shadow-sm"
+                        >
+                          GITHUB ↗
+                        </a>
+                      </div>
                     </div>
                   </div>
                 );

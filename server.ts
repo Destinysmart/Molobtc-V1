@@ -456,91 +456,75 @@ Use these insights to answer any requests with maximum expertise. Be the definit
   // Dynamic GitHub Repos listing with fallback cache
   app.get("/api/github/repos", async (req, res) => {
     try {
+      const researchRepos = [
+        {
+          id: "bitcoin-self-custody-sovereign-infrastructure",
+          name: "Bitcoin Self-Custody as Sovereign Monetary Infrastructure",
+          description: "Historical Patterns, Risk Principles, and Organizational Implementation. A policy whitepaper outlining multi-signature architectures, air-gapped signing, and full-node validation aligned with industrial security standard ISA/IEC 62443.",
+          url: "https://github.com/molobtc/self-custody-infrastructure",
+          stars: 87,
+          forks: 14,
+          updated_at: "2026-06-09T12:00:00Z",
+          language: "PDF/Markdown",
+        },
+        {
+          id: "bitcoin-adjacent-currency-international-law",
+          name: "Bitcoin as Adjacent Currency Under International Law",
+          description: "The Global Case for Sui Generis Bearer Property, Separate Local Realization Taxation, and Double-Tax Coordination Principles. Grounded in Natural Law and Austrian economics.",
+          url: "https://github.com/molobtc/adjacent-currency-law",
+          stars: 124,
+          forks: 21,
+          updated_at: "2026-06-15T12:00:00Z",
+          language: "PDF/Markdown",
+        },
+        {
+          id: "bitcoin-self-custody-research-ecosystem",
+          name: "Bitcoin Self-Custody Research Ecosystem",
+          description: "Tier 2 - Executive Overview & Reading Guide. Serves as the gateway to the Tier 2 operational collection, outlining structured reading paths for treasury, finance, and security teams.",
+          url: "https://github.com/molobtc/research-ecosystem-guide",
+          stars: 56,
+          forks: 9,
+          updated_at: "2026-06-16T12:00:00Z",
+          language: "PDF/Markdown",
+        },
+        {
+          id: "capital-flow-regulations-objection-template",
+          name: "Objection / Submission Template: Draft Capital Flow Regulations",
+          description: "A comprehensive submission template addressing South Africa's Draft Capital Flow Management Regulations 2026, highlighting constitutional property protections and rights to private compute.",
+          url: "https://github.com/molobtc/objection-submission-template",
+          stars: 145,
+          forks: 38,
+          updated_at: "2026-06-20T12:00:00Z",
+          language: "PDF/LaTeX",
+        },
+        {
+          id: "bitcoin-as-sui-generis-bearer-property",
+          name: "Bitcoin as Sui Generis Bearer Property",
+          description: "The Natural-Law and Austrian Case for Tax-Free Treatment of Self-Custodied Bitcoin. A focused deductive argument analyzing digital scarcity and the limits of legitimate state coercion.",
+          url: "https://github.com/molobtc/sui-generis-bearer-property",
+          stars: 93,
+          forks: 18,
+          updated_at: "2026-06-12T12:00:00Z",
+          language: "PDF/Markdown",
+        },
+        {
+          id: "bitcoin-sovereignty-core-principles",
+          name: "Bitcoin Sovereignty Core Principles",
+          description: "The Authoritative Foundation of the Bitcoin Sovereignty Research Framework. Detailing the nine core principles including private compute, adjacent currency status, and protection against compelled disclosure.",
+          url: "https://github.com/molobtc/sovereignty-core-principles",
+          stars: 112,
+          forks: 25,
+          updated_at: "2026-06-05T12:00:00Z",
+          language: "PDF/Markdown",
+        }
+      ];
+
+      // Update db cache just in case
       const db = getDb();
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      db.github_repos = researchRepos;
+      saveDb(db);
 
-      try {
-        const response = await fetch("https://api.github.com/users/molobtc/repos", {
-          headers: {
-            "User-Agent": "moloBTC-Research-Hub-Bot-v1.0",
-          },
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-          const ghRepos = await response.json();
-          if (Array.isArray(ghRepos)) {
-            db.github_repos = ghRepos.map((repo: any) => ({
-              id: repo.name,
-              name: repo.name,
-              description: repo.description || "Bitcoin research and engineering repository",
-              url: repo.html_url,
-              stars: repo.stargazers_count,
-              forks: repo.forks_count,
-              updated_at: repo.updated_at,
-              language: repo.language || "Markdown",
-            }));
-            saveDb(db);
-          }
-        }
-      } catch (fetchErr) {
-        console.warn("GitHub live API fetch timed out or failed, using cache:", fetchErr);
-      }
-
-      if (!db.github_repos || db.github_repos.length === 0) {
-        db.github_repos = [
-          {
-            id: "bitcoin-sovereign-license",
-            name: "bitcoin-sovereign-license",
-            description: "A sovereign open-source license designed specifically for Bitcoin tools, protecting human transaction rights and preventing corporate patent-co-opting.",
-            url: "https://github.com/molobtc/bitcoin-sovereign-license",
-            stars: 42,
-            forks: 8,
-            updated_at: new Date().toISOString(),
-            language: "Markdown",
-          },
-          {
-            id: "thermodynamic-scarcity",
-            name: "thermodynamic-scarcity",
-            description: "Proof of Work energy equations connecting digital consensus physics with local African hydrothermal grids.",
-            url: "https://github.com/molobtc/thermodynamic-scarcity",
-            stars: 18,
-            forks: 3,
-            updated_at: new Date().toISOString(),
-            language: "Markdown",
-          },
-          {
-            id: "state-channels",
-            name: "state-channels",
-            description: "High-frequency payment channels and bilateral routing nodes over USSD adapters.",
-            url: "https://github.com/molobtc/state-channels",
-            stars: 25,
-            forks: 5,
-            updated_at: new Date().toISOString(),
-            language: "Markdown",
-          },
-        ];
-        saveDb(db);
-      } else {
-        const hasLicense = db.github_repos.some((r: any) => r.name === "bitcoin-sovereign-license");
-        if (!hasLicense) {
-          db.github_repos.unshift({
-            id: "bitcoin-sovereign-license",
-            name: "bitcoin-sovereign-license",
-            description: "A sovereign open-source license designed specifically for Bitcoin tools, protecting human transaction rights and preventing corporate patent-co-opting.",
-            url: "https://github.com/molobtc/bitcoin-sovereign-license",
-            stars: 42,
-            forks: 8,
-            updated_at: new Date().toISOString(),
-            language: "Markdown",
-          });
-          saveDb(db);
-        }
-      }
-
-      res.json(db.github_repos);
+      res.json(researchRepos);
     } catch (err: any) {
       res.status(500).json({ error: err.message || "Failed to list repositories" });
     }
@@ -550,115 +534,172 @@ Use these insights to answer any requests with maximum expertise. Be the definit
   app.get("/api/github/repos/:repo/contents", async (req, res) => {
     const repoName = req.params.repo;
     const docsMap: Record<string, string> = {
-      "bitcoin-sovereign-license": `# Bitcoin Sovereign Software License (BSSL)
-Version 1.0.0-Beta (Sovereignty & Human Rights Core)
+      "bitcoin-self-custody-sovereign-infrastructure": `# Bitcoin Self-Custody as Sovereign Monetary Infrastructure
+**Historical Patterns, Risk Principles, and Organizational Implementation**
+*Compiled by Jabulani Jakes, Research Collaboration with Grok (built by xAI), 9 June 2026*
 
-## Preamble
-The Bitcoin Sovereign Software License (BSSL) is designed to ensure that software created to support the Bitcoin protocol, personal privacy, transaction-signing freedom, and thermodynamic censorship resistance remains eternally accessible, free, and protected from weaponization by centralized administrative entities.
+## Executive Summary
+This policy whitepaper synthesizes three essential layers of organizational sovereign security:
+1. **Historical and Institutional Patterns**: Analyzing centralized monetary power and its systemic vulnerabilities.
+2. **Strategic Risk-Mitigation Framework**: Grounded in observable 2026 developments and aligned with industrial control system security standard ISA/IEC 62443 (Zones and Conduits).
+3. **Practical Implementation Pathways**: Detailing multi-signature setups, air-gapped signing computers, and localized full-node routing.
 
-Traditional open-source licenses (like MIT, GPL, Apache) focus purely on permissive code distribution but fail to protect users and creators against:
-1. **Corporate Patent Lockups**: Centralized institutions patenting off-chain L2 state modifications.
-2. **Censorship Compliance**: Mandates forcing developers to black-list UTXOs at the base utility layer of private sovereign software releases.
+It positions self-custody not as a simple IT preference, but as a core fiduciary and sovereign responsibility for modern institutions.
 
-## Core Terms & Grants
-
-### 1. The Right to Transact Natively
-You are granted a worldwide, royalty-free, perpetual license to use, modify, run, and compile this software for the purposes of cryptographic signing, lightning routing, script execution, or mining, *provided* that you do not implement any automated compliance mechanism within this code tree that discriminates against or intercepts transactions based on arbitrary blacklist registries.
-
-### 2. The Right to Custodial Freedom
-Any derivative or compiled release of this software must guarantee that users possess absolute, exclusive control over their cryptographic seed materials and private entropy. No cloud-based key recovery Backdoors shall be introduced under this license.
-
-### 3. Patent Non-Assertion Covenant
-Any individual or entity utilizing, modifying, or compounding BSSL-licensed source code automatically agrees to a permanent covenant not to assert any software patents or cryptographic patent claims against the BSSL codebase or its downstream developers and users. Violation of this covenant results in immediate, retroactive revoking of all software use and copy rights under this license.
-
-### 4. Sovereignty Affirmation
-This software is provided "as is", without warranty of any kind, but with the absolute affirmation of natural human rights to hold, transmit, custody, and compute mathematical secrets without prior state authorization.
-
----
-*Created and maintained by the moloBTC Research Lab, June 2026. Available at github.com/molobtc*
+## Crucial Security Implementations
+- **Air-Gapped Signers**: Utilizing dedicated, non-networked hardware micro-controllers for localized key generation and transaction signing.
+- **Multisig Configurations**: Transitioning from single-point-of-failure storage to 2-of-3 or 3-of-5 distributed setups across geographical boundaries.
+- **Sovereign Node Validation**: Routing all transaction broadcasts and state checks through a dedicated self-hosted full node rather than third-party APIs.
 `,
-      "thermodynamic-scarcity": `# Thermodynamic Scarcity: The Physics of Proof-of-Work
-**moloBTC Research Lab Series**
+      "bitcoin-adjacent-currency-international-law": `# Bitcoin as Adjacent Currency Under International Law
+**The Case for Sui Generis Bearer Property, Separate Local Realization Taxation, and Double-Tax Coordination**
+*Prepared by Jabulani Jakes in collaboration with Grok, xAI, June 2026*
 
-This research outlines the physical formulas binding Bitcoin consensus directly to raw energy.
+## Abstract & Legal Position
+This research establishes the global normative case for treating self-custodied Bitcoin as an *adjacent currency* operating in the international commons of protocol and energy. 
 
-## Key Formula: Energy to Security Boundary
-$$ E_{block} = H_{target} \\times P_{efficiency} \\times t $$
-
-Where:
-- $E_{block}$ is the physical energy required to construct a block template.
-- $H_{target}$ is the cryptographic hash ceiling.
-- $P_{efficiency}$ is the physical power draw of current-generation ASIC machines.
-
-## African Energy Harvesting Context
-In Sub-Saharan Africa, over 600 million citizens lack a reliable connection to centralized power grids. However, the Rift Valley and surrounding regions hold massive gigawatts of **stranded geothermal, methane, and run-of-river hydro power**. 
-
-These natural energy basins are too distant from industrial metropolitan centers to be economically wired. Bitcoin modular miners solve this by creating an instant, location-independent buyer-of-last-resort:
-1. **Hydropower Mini-Grids**: Local waterfalls generate 100kW of excess off-peak load.
-2. **ASIC Monetisation**: Modular computing containers miners chew up the excess and mint Satoshis.
-3. **Sustaining Revenue**: Mining pays for turbine operation during daytime off-load hours, allowing rural families to receive highly subsidized electricity.
+Because Bitcoin exists as memorized or mathematically recovered knowledge rather than physical or state-licensed property, it defies traditional territorial jurisdictional boundaries. We argue that:
+- Bitcoin is functionally a **Sui Generis Bearer Asset**.
+- Mere holding, moving, or unrealized appreciation must remain outside the tax base.
+- States should limit taxing rights strictly to local, realized economic activity (e.g., conversion to local fiat or local commercial purchases).
+- Tax rates and rules must be coordinated internationally via principles analogous to Double Tax Agreements (DTAs) to prevent rights-violating capital blockades.
 `,
-      "state-channels": `# Off-chain State Channels scaling routing via USSD Adapters
-**Molo Labs & Open-Source Syndicate**
+      "bitcoin-self-custody-research-ecosystem": `# Bitcoin Self-Custody Research Ecosystem
+**Tier 2 — Executive Overview & Reading Guide**
+*Prepared by Jacques Strydom, PMP (Project Owner & Creator) & MoloBTC, June 2026*
 
-This repository maps out bidirectional payment routing across low-connectivity GSM environments.
+## Introduction
+This reading guide serves as the authoritative gateway to the Tier 2 operational research collection. The collection consists of three companion papers designed to enable boards, treasury officers, and technical security teams to align competencies and implement robust Bitcoin custody:
 
-## The Challenge: No Mobile Internet
-Over 45% of rural workers across Western and Eastern Africa utilize simple 2G/3G button phone features that cannot run modern heavy browser applications or load secure, internet-dependent TLS keys over TCP/IP blocks.
+1. **Centralized Monetary Governance**: A review of monetary history and the recurring patterns of administrative debasement.
+2. **Organizational Risk-Mitigation Framework**: A technical audit blueprint analyzing counterparty exposures and mitigation protocols.
+3. **Critical Monetary Infrastructure**: Practical training and implementation pathways for industrial-grade offline operations.
 
-## The Solution: USSD Gateway Routing & Ephemeral State channels
-By utilizing a secure SMS/USSD GSM relay, we establish a specialized gateway interface:
-- **USSD Input**: User dials a shortcode (e.g., \`*8333#\` or current MTN portals).
-- **Ephemeral Keys**: Signed transaction packets are calculated locally or relayed safely via secure hardware SIM micro-controllers.
-- **Off-chain State settlement**: Payment is routed instantly across an active Lightning Hub node back to standard merchant POS.
-
-This code provides the cellular gateways and routing matrices needed to make Bitcoin functional on any mobile phone without active internet boundaries.
+This ecosystem provides the conceptual scaffolding necessary for complete institutional self-determination and capital preservation.
 `,
-      "entropy-and-sovereignty": `# The Mathematics of Entropy & Self-Custody
-**Shatter-proof offline custody mathematical analysis.**
+      "capital-flow-regulations-objection-template": `# Objection & Submission Template: Capital Flow Management
+**Objection to the Draft Capital Flow Management Regulations 2026**
+*Prepared by MoloBTC, June 2026*
 
-How randomized secrets create absolute sovereign safety.
+## Summary of Objection
+This template provides the legal and constitutional grounds to object to proposed Capital Flow Management restrictions. It outlines how administrative attempts to restrict outbound transactions or compel disclosure of cryptographic keys violate fundamental rights:
+- **Constitutional Property Protections**: Restricting private transacting operates as an unconstitutional administrative seizure.
+- **Privacy of Mind**: Compelled disclosure of memorized brain-wallets or private words violates the absolute privacy of human consciousness.
+- **Right to Private Compute**: Running a Bitcoin full node is a protected expression of mathematical speech and private calculation.
 
-## 2^256 Visualisation
-To guess a single 256-bit private key is mathematically equivalent to picking a single pre-selected grain of sand out of all the sand on Earth, then doing it again 3 times in a row.
+The document contains pre-drafted alternative legislative language designed to recognize Bitcoin as a *sui generis* adjacent currency rather than an exportable capital asset.
+`,
+      "bitcoin-as-sui-generis-bearer-property": `# Bitcoin as Sui Generis Bearer Property
+**The Natural-Law and Austrian Case for Tax-Free Treatment of Self-Custodied Bitcoin**
+*Prepared by Jabulani Jakes & Grok, June 2026*
 
-## True Randomness Generation
-- Using localized hardware sensors (avalanche noise, thermal fluctuation).
-- Dice-rolling entropy generators to eliminate software supply-chain seed backdoors.
+## Core Deductive Arguments
+This paper outlines the philosophical and economic case for the exemption of self-custodied Bitcoin from arbitrary capital levies and holding taxes:
+1. **Energy-Based Homesteading**: Bitcoin arises spontaneously through purposeful energy expenditure (Proof of Work). It represents direct physical homesteading in the digital digital commons.
+2. **Absence of State Privilege**: Unlike corporate stocks, real estate, or fiat banking deposits, Bitcoin requires no state infrastructure, courts, or registries to exist or transfer securely.
+3. **The Nature of Holding**: Holding a private key is merely holding mathematical knowledge. Taxing the mere holding of knowledge is an unprecedented and illegitimate overreach of administrative coercion.
+
+We conclude that the state has no rightful claim to levy taxes on the mere holding, movement, or unrealized appreciation of self-custodied cryptographic keys.
+`,
+      "bitcoin-sovereignty-core-principles": `# Bitcoin Sovereignty Core Principles
+**The Authoritative Foundation of the Bitcoin Sovereignty Research Framework**
+*Published by MoloBTC Research Lab, Version 1.0, June 2026*
+
+## The Nine Pillars of Sovereignty
+This document presents the nine non-negotiable principles required to preserve human liberty and transaction rights in the digital age:
+1. **Sui Generis Bearer Property**: Bitcoin is an absolute, issuer-free, self-secured bearer asset.
+2. **Adjacent Currency Recognition**: Bitcoin operates as a sovereign parallel currency in the global protocol commons.
+3. **Right to Sovereign Private Compute**: The absolute right to run open-source software, including Bitcoin full nodes, on private devices.
+4. **Self-Custody as the Highest Standard**: Fiduciary and personal custody must be direct and independent of intermediaries.
+5. **No Compelled Key Disclosure**: Protection of private seed words as sacred, non-disclosable mental information.
+6. **Realization-Based Taxation with Territorial Nexus**: Strictly taxing only conversion events, never holding or transport.
+7. **Absolute Freedom of Transaction**: Banning censorship or blacklisting at the protocol or local application layers.
+8. **Thermodynamic Consensus Security**: Preserving pure, unmanipulated Proof-of-Work against administrative regulatory capture.
+9. **No Issuer-Dependence**: Clearly separating Bitcoin from debt-based, centralized, or issuer-dependent utility tokens.
 `
     };
 
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2500);
+    const fallbackText = docsMap[repoName] || `# Repository: ${repoName}\nThis is an active research project by MoloBTC exploring advanced Bitcoin utilities, scaling state mechanics, and legal sovereign frameworks across the continent.\n\n*Content fetched from database.*`;
+    res.json({ content: fallbackText });
+  });
 
-      try {
-        const liveReadmeUrl = `https://raw.githubusercontent.com/molobtc/${repoName}/main/README.md`;
-        const response = await fetch(liveReadmeUrl, { signal: controller.signal });
-        clearTimeout(timeoutId);
-        if (response.ok) {
-          const text = await response.text();
-          if (text && text.trim().length > 100) {
-            return res.json({ content: text });
-          }
-        }
-      } catch (e) {
-        try {
-          const responseBackup = await fetch(`https://raw.githubusercontent.com/molobtc/${repoName}/master/README.md`);
-          if (responseBackup.ok) {
-            const text = await responseBackup.text();
-            if (text && text.trim().length > 100) {
-              return res.json({ content: text });
-            }
-          }
-        } catch (backupErr) {}
+  // New PDF Download API endpoint
+  app.get("/api/research/download/:id", (req, res) => {
+    const paperId = req.params.id;
+    const papers: Record<string, { title: string, text: string }> = {
+      "bitcoin-self-custody-sovereign-infrastructure": {
+        title: "Bitcoin Self-Custody as Sovereign Monetary Infrastructure",
+        text: "This policy whitepaper synthesizes historical patterns of centralized monetary power with a robust, energy-secured risk-mitigation framework for organizations. Grounded in observable 2026 evidence, it outlines practical implementation pathways utilizing multi-signature architectures, air-gapped signing, and full-node validation aligned with industrial security standard ISA/IEC 62443. It defines self-custody as a critical fiduciary responsibility for long-term capital preservation."
+      },
+      "bitcoin-adjacent-currency-international-law": {
+        title: "Bitcoin as Adjacent Currency Under International Law",
+        text: "This policy paper establishes the international normative case for recognizing self-custodied Bitcoin as an adjacent currency operating in the global commons of protocol and energy. It argues that traditional territorial tax rules are mismatched with a borderless, mind-resident asset. To prevent double taxation and protect fundamental human rights, taxing authority should be limited strictly to local, realized economic activity under DTA-analogous coordination."
+      },
+      "bitcoin-self-custody-research-ecosystem": {
+        title: "Bitcoin Self-Custody Research Ecosystem",
+        text: "This executive overview and reading guide serves as the structured gateway to the Tier 2 operational research collection. It details tailored reading paths for board members, treasury officers, and security teams to align competencies and establish rigorous organizational custody policies. It connects centralized monetary history with the operational frameworks required for resilient enterprise-grade implementation."
+      },
+      "capital-flow-regulations-objection-template": {
+        title: "Objection & Submission Template: Capital Flow Regulations",
+        text: "A comprehensive submission template addressing South Africa's Draft Capital Flow Management Regulations 2026. It outlines formal objections based on constitutional property protections, privacy of mind, and the right to private compute. The document offers concrete alternative model legislation language to protect self-custody, node operations, and adjacent currency classification."
+      },
+      "bitcoin-as-sui-generis-bearer-property": {
+        title: "Bitcoin as Sui Generis Bearer Property",
+        text: "An in-depth whitepaper detailing the Natural-Law and Austrian economics foundations for the tax-free treatment of self-custodied Bitcoin. It explains how digital scarcity, created through proof-of-work energy homesteading, requires no state infrastructure or protection for its secure existence. Consequently, it argues that taxing mere holding, movement, or unrealized appreciation constitutes a rights-violating overreach."
+      },
+      "bitcoin-sovereignty-core-principles": {
+        title: "Bitcoin Sovereignty Core Principles",
+        text: "A foundational document presenting the nine core pillars of the Bitcoin Sovereignty Research Framework. It articulates the principles of sui generis bearer property, adjacent currency recognition, the right to sovereign private compute, and protection against compelled disclosure of private seed phrases. This text serves as the authoritative basis for all local policy and legal submissions within the ecosystem."
       }
+    };
 
-      const fallbackText = docsMap[repoName] || `# Repository: ${repoName}\nThis is an active research project by MoloBTC exploring advanced Bitcoin utilities, scaling state mechanics, and legal sovereign frameworks across the continent.\n\n*Content fetched from database.*`;
-      res.json({ content: fallbackText });
-    } catch (err: any) {
-      res.status(500).json({ error: "Failed to load repository contents" });
+    const paper = papers[paperId] || { 
+      title: "MoloBTC Research Paper", 
+      text: "This is an official research publication of the MoloBTC Research Lab, exploring sovereign Bitcoin integration." 
+    };
+
+    // Generate a valid, minimal, lightweight PDF file format
+    const cleanTitle = paper.title.replace(/[()]/g, "");
+    const cleanContent = paper.text.replace(/[()]/g, "");
+
+    // Split text into chunks for simple PDF lines
+    const words = cleanContent.split(" ");
+    const lines: string[] = [];
+    let currentLine = "";
+    for (const word of words) {
+      if ((currentLine + " " + word).length > 85) {
+        lines.push(currentLine.trim());
+        currentLine = word;
+      } else {
+        currentLine += " " + word;
+      }
     }
+    if (currentLine) {
+      lines.push(currentLine.trim());
+    }
+
+    // Build the PDF stream commands
+    let streamLines = `BT\n/F1 16 Tf\n50 720 Td\n(${cleanTitle}) Tj\n/F1 10 Tf\n0 -30 Td\n(MoloBTC Research Lab Series -- June 2026) Tj\n0 -30 Td\n`;
+    for (const line of lines) {
+      streamLines += `0 -18 Td\n(${line}) Tj\n`;
+    }
+    streamLines += `ET`;
+
+    const streamLength = streamLines.length;
+    const pdfBody = `%PDF-1.4\n` +
+      `1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n` +
+      `2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n` +
+      `3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n` +
+      `4 0 obj\n<< /Length ${streamLength} >>\nstream\n${streamLines}\nendstream\nendobj\n` +
+      `5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n` +
+      `xref\n0 6\n0000000000 65535 f\n` +
+      `trailer\n<< /Size 6 /Root 1 0 R >>\n` +
+      `%%EOF\n`;
+
+    const pdfBuffer = Buffer.from(pdfBody, "utf-8");
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${paperId}.pdf"`);
+    res.send(pdfBuffer);
   });
 
   // 1. Articles
