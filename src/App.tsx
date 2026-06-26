@@ -13,14 +13,6 @@ const HomePage = lazy(() => import("./pages/HomePage").then(m => ({ default: m.H
 const ArticlePage = lazy(() => import("./pages/ArticlePage").then(m => ({ default: m.ArticlePage })));
 const DonatePage = lazy(() => import("./pages/DonatePage").then(m => ({ default: m.DonatePage })));
 
-// Admin modules with heavy editors/charts kept separate
-const AdminLayout = lazy(() => import("./pages/admin/AdminLayout").then(m => ({ default: m.AdminLayout })));
-const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
-const AdminArticles = lazy(() => import("./pages/admin/AdminArticles").then(m => ({ default: m.AdminArticles })));
-const EditorPage = lazy(() => import("./pages/admin/EditorPage").then(m => ({ default: m.EditorPage })));
-const AdminUsers = lazy(() => import("./pages/admin/AdminUsers").then(m => ({ default: m.AdminUsers })));
-const AdminSettings = lazy(() => import("./pages/admin/AdminSettings").then(m => ({ default: m.AdminSettings })));
-
 // Super lightweight instant feedback indicator for slow 3G phones
 function AsyncPageSync() {
   return (
@@ -51,16 +43,6 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/article/:slug" element={<ArticlePage />} />
             <Route path="/donate" element={<DonatePage />} />
-            
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="articles" element={<AdminArticles />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="settings" element={<AdminSettings />} />
-              <Route path="editor" element={<EditorPage />} />
-              <Route path="editor/:id" element={<EditorPage />} />
-            </Route>
           </Routes>
         </Suspense>
       </BrowserRouter>

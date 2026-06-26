@@ -1076,8 +1076,6 @@ This document presents the nine non-negotiable principles required to preserve h
     const baseUrl = `${req.protocol}://${req.get("host")}`;
     const robots = `User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /admin/*
 Disallow: /api/*
 
 # Clear access paths for major AI engines, Answer engines and Large Language Model crawlers
