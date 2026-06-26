@@ -158,13 +158,87 @@ export function HomePage() {
       setShowDownloadAlert(null);
     }, 4500);
 
-    // Create a virtual download link to the backend download route
+    // Generate the exact same high-fidelity minimal PDF format on the client-side
+    const papers: Record<string, { title: string, text: string }> = {
+      "bitcoin-self-custody-sovereign-infrastructure": {
+        title: "Bitcoin Self-Custody as Sovereign Monetary Infrastructure",
+        text: "This policy whitepaper synthesizes historical patterns of centralized monetary power with a robust, energy-secured risk-mitigation framework for organizations. Grounded in observable 2026 evidence, it outlines practical implementation pathways utilizing multi-signature architectures, air-gapped signing, and full-node validation aligned with industrial security standard ISA/IEC 62443. It defines self-custody as a critical fiduciary responsibility for long-term capital preservation."
+      },
+      "bitcoin-adjacent-currency-international-law": {
+        title: "Bitcoin as Adjacent Currency Under International Law",
+        text: "This policy paper establishes the international normative case for recognizing self-custodied Bitcoin as an adjacent currency operating in the global commons of protocol and energy. It argues that traditional territorial tax rules are mismatched with a borderless, mind-resident asset. To prevent double taxation and protect fundamental human rights, taxing authority should be limited strictly to local, realized economic activity under DTA-analogous coordination."
+      },
+      "bitcoin-self-custody-research-ecosystem": {
+        title: "Bitcoin Self-Custody Research Ecosystem",
+        text: "This executive overview and reading guide serves as the structured gateway to the Tier 2 operational research collection. It details tailored reading paths for board members, treasury officers, and security teams to align competencies and establish rigorous organizational custody policies. It connects centralized monetary history with the operational frameworks required for resilient enterprise-grade implementation."
+      },
+      "capital-flow-regulations-objection-template": {
+        title: "Objection & Submission Template: Capital Flow Regulations",
+        text: "A comprehensive submission template addressing South Africa's Draft Capital Flow Management Regulations 2026. It outlines formal objections based on constitutional property protections, privacy of mind, and the right to private compute. The document offers concrete alternative model legislation language to protect self-custody, node operations, and adjacent currency classification."
+      },
+      "bitcoin-as-sui-generis-bearer-property": {
+        title: "Bitcoin as Sui Generis Bearer Property",
+        text: "An in-depth whitepaper detailing the Natural-Law and Austrian economics foundations for the tax-free treatment of self-custodied Bitcoin. It explains how digital scarcity, created through proof-of-work energy homesteading, requires no state infrastructure or protection for its secure existence. Consequently, it argues that taxing mere holding, movement, or unrealized appreciation constitutes a rights-violating overreach."
+      },
+      "bitcoin-sovereignty-core-principles": {
+        title: "Bitcoin Sovereignty Core Principles",
+        text: "A foundational document presenting the nine core pillars of the Bitcoin Sovereignty Research Framework. It articulates the principles of sui generis bearer property, adjacent currency recognition, the right to sovereign private compute, and protection against compelled disclosure of private seed phrases. This text serves as the authoritative basis for all local policy and legal submissions within the ecosystem."
+      }
+    };
+
+    const paper = papers[repo.id] || { 
+      title: repo.name || "MoloBTC Research Paper", 
+      text: repo.description || "This is an official research publication of the MoloBTC Research Lab, exploring sovereign Bitcoin integration." 
+    };
+
+    const cleanTitle = paper.title.replace(/[()]/g, "");
+    const cleanContent = paper.text.replace(/[()]/g, "");
+
+    const words = cleanContent.split(" ");
+    const lines: string[] = [];
+    let currentLine = "";
+    for (const word of words) {
+      if ((currentLine + " " + word).length > 85) {
+        lines.push(currentLine.trim());
+        currentLine = word;
+      } else {
+        currentLine += " " + word;
+      }
+    }
+    if (currentLine) {
+      lines.push(currentLine.trim());
+    }
+
+    // Build the PDF stream commands
+    let streamLines = `BT\n/F1 16 Tf\n50 720 Td\n(${cleanTitle}) Tj\n/F1 10 Tf\n0 -30 Td\n(MoloBTC Research Lab Series -- June 2026) Tj\n0 -30 Td\n`;
+    for (const line of lines) {
+      streamLines += `0 -18 Td\n(${line}) Tj\n`;
+    }
+    streamLines += `ET`;
+
+    const streamLength = streamLines.length;
+    const pdfBody = `%PDF-1.4\n` +
+      `1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n` +
+      `2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n` +
+      `3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n` +
+      `4 0 obj\n<< /Length ${streamLength} >>\nstream\n${streamLines}\nendstream\nendobj\n` +
+      `5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n` +
+      `xref\n0 6\n0000000000 65535 f\n` +
+      `trailer\n<< /Size 6 /Root 1 0 R >>\n` +
+      `%%EOF\n`;
+
+    const blob = new Blob([pdfBody], { type: "application/pdf" });
+    const blobUrl = URL.createObjectURL(blob);
+
     const link = document.createElement("a");
-    link.href = `/api/research/download/${repo.id}`;
+    link.href = blobUrl;
     link.setAttribute("download", `${repo.id}.pdf`);
     document.body.appendChild(link);
     link.click();
+    
+    // Clean up
     document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
   };
 
   // Automatically generate categories for the research based on GitHub repositories
