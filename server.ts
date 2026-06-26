@@ -734,7 +734,11 @@ This document presents the nine non-negotiable principles required to preserve h
 
     const pdfBuffer = Buffer.from(pdfBody, "utf-8");
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${paperId}.pdf"`);
+    if (req.query.preview === "true" || req.query.inline === "true") {
+      res.setHeader("Content-Disposition", `inline; filename="${paperId}.pdf"`);
+    } else {
+      res.setHeader("Content-Disposition", `attachment; filename="${paperId}.pdf"`);
+    }
     res.send(pdfBuffer);
   });
 

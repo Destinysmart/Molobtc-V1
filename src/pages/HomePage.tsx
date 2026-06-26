@@ -116,6 +116,7 @@ function TypewriterHeader() {
 export function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeModalTab, setActiveModalTab] = useState<"pdf" | "readme">("pdf");
   
   // GitHub UI Integration State & Service orchestration
   const {
@@ -126,6 +127,13 @@ export function HomePage() {
     isLoadingContent: isRepoContentLoading,
     selectRepository: handleSelectRepo,
   } = useGithubState();
+
+  // Reset modal tab to PDF on select repository
+  useEffect(() => {
+    if (selectedRepo) {
+      setActiveModalTab("pdf");
+    }
+  }, [selectedRepo]);
 
   // Helper to resolve repository category
   const getRepoCategory = (repoName: string): string => {
@@ -974,23 +982,78 @@ export function HomePage() {
                       </p>
                     </div>
 
-                    <div className="bg-[#FFFDFB] border border-brand-100/70 p-4 rounded-xl flex items-center gap-2.5">
-                      <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shrink-0" />
-                      <p className="text-[11px] text-gray-600 m-0">
-                        Dynamic content pulled directly from the GitHub repository files. No hardcoded mock data.
-                      </p>
+                    {/* Navigation Tabs inside Modal */}
+                    <div className="flex border-b border-gray-200 gap-6">
+                      <button
+                        onClick={() => setActiveModalTab("pdf")}
+                        className={`pb-3 text-sm font-semibold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
+                          activeModalTab === "pdf"
+                            ? "border-brand-500 text-brand-600 font-bold"
+                            : "border-transparent text-gray-500 hover:text-gray-900"
+                        }`}
+                      >
+                        <BookOpen className="w-4 h-4" />
+                        PDF Document Preview
+                      </button>
+                      <button
+                        onClick={() => setActiveModalTab("readme")}
+                        className={`pb-3 text-sm font-semibold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
+                          activeModalTab === "readme"
+                            ? "border-brand-500 text-brand-600 font-bold"
+                            : "border-transparent text-gray-500 hover:text-gray-900"
+                        }`}
+                      >
+                        <Github className="w-4 h-4" />
+                        Dynamic README & Files
+                      </button>
                     </div>
 
-                    {isRepoContentLoading ? (
-                      <div className="space-y-4 py-8">
-                        <div className="h-4 bg-gray-150 rounded w-1/3 animate-pulse" />
-                        <div className="h-4 bg-gray-100 rounded w-5/6 animate-pulse" />
-                        <div className="h-4 bg-gray-100 rounded w-4/5 animate-pulse" />
-                        <div className="h-4 bg-gray-100 rounded w-full animate-pulse" />
+                    {activeModalTab === "pdf" ? (
+                      <div className="space-y-4">
+                        <div className="bg-brand-50/50 border border-brand-100/70 p-3.5 rounded-xl flex items-center justify-between gap-3 shadow-xs">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-2.5 h-2.5 rounded-full bg-brand-500 animate-pulse shrink-0" />
+                            <p className="text-[11px] sm:text-xs text-brand-900 m-0 font-medium">
+                              Interactive PDF Preview compiled dynamically on our secure server workspace.
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => handleDownloadPdf(selectedRepo)}
+                            className="text-[11px] font-bold text-white bg-brand-500 hover:bg-brand-600 px-3 py-1.5 rounded-xl flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            Download PDF
+                          </button>
+                        </div>
+                        <div className="relative border border-gray-200 rounded-2xl overflow-hidden bg-gray-100 shadow-sm h-[500px] w-full">
+                          <iframe
+                            src={`/api/research/download/${selectedRepo.id}?preview=true`}
+                            className="absolute inset-0 w-full h-full border-0"
+                            title={`${selectedRepo.name} PDF Preview`}
+                          />
+                        </div>
                       </div>
                     ) : (
-                      <div className="bg-gray-50 border border-gray-150 rounded-2xl p-5 sm:p-6 text-gray-850 font-sans max-h-[480px] overflow-y-auto shadow-inner text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
-                        {repoContent}
+                      <div className="space-y-4">
+                        <div className="bg-[#FFFDFB] border border-brand-100/70 p-4 rounded-xl flex items-center gap-2.5">
+                          <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shrink-0" />
+                          <p className="text-[11px] text-gray-600 m-0">
+                            Dynamic content pulled directly from the GitHub repository files. No hardcoded mock data.
+                          </p>
+                        </div>
+
+                        {isRepoContentLoading ? (
+                          <div className="space-y-4 py-8">
+                            <div className="h-4 bg-gray-150 rounded w-1/3 animate-pulse" />
+                            <div className="h-4 bg-gray-100 rounded w-5/6 animate-pulse" />
+                            <div className="h-4 bg-gray-100 rounded w-4/5 animate-pulse" />
+                            <div className="h-4 bg-gray-100 rounded w-full animate-pulse" />
+                          </div>
+                        ) : (
+                          <div className="bg-gray-50 border border-gray-150 rounded-2xl p-5 sm:p-6 text-gray-850 font-sans max-h-[420px] overflow-y-auto shadow-inner text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
+                            {repoContent}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
