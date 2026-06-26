@@ -37,6 +37,7 @@ import {   ArrowRight,
   RefreshCw
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { PdfPreviewCanvas } from "../components/PdfPreviewCanvas";
 
 // Types for Research Paper
 interface ResearchPaper {
@@ -1010,28 +1011,11 @@ export function HomePage() {
 
                     {activeModalTab === "pdf" ? (
                       <div className="space-y-4">
-                        <div className="bg-brand-50/50 border border-brand-100/70 p-3.5 rounded-xl flex items-center justify-between gap-3 shadow-xs">
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-2.5 h-2.5 rounded-full bg-brand-500 animate-pulse shrink-0" />
-                            <p className="text-[11px] sm:text-xs text-brand-900 m-0 font-medium">
-                              Interactive PDF Preview compiled dynamically on our secure server workspace.
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => handleDownloadPdf(selectedRepo)}
-                            className="text-[11px] font-bold text-white bg-brand-500 hover:bg-brand-600 px-3 py-1.5 rounded-xl flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm"
-                          >
-                            <Download className="w-3.5 h-3.5" />
-                            Download PDF
-                          </button>
-                        </div>
-                        <div className="relative border border-gray-200 rounded-2xl overflow-hidden bg-gray-100 shadow-sm h-[500px] w-full">
-                          <iframe
-                            src={`/api/research/download/${selectedRepo.id}?preview=true`}
-                            className="absolute inset-0 w-full h-full border-0"
-                            title={`${selectedRepo.name} PDF Preview`}
-                          />
-                        </div>
+                        <PdfPreviewCanvas 
+                          repoId={selectedRepo.id}
+                          repoName={selectedRepo.name}
+                          onDownload={() => handleDownloadPdf(selectedRepo)}
+                        />
                       </div>
                     ) : (
                       <div className="space-y-4">
