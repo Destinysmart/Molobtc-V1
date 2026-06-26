@@ -460,7 +460,7 @@ export function HomePage() {
 
         {/* SECTION: THREE PILLARS CORES */}
         <section className="mb-24">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             
             {/* Pillar 1: Research */}
             <motion.div 
@@ -534,7 +534,7 @@ export function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-150 shadow-sm hover:shadow-xl transition-all hover:border-brand-300 flex flex-col justify-between group cursor-pointer"
+              className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-150 shadow-sm hover:shadow-xl transition-all hover:border-brand-300 flex flex-col justify-between group cursor-pointer md:col-span-2 lg:col-span-1"
               onClick={() => {
                 const el = document.querySelector("#opportunities");
                 el?.scrollIntoView({ behavior: "smooth" });
