@@ -243,28 +243,43 @@ export function HomePage() {
 
   // Automatically generate categories for the research based on GitHub repositories
   const generatedCategories = useMemo(() => {
+    console.log("[HomePage] Computing generatedCategories. githubRepos:", githubRepos);
     const cats = new Set<string>();
     githubRepos.forEach(repo => {
-      cats.add(getRepoCategory(repo.name));
+      const cat = getRepoCategory(repo.name);
+      console.log(`[HomePage] Repo "${repo.name}" classified as category: "${cat}"`);
+      cats.add(cat);
     });
-    return Array.from(cats);
+    const result = Array.from(cats);
+    console.log("[HomePage] Computed generatedCategories:", result);
+    return result;
   }, [githubRepos]);
 
   // Dynamically filter repositories based on active category and search
   const filteredRepos = useMemo(() => {
-    return githubRepos.filter(repo => {
+    console.log(`[HomePage] Computing filteredRepos. githubRepos:`, githubRepos, "selectedCategory:", selectedCategory, "searchQuery:", searchQuery);
+    const result = githubRepos.filter(repo => {
       // Filter by auto-generated category
       if (selectedCategory !== "all") {
         const cat = getRepoCategory(repo.name);
-        if (cat !== selectedCategory) return false;
+        if (cat !== selectedCategory) {
+          console.log(`[HomePage] Filter out repo "${repo.name}" (category: "${cat}") because selected is "${selectedCategory}"`);
+          return false;
+        }
       }
       // Filter by quick search query
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        return repo.name.toLowerCase().includes(q) || repo.description.toLowerCase().includes(q);
+        const matches = repo.name.toLowerCase().includes(q) || repo.description.toLowerCase().includes(q);
+        if (!matches) {
+          console.log(`[HomePage] Filter out repo "${repo.name}" because it does not match search query: "${q}"`);
+          return false;
+        }
       }
       return true;
     });
+    console.log("[HomePage] Computed filteredRepos:", result);
+    return result;
   }, [githubRepos, selectedCategory, searchQuery]);
 
   // Modal & Detail state
@@ -314,11 +329,24 @@ export function HomePage() {
   useEffect(() => {
     // Fetch dynamic content configurations
     fetch("/api/homepage/data")
-      .then(r => r.json())
-      .then(data => {
-        if (data.perspectives && Object.keys(data.perspectives).length > 0) setPerspectives(data.perspectives);
+      .then(r => {
+        if (!r.ok) {
+          throw new Error(`HTTP status ${r.status}`);
+        }
+        const contentType = r.headers.get("content-type");
+        if (contentType && contentType.includes("text/html")) {
+          throw new Error("HTML response received instead of JSON (likely static host)");
+        }
+        return r.json();
       })
-      .catch(console.error);
+      .then(data => {
+        if (data && data.perspectives && Object.keys(data.perspectives).length > 0) {
+          setPerspectives(data.perspectives);
+        }
+      })
+      .catch(err => {
+        console.warn("[HomePage] Offline mode fallback active for homepage data. Keeping default offline perspectives.", err);
+      });
   }, []);
 
   // Blink Donation Script Loader & Initializer

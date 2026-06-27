@@ -7,44 +7,62 @@ import { GoogleGenAI } from "@google/genai";
 const PORT = 3000;
 const DB_FILE = path.join(process.cwd(), "db.json");
 
-// Ensure db.json exists with MoloBTC category structures
-if (!fs.existsSync(DB_FILE)) {
-  fs.writeFileSync(
-    DB_FILE,
-    JSON.stringify({
-      articles: [],
-      categories: [
-        { id: "c1", name: "Physical Protocol", slug: "physical-protocol" },
-        { id: "c2", name: "Scaling & Lightning", slug: "scaling-lightning" },
-        { id: "c3", name: "Security & Custody", slug: "security-custody" },
-        { id: "c4", name: "Monetary Economics", slug: "monetary-economics" },
-      ],
-      tags: [],
-      users: [
-        {
-          id: "admin-1",
-          role: "admin",
-          name: "Molo BTC Lead Researcher",
-          avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=200&auto=format&fit=crop",
-        },
-        {
-          id: "pub-1",
-          role: "publisher",
-          name: "Molo BTC Open-Source Contributor",
-          avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop",
-        },
-      ],
-    }),
-  );
-}
+const defaultDbStructure = {
+  articles: [],
+  categories: [
+    { id: "c1", name: "Physical Protocol", slug: "physical-protocol" },
+    { id: "c2", name: "Scaling & Lightning", slug: "scaling-lightning" },
+    { id: "c3", name: "Security & Custody", slug: "security-custody" },
+    { id: "c4", name: "Monetary Economics", slug: "monetary-economics" },
+  ],
+  tags: [],
+  users: [
+    {
+      id: "admin-1",
+      role: "admin",
+      name: "Molo BTC Lead Researcher",
+      avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=200&auto=format&fit=crop",
+    },
+    {
+      id: "pub-1",
+      role: "publisher",
+      name: "Molo BTC Open-Source Contributor",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop",
+    },
+  ],
+};
+
+let memoryDb: any = null;
 
 function getDb() {
-  const data = fs.readFileSync(DB_FILE, "utf-8");
-  return JSON.parse(data);
+  if (memoryDb) {
+    return memoryDb;
+  }
+  try {
+    if (fs.existsSync(DB_FILE)) {
+      const data = fs.readFileSync(DB_FILE, "utf-8");
+      memoryDb = JSON.parse(data);
+      console.log("[server.ts] Successfully read existing db.json file.");
+      return memoryDb;
+    }
+  } catch (err) {
+    console.warn("[server.ts] Failed to read db.json file, utilizing in-memory database fallback:", err);
+  }
+  
+  // Initialize from default structure if file read fails or doesn't exist
+  console.log("[server.ts] db.json file not found or unreadable. Initializing default database in-memory.");
+  memoryDb = JSON.parse(JSON.stringify(defaultDbStructure));
+  return memoryDb;
 }
 
 function saveDb(data: any) {
-  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+  memoryDb = data;
+  try {
+    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+    console.log("[server.ts] Database file saved successfully to disk.");
+  } catch (err) {
+    console.warn("[server.ts] Unable to save to db.json file on disk (expected on read-only environments like Vercel):", err);
+  }
 }
 
 // Seed or update database to hold premium Molo BTC research papers

@@ -184,44 +184,59 @@ export class GitHubService {
    * Auto-heals and uses high-fidelity offline fallbacks if the server-side API is missing (e.g. on static hosts like Vercel).
    */
   public async getRepositories(): Promise<GitHubRepo[]> {
+    console.log("[GitHubService] getRepositories() called.");
     try {
+      console.log("[GitHubService] Fetching from Express backend API: /api/github/repos");
       const response = await fetch("/api/github/repos");
+      console.log("[GitHubService] Backend response received. Status:", response.status, "OK:", response.ok);
+      
       if (!response.ok) {
-        throw new Error("HTTP non-ok");
+        throw new Error(`HTTP status non-ok: ${response.status}`);
       }
       
       const contentType = response.headers.get("content-type");
+      console.log("[GitHubService] Backend response Content-Type:", contentType);
       if (contentType && contentType.includes("text/html")) {
-        throw new Error("HTML response");
+        throw new Error("HTML response received instead of JSON (likely static router redirect)");
       }
 
       const data = await response.json();
+      console.log("[GitHubService] Successfully parsed JSON from backend. Data:", data);
       if (!Array.isArray(data)) {
-        throw new Error("Invalid format");
+        throw new Error("Invalid format received from backend: data is not an array");
       }
       return data;
     } catch (err) {
-      console.warn("Express backend API unavailable. Engaging sovereign offline repository cache...", err);
+      console.warn("[GitHubService] Express backend API unavailable or failed. Engaging sovereign offline repository cache...", err);
       
       // Attempt to retrieve live stars/forks count directly from GitHub API for real-time authenticity
       try {
+        console.log("[GitHubService] Fetching live stats directly from public GitHub API: https://api.github.com/repos/MoloBTC-Org/bsrf");
         const ghRes = await fetch("https://api.github.com/repos/MoloBTC-Org/bsrf", {
           headers: { "Accept": "application/vnd.github.v3+json" }
         });
+        console.log("[GitHubService] Public GitHub API response status:", ghRes.status, "OK:", ghRes.ok);
         if (ghRes.ok) {
           const ghData = await ghRes.json();
+          console.log("[GitHubService] Public GitHub API response parsed:", ghData);
           const stars = ghData.stargazers_count ?? 42;
           const forks = ghData.forks_count ?? 8;
-          return fallbackRepos.map(repo => ({
+          console.log(`[GitHubService] Applying live stats - Stars: ${stars}, Forks: ${forks} to fallbackRepos.`);
+          const mapped = fallbackRepos.map(repo => ({
             ...repo,
             stars,
             forks
           }));
+          console.log("[GitHubService] Mapped fallback repos:", mapped);
+          return mapped;
+        } else {
+          console.warn("[GitHubService] Public GitHub API returned non-ok status. Might be rate-limited.");
         }
       } catch (ghErr) {
-        console.error("Failed to query live stats from public GitHub API:", ghErr);
+        console.error("[GitHubService] Failed to query live stats from public GitHub API:", ghErr);
       }
       
+      console.log("[GitHubService] Returning static fallbackRepos:", fallbackRepos);
       return fallbackRepos;
     }
   }
@@ -231,43 +246,57 @@ export class GitHubService {
    * stored in a given MoloBTC repository. Supports client-side Raw content fetches & high-fidelity local fallbacks.
    */
   public async getRepositoryReadme(repoName: string): Promise<string> {
+    console.log(`[GitHubService] getRepositoryReadme() called for repo: ${repoName}`);
     try {
+      console.log(`[GitHubService] Fetching readme from Express backend: /api/github/repos/${repoName}/contents`);
       const response = await fetch(`/api/github/repos/${encodeURIComponent(repoName)}/contents`);
+      console.log(`[GitHubService] Backend readme response status: ${response.status}, OK: ${response.ok}`);
+      
       if (!response.ok) {
-        throw new Error("HTTP non-ok");
+        throw new Error(`HTTP status non-ok: ${response.status}`);
       }
       
       const contentType = response.headers.get("content-type");
+      console.log(`[GitHubService] Backend readme response Content-Type: ${contentType}`);
       if (contentType && contentType.includes("text/html")) {
-        throw new Error("HTML response");
+        throw new Error("HTML response received instead of JSON");
       }
 
       const data = await response.json();
+      console.log("[GitHubService] Parsed readme response successfully:", data);
       if (data && typeof data.content === "string") {
         return data.content;
       }
-      throw new Error("Invalid payload format");
+      throw new Error("Invalid payload format: 'content' field is missing or not a string");
     } catch (err) {
-      console.warn(`Express backend readme API unavailable for ${repoName}. Resolving sovereign direct/raw backup...`, err);
+      console.warn(`[GitHubService] Express backend readme API unavailable for ${repoName}. Resolving sovereign direct/raw backup...`, err);
       
       // 1. Try to fetch directly from raw.githubusercontent.com (No CORS issues, perfect for Vercel SPA)
       const rawUrl = rawUrls[repoName];
+      console.log(`[GitHubService] Checking direct Raw URL for ${repoName}: ${rawUrl || "None"}`);
       if (rawUrl) {
         try {
+          console.log(`[GitHubService] Fetching directly from Raw GitHub: ${rawUrl}`);
           const rawResponse = await fetch(rawUrl);
+          console.log(`[GitHubService] Raw response status: ${rawResponse.status}, OK: ${rawResponse.ok}`);
           if (rawResponse.ok) {
             const rawText = await rawResponse.text();
             if (rawText && !rawText.trim().startsWith("<!DOCTYPE")) {
+              console.log(`[GitHubService] Successfully fetched Raw markdown of length: ${rawText.length}`);
               return rawText;
+            } else {
+              console.warn("[GitHubService] Raw fetch returned HTML instead of Markdown.");
             }
           }
         } catch (rawErr) {
-          console.error(`Direct GitHub raw content pull failed for ${repoName}:`, rawErr);
+          console.error(`[GitHubService] Direct GitHub raw content pull failed for ${repoName}:`, rawErr);
         }
       }
 
       // 2. Fallback to local pre-compiled high-fidelity documents
-      return docsMap[repoName] || `# Repository: ${repoName}\nThis is an active research project by MoloBTC exploring advanced Bitcoin utilities, scaling state mechanics, and legal sovereign frameworks across the continent.\n\n*Content resolved from offline cache.*`;
+      const offlineDoc = docsMap[repoName];
+      console.log(`[GitHubService] Returning offline backup doc for ${repoName}. Exists: ${!!offlineDoc}`);
+      return offlineDoc || `# Repository: ${repoName}\nThis is an active research project by MoloBTC exploring advanced Bitcoin utilities, scaling state mechanics, and legal sovereign frameworks across the continent.\n\n*Content resolved from offline cache.*`;
     }
   }
 }

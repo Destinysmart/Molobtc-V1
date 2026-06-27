@@ -18,15 +18,18 @@ export function useGithubState() {
   });
 
   const loadRepositories = useCallback(async () => {
+    console.log("[useGithubState] loadRepositories() initiated. Setting isLoadingRepos to true.");
     setRepoState((prev) => ({ ...prev, isLoadingRepos: true, error: null }));
     try {
       const liveRepos = await githubService.getRepositories();
+      console.log("[useGithubState] loadRepositories() succeeded with repos list:", liveRepos);
       setRepoState((prev) => ({
         ...prev,
         repos: liveRepos,
         isLoadingRepos: false,
       }));
     } catch (err: any) {
+      console.error("[useGithubState] loadRepositories() failed with error:", err);
       setRepoState((prev) => ({
         ...prev,
         isLoadingRepos: false,
@@ -36,6 +39,7 @@ export function useGithubState() {
   }, []);
 
   const selectRepository = useCallback(async (repo: GitHubRepo | null) => {
+    console.log("[useGithubState] selectRepository() called for repo:", repo);
     if (!repo) {
       setRepoState((prev) => ({
         ...prev,
@@ -56,12 +60,14 @@ export function useGithubState() {
 
     try {
       const readmeText = await githubService.getRepositoryReadme(repo.name);
+      console.log(`[useGithubState] selectRepository() successfully fetched content of length ${readmeText.length} for ${repo.name}`);
       setRepoState((prev) => ({
         ...prev,
         repoContent: readmeText,
         isLoadingContent: false,
       }));
     } catch (err: any) {
+      console.error(`[useGithubState] selectRepository() failed for ${repo.name}:`, err);
       setRepoState((prev) => ({
         ...prev,
         isLoadingContent: false,
