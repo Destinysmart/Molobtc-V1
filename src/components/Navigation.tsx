@@ -61,8 +61,8 @@ export function Navigation() {
           </a>
           <div className="hidden md:flex gap-4 lg:gap-6 text-xs lg:text-sm font-medium">
             <a href="/#research" className="text-gray-550 hover:text-gray-950 transition-colors font-semibold">Research</a>
-            <a href="/#donate" className="text-gray-550 hover:text-gray-950 transition-colors font-semibold">Donate</a>
-            <a href="/#opportunities" className="text-gray-550 hover:text-gray-950 transition-colors font-semibold">Molo AI</a>
+            <a href="/#support" className="text-gray-550 hover:text-gray-950 transition-colors font-semibold">Donate</a>
+            <a href="/#molo-ai" className="text-gray-550 hover:text-gray-950 transition-colors font-semibold">Molo AI</a>
           </div>
         </div>
 
@@ -139,7 +139,7 @@ export function Navigation() {
                   <span>Research</span>
                 </a>
                 <a 
-                  href="/#donate" 
+                  href="/#support" 
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center gap-2.5 p-3 rounded-xl hover:bg-brand-50/50 hover:text-brand-700 text-gray-750 text-xs font-black uppercase tracking-wider transition-colors"
                 >
@@ -147,7 +147,7 @@ export function Navigation() {
                   <span>Donate</span>
                 </a>
                 <a 
-                  href="/#opportunities" 
+                  href="/#molo-ai" 
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center gap-2.5 p-3 rounded-xl hover:bg-brand-50/50 hover:text-brand-700 text-gray-750 text-xs font-black uppercase tracking-wider transition-colors"
                 >

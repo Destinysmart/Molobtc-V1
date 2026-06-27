@@ -527,7 +527,7 @@ export function HomePage() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-150 shadow-sm hover:shadow-xl transition-all hover:border-brand-300 flex flex-col justify-between group cursor-pointer"
               onClick={() => {
-                const el = document.querySelector("#discover");
+                const el = document.querySelector("#molo-ai");
                 el?.scrollIntoView({ behavior: "smooth" });
               }}
             >
@@ -537,10 +537,10 @@ export function HomePage() {
                 </div>
                 <h3 className="heading-display text-xl sm:text-2xl font-bold text-gray-950 group-hover:text-brand-600 transition-colors">Discover</h3>
                 <p className="text-gray-550 text-xs sm:text-sm leading-relaxed">
-                  Curated Bitcoin tools, wallets, educational resources, projects, and ecosystem directories.
+                  Explore Molo AI, your Bitcoin knowledge assistant. Ask questions about Bitcoin, Lightning, mining, wallets, economics, open-source projects, and discover beginner-friendly answers powered by our research library.
                 </p>
                 <div className="pt-2 flex flex-wrap gap-1.5">
-                  {["Wallet specs", "Learning plans", "Mining tech", "Builder directories"].map((tag) => (
+                  {["Molo AI", "Bitcoin Q&A", "Research Assistant", "Lightning", "Open Source"].map((tag) => (
                     <span key={tag} className="bg-gray-50 text-gray-500 font-mono text-[9px] px-2 py-0.5 rounded border border-gray-150">
                       {tag}
                     </span>
@@ -548,7 +548,7 @@ export function HomePage() {
                 </div>
               </div>
               <div className="mt-8 text-xs font-bold text-brand-600 group-hover:text-brand-850 flex items-center gap-1">
-                Discover local pathways <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                Explore Molo AI <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </div>
             </motion.div>
 
@@ -560,7 +560,7 @@ export function HomePage() {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-150 shadow-sm hover:shadow-xl transition-all hover:border-brand-300 flex flex-col justify-between group cursor-pointer md:col-span-2 lg:col-span-1"
               onClick={() => {
-                const el = document.querySelector("#opportunities");
+                const el = document.querySelector("#support");
                 el?.scrollIntoView({ behavior: "smooth" });
               }}
             >
@@ -570,10 +570,10 @@ export function HomePage() {
                 </div>
                 <h3 className="heading-display text-xl sm:text-2xl font-bold text-gray-950 group-hover:text-brand-600 transition-colors">Connect</h3>
                 <p className="text-gray-550 text-xs sm:text-sm leading-relaxed">
-                  Helping people find communities, remote jobs, open source grants, circular networks, and meetups.
+                  Support the growth of Molo BTC through Bitcoin donations, contribute to open-source development, or help expand accessible Bitcoin education across Africa.
                 </p>
                 <div className="pt-2 flex flex-wrap gap-1.5">
-                  {["Bitcoin jobs", "Code grants", "Mining channels", "Circular markets"].map((tag) => (
+                  {["Donations", "Open Source", "Community", "Bitcoin", "Support"].map((tag) => (
                     <span key={tag} className="bg-gray-50 text-gray-500 font-mono text-[9px] px-2 py-0.5 rounded border border-gray-150">
                       {tag}
                     </span>
@@ -581,7 +581,7 @@ export function HomePage() {
                 </div>
               </div>
               <div className="mt-8 text-xs font-bold text-brand-600 group-hover:text-brand-850 flex items-center gap-1">
-                Browse opportunities <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                Support Molo BTC <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </div>
             </motion.div>
 
@@ -760,7 +760,7 @@ export function HomePage() {
         </section>
 
         {/* SECTION: SUPPORT & DONATE */}
-        <section id="donate" className="scroll-margin-top mb-24 max-w-4xl mx-auto">
+        <section id="support" className="scroll-margin-top mb-24 max-w-4xl mx-auto">
           <div className="bg-white rounded-3xl p-8 sm:p-12 border border-gray-150/80 shadow-md relative overflow-hidden">
             <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-400 to-brand-600" />
             <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 h-64 w-64 rounded-full bg-brand-50/30 blur-3xl pointer-events-none" />
@@ -822,7 +822,7 @@ export function HomePage() {
         </section>
 
         {/* SECTION: MOLO AI EXPLORER TUTOR */}
-        <section id="opportunities" className="mb-12 bg-[#120F0D] text-white rounded-3xl p-6 sm:p-10 relative overflow-hidden">
+        <section id="molo-ai" className="mb-12 bg-[#120F0D] text-white rounded-3xl p-6 sm:p-10 relative overflow-hidden">
           <span id="ai-explorer" className="absolute top-0 left-0" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-brand-900/40 via-transparent to-transparent pointer-events-none" />
           
@@ -1114,7 +1114,7 @@ export function HomePage() {
                           const repoName = selectedRepo.name;
                           handleSelectRepo(null);
                           setTimeout(() => {
-                            const chatInput = document.querySelector("#opportunities");
+                            const chatInput = document.querySelector("#molo-ai");
                             chatInput?.scrollIntoView({ behavior: "smooth" });
                             // Prepopulate the query
                             setUserQuery(`Can you explain the main mechanics and context of the molobtc repo: "${repoName}"?`);

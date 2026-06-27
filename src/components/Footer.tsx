@@ -17,7 +17,7 @@ export function Footer() {
              <a href="https://github.com/MoloBTC-Org" target="_blank" rel="noreferrer" className="w-full sm:w-auto rounded-xl bg-gray-950 px-6 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 transition-all shadow-md inline-flex items-center justify-center gap-2">
                Explore Molo BTC on GitHub
              </a>
-             <a href="#ai-explorer" className="w-full sm:w-auto rounded-xl border border-gray-200 bg-white px-6 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-all inline-flex items-center justify-center">
+             <a href="#molo-ai" className="w-full sm:w-auto rounded-xl border border-gray-200 bg-white px-6 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-all inline-flex items-center justify-center">
                Ask Molo AI a Question
              </a>
           </div>
@@ -50,8 +50,8 @@ export function Footer() {
             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Quick Navigation</span>
             <div className="flex flex-wrap gap-4 md:flex-col md:gap-3 text-gray-500 font-medium">
               <a href="/#research" className="hover:text-gray-900 transition-colors">Research</a>
-              <a href="/#opportunities" className="hover:text-gray-900 transition-colors">Molo AI</a>
-              <a href="/#donate" className="hover:text-gray-900 transition-colors">Support & Donate</a>
+              <a href="/#molo-ai" className="hover:text-gray-900 transition-colors">Molo AI</a>
+              <a href="/#support" className="hover:text-gray-900 transition-colors">Support & Donate</a>
               <a href="https://github.com/MoloBTC-Org" target="_blank" rel="noreferrer" className="hover:text-gray-900 transition-colors">GitHub profile</a>
             </div>
           </div>
