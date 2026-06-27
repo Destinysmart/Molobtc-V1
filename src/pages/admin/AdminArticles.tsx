@@ -157,7 +157,7 @@ export function AdminArticles() {
             Research Papers Hub
           </h1>
           <p className="text-xs text-gray-550 mt-1 leading-relaxed">
-            Verify layout attributes, read plain text specs, and synchronize the core educational curriculum from github.com/molobtc.
+            Verify layout attributes, read plain text specs, and synchronize the core educational curriculum from github.com/MoloBTC-Org.
           </p>
         </div>
 
@@ -221,7 +221,7 @@ export function AdminArticles() {
         {isLoading ? (
           <div className="py-28 text-center text-gray-400 flex flex-col items-center justify-center">
             <Loader2 className="w-8 h-8 text-brand-500 animate-spin mb-3" />
-            <span className="text-xs font-semibold font-mono tracking-wider">Establishing secure synchronization channels with github.com/molobtc...</span>
+            <span className="text-xs font-semibold font-mono tracking-wider">Establishing secure synchronization channels with github.com/MoloBTC-Org...</span>
           </div>
         ) : filteredRepos.length === 0 ? (
           <div className="py-24 text-center text-gray-400">
@@ -388,7 +388,7 @@ export function AdminArticles() {
               {/* Footer */}
               <div className="p-4.5 flex items-center justify-between bg-white shrink-0 border-t border-gray-100">
                 <span className="text-[10px] font-mono text-gray-400">
-                  Ref: github.com/molobtc
+                  Ref: github.com/MoloBTC-Org
                 </span>
                 <div className="flex items-center gap-2">
                   <a

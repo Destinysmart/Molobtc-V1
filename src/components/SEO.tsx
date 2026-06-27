@@ -18,7 +18,7 @@ export function SEO({
   title = "Molo BTC - Beginner-Friendly Bitcoin Research Workspace",
   description = "Breaking down the physical, digital, and monetary complexity of Bitcoin into beautiful, easily digestible open-source research summaries.",
   image = "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=2670&auto=format&fit=crop",
-  url = "https://github.com/molobtc",
+  url = "https://github.com/MoloBTC-Org",
   type = "website",
   publishedTime,
   modifiedTime,
@@ -28,8 +28,8 @@ export function SEO({
   keyTakeaways
 }: SEOProps) {
 
-  const currentOrigin = typeof window !== "undefined" ? window.location.origin : "https://github.com/molobtc";
-  const currentUrl = url && !url.includes("bitlance.com") ? url : (typeof window !== "undefined" ? window.location.href : "https://github.com/molobtc");
+  const currentOrigin = typeof window !== "undefined" ? window.location.origin : "https://github.com/MoloBTC-Org";
+  const currentUrl = url && !url.includes("bitlance.com") ? url : (typeof window !== "undefined" ? window.location.href : "https://github.com/MoloBTC-Org");
   
   const baseSchema = {
     "@context": "https://schema.org",
@@ -51,7 +51,7 @@ export function SEO({
     "url": currentOrigin,
     "logo": `${currentOrigin}/src/assets/images/molobtc_official_logo_1781542833685.jpg`,
     "sameAs": [
-      "https://github.com/molobtc",
+      "https://github.com/MoloBTC-Org",
       "https://x.com/moloBTC"
     ]
   };

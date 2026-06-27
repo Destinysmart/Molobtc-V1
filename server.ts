@@ -40,9 +40,11 @@ function getDb() {
   }
   try {
     if (fs.existsSync(DB_FILE)) {
-      const data = fs.readFileSync(DB_FILE, "utf-8");
+      let data = fs.readFileSync(DB_FILE, "utf-8");
+      // Auto-migrate lower-case organization URL to the main MoloBTC-Org organization
+      data = data.replace(/github\.com\/molobtc/g, "github.com/MoloBTC-Org");
       memoryDb = JSON.parse(data);
-      console.log("[server.ts] Successfully read existing db.json file.");
+      console.log("[server.ts] Successfully read existing db.json file and migrated lower-case github links.");
       return memoryDb;
     }
   } catch (err) {
@@ -117,7 +119,7 @@ if (dbData.articles.length === 0 || hasOldSeeds) {
       category_id: "c1",
       status: "published",
       abstract: "This paper analyzes the intrinsic relationship between energy expenditures and digital ledger consensus. By requiring miners to perform millions of trillions of physical guesses (hashes) to generate blocks, Bitcoin links its digital ledger directly to real-world physics. We break down the mechanics of the ASICs, hash rates, and why physical hashes prove a record's authenticity, making digital ledger alteration physically impossible.",
-      github_repo: "https://github.com/molobtc/thermodynamic-scarcity",
+      github_repo: "https://github.com/MoloBTC-Org/thermodynamic-scarcity",
       download_file: "MoloBTC_Research_Thermodynamic_Scarcity.pdf",
       reading_time: "8 min read",
       content: `
@@ -150,7 +152,7 @@ if (dbData.articles.length === 0 || hasOldSeeds) {
       category_id: "c2",
       status: "published",
       abstract: "The Lightning Network is Bitcoin's primary Layer-2 protocol. This work explains how two peers can open a cryptographic 'state channel' by locking funds on the main network, then instantly route unlimited micro-payments offline. Transactions are verified in milliseconds by exchanging physical cryptographically signed updates, bypassing block congestion altogether.",
-      github_repo: "https://github.com/molobtc/state-channels",
+      github_repo: "https://github.com/MoloBTC-Org/state-channels",
       download_file: "MoloBTC_Lightning_State_Channels_Guide.pdf",
       reading_time: "6 min read",
       content: `
@@ -180,7 +182,7 @@ if (dbData.articles.length === 0 || hasOldSeeds) {
       category_id: "c3",
       status: "published",
       abstract: "Self-custody of Bitcoin gives individuals complete sovereignty, but understanding why it is secure requires looking at probability math. This paper explores the concept of cryptographic entropy—specifically, the 256 bits of randomness that constitute a private key. We prove why searching for a key is functionally impossible, even using all solar system computation.",
-      github_repo: "https://github.com/molobtc/entropy-and-sovereignty",
+      github_repo: "https://github.com/MoloBTC-Org/entropy-and-sovereignty",
       download_file: "MoloBTC_Custody_Entropy_Math_Walkthrough.pdf",
       reading_time: "10 min read",
       content: `
@@ -210,7 +212,7 @@ if (dbData.articles.length === 0 || hasOldSeeds) {
       category_id: "c4",
       status: "published",
       abstract: "Unlike modern digital banks or Ethereum which use account status ledgers (like checking accounts with a single balance), Bitcoin works strictly like physical cash. It tracks individual bills, known as Unspent Transaction Outputs (UTXOs). We prove why this cash-based design enables extreme parallel processing, superior security, and highly predictable smart contract states.",
-      github_repo: "https://github.com/molobtc/utxo-model",
+      github_repo: "https://github.com/MoloBTC-Org/utxo-model",
       download_file: "MoloBTC_Architecture_UTXO_vs_Account.pdf",
       reading_time: "7 min read",
       content: `
@@ -280,7 +282,7 @@ if (!dynamicDb.ecosystemTabs) {
       curatedPaths: [
         { name: "Saylor Academy - CS120 Bitcoin Course", url: "https://www.saylor.org/courses/cs120/", desc: "Free comprehensive computer science overview of Bitcoin architecture and logic." },
         { name: "Mi Primer Bitcoin (My First Bitcoin)", url: "https://miprimerbitcoin.io/", desc: "Open-source diploma curriculum designed for teaching high schools next-generation money." },
-        { name: "Baka Academy", url: "https://github.com/molobtc", desc: "Interactive localized community meetups and digital resource guides across sub-Saharan Africa." }
+        { name: "Baka Academy", url: "https://github.com/MoloBTC-Org", desc: "Interactive localized community meetups and digital resource guides across sub-Saharan Africa." }
       ]
     },
     build: {
@@ -315,7 +317,7 @@ if (!dynamicDb.ecosystemTabs) {
       curatedPaths: [
         { name: "Bitlance", url: "https://bitlance.work", desc: "A peer-to-peer freelancing and work-and-earn platform for Bitcoin and Lightning bounties." },
         { name: "Bitcoin Jobs Global Board", url: "https://bitcoinjobs.co/", desc: "Aggregated engineering, design, marketing, and editorial placements globally and remote." },
-        { name: "Superlative Open Source Directory", url: "https://github.com/molobtc", desc: "Discover active bounties, developer fellowships, and localized community internships." }
+        { name: "Superlative Open Source Directory", url: "https://github.com/MoloBTC-Org", desc: "Discover active bounties, developer fellowships, and localized community internships." }
       ]
     }
   };

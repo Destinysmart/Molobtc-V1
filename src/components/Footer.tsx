@@ -13,7 +13,7 @@ export function Footer() {
             Molo BTC is an open-source hub. All of our summaries, explainers, and physics breakdowns are hosted transparently on our GitHub organization. Fork our work, suggest improvements, or submit your own research scripts.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-             <a href="https://github.com/molobtc" target="_blank" rel="noreferrer" className="w-full sm:w-auto rounded-xl bg-gray-950 px-6 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 transition-all shadow-md inline-flex items-center justify-center gap-2">
+             <a href="https://github.com/MoloBTC-Org" target="_blank" rel="noreferrer" className="w-full sm:w-auto rounded-xl bg-gray-950 px-6 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 transition-all shadow-md inline-flex items-center justify-center gap-2">
                Explore Molo BTC on GitHub
              </a>
              <a href="#ai-explorer" className="w-full sm:w-auto rounded-xl border border-gray-200 bg-white px-6 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-all inline-flex items-center justify-center">
@@ -51,7 +51,7 @@ export function Footer() {
               <a href="/#research" className="hover:text-gray-900 transition-colors">Research</a>
               <a href="/#opportunities" className="hover:text-gray-900 transition-colors">Molo AI</a>
               <a href="/#donate" className="hover:text-gray-900 transition-colors">Support & Donate</a>
-              <a href="https://github.com/molobtc" target="_blank" rel="noreferrer" className="hover:text-gray-900 transition-colors">GitHub profile</a>
+              <a href="https://github.com/MoloBTC-Org" target="_blank" rel="noreferrer" className="hover:text-gray-900 transition-colors">GitHub profile</a>
             </div>
           </div>
           
