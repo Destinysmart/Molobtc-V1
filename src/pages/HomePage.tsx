@@ -356,20 +356,37 @@ export function HomePage() {
         }),
       });
 
+      if (!response.ok) {
+        let errMsg = `HTTP ${response.status} Error`;
+        try {
+          const errData = await response.json();
+          if (errData && errData.error) {
+            errMsg = errData.error;
+          }
+        } catch (_) {
+          errMsg = `Server responded with ${response.status} ${response.statusText}`;
+        }
+        setChatHistory(prev => [...prev, { 
+          role: "ai", 
+          text: `⚠️ Molo AI Error: ${errMsg}` 
+        }]);
+        return;
+      }
+
       const data = await response.json();
       if (data.error) {
         setChatHistory(prev => [...prev, { 
           role: "ai", 
-          text: `⚠️ Molo error: ${data.error}` 
+          text: `⚠️ Molo AI Error: ${data.error}` 
         }]);
       } else {
         setChatHistory(prev => [...prev, { role: "ai", text: data.text }]);
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error("AI Chat Error:", err);
       setChatHistory(prev => [...prev, { 
         role: "ai", 
-        text: "🔌 Connection issue. It looks like the Gemini server is bootloading. Please check GEMINI_API_KEY inside the secrets drawer if this persists." 
+        text: `🔌 Connection issue: ${err?.message || "Network request failed"}. Please check if the server is offline or if GEMINI_API_KEY inside the secrets drawer is configured properly.` 
       }]);
     } finally {
       setIsAiLoading(false);
