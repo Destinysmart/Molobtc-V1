@@ -42,6 +42,7 @@ import {   ArrowRight,
 import { motion, AnimatePresence } from "motion/react";
 import { PdfPreviewCanvas } from "../components/PdfPreviewCanvas";
 import { downloadSovereignPdf } from "../services/pdfGenerator";
+import { generateChatResponse } from "../services/geminiService";
 
 // Types for Research Paper
 interface ResearchPaper {
@@ -338,7 +339,7 @@ export function HomePage() {
     };
   }, []);
 
-  // Chat with Gemini API on Server
+  // Chat with Gemini API on Server / Client Fallback
   const handleAiChat = async (promptText: string) => {
     if (!promptText.trim()) return;
 
@@ -347,46 +348,16 @@ export function HomePage() {
     setIsAiLoading(true);
 
     try {
-      const response = await fetch("/api/gemini/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          prompt: promptText,
-          topic: selectedRepo ? `Repository: ${selectedRepo.name}` : undefined
-        }),
-      });
-
-      if (!response.ok) {
-        let errMsg = `HTTP ${response.status} Error`;
-        try {
-          const errData = await response.json();
-          if (errData && errData.error) {
-            errMsg = errData.error;
-          }
-        } catch (_) {
-          errMsg = `Server responded with ${response.status} ${response.statusText}`;
-        }
-        setChatHistory(prev => [...prev, { 
-          role: "ai", 
-          text: `⚠️ Molo AI Error: ${errMsg}` 
-        }]);
-        return;
-      }
-
-      const data = await response.json();
-      if (data.error) {
-        setChatHistory(prev => [...prev, { 
-          role: "ai", 
-          text: `⚠️ Molo AI Error: ${data.error}` 
-        }]);
-      } else {
-        setChatHistory(prev => [...prev, { role: "ai", text: data.text }]);
-      }
+      const reply = await generateChatResponse(
+        promptText, 
+        selectedRepo ? `Repository: ${selectedRepo.name}` : undefined
+      );
+      setChatHistory(prev => [...prev, { role: "ai", text: reply }]);
     } catch (err: any) {
       console.error("AI Chat Error:", err);
       setChatHistory(prev => [...prev, { 
         role: "ai", 
-        text: `🔌 Connection issue: ${err?.message || "Network request failed"}. Please check if the server is offline or if GEMINI_API_KEY inside the secrets drawer is configured properly.` 
+        text: err.message || "Failed to communicate with Molo AI"
       }]);
     } finally {
       setIsAiLoading(false);

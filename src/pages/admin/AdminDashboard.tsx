@@ -30,6 +30,7 @@ import {
 } from "recharts";
 import { motion, AnimatePresence } from "motion/react";
 import { PdfPreviewCanvas } from "../../components/PdfPreviewCanvas";
+import { generateChatResponse } from "../../services/geminiService";
 
 interface GithubRepo {
   id: string;
@@ -122,22 +123,12 @@ export function AdminDashboard() {
     setSandboxResponse("");
 
     try {
-      const res = await fetch("/api/gemini/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: promptToSend,
-          topic: selectedRepo ? `Repository: ${selectedRepo.name}` : undefined
-        })
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        setSandboxResponse(data.text);
-        triggerToast("Cognitive response synthesized successfully!");
-      } else {
-        setSandboxResponse(`Error: ${data.error || "Failed to communicate with Molo AI"}`);
-      }
+      const reply = await generateChatResponse(
+        promptToSend,
+        selectedRepo ? `Repository: ${selectedRepo.name}` : undefined
+      );
+      setSandboxResponse(reply);
+      triggerToast("Cognitive response synthesized successfully!");
     } catch (err: any) {
       setSandboxResponse(`Error: ${err.message || "Failed to submit sandbox test"}`);
     } finally {
