@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { SearchOverlay } from "./SearchOverlay";
+import molobtcLogo from "../assets/images/molobtc_official_logo_1781542833685.jpg";
 
 export function Navigation() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -52,7 +53,7 @@ export function Navigation() {
         <div className="flex items-center gap-8">
           <a href="/" className="flex items-center h-12">
             <img 
-              src="/src/assets/images/molobtc_official_logo_1781542833685.jpg" 
+              src={molobtcLogo} 
               alt="Molo BTC Logo" 
               className="h-11 md:h-12 w-auto object-contain transform hover:scale-105 transition-transform duration-300"
               referrerPolicy="no-referrer"
@@ -112,7 +113,7 @@ export function Navigation() {
               <div className="flex items-center justify-between border-b border-gray-150 pb-4 mb-6">
                 <a href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center">
                   <img 
-                    src="/src/assets/images/molobtc_official_logo_1781542833685.jpg" 
+                    src={molobtcLogo} 
                     alt="Molo BTC Logo" 
                     className="h-9 w-auto object-contain"
                   />

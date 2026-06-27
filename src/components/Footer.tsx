@@ -1,4 +1,5 @@
 import { Bitcoin } from "lucide-react";
+import molobtcLogo from "../assets/images/molobtc_official_logo_1781542833685.jpg";
 
 export function Footer() {
   return (
@@ -29,7 +30,7 @@ export function Footer() {
           <div className="max-w-md space-y-4">
             <div className="flex items-center h-10">
               <img 
-                src="/src/assets/images/molobtc_official_logo_1781542833685.jpg" 
+                src={molobtcLogo} 
                 alt="Molo BTC Logo" 
                 className="h-9 w-auto object-contain transform hover:scale-105 transition-transform duration-300"
                 referrerPolicy="no-referrer"

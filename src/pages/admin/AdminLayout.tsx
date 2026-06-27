@@ -11,6 +11,7 @@ import {
   ShieldAlert
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import molobtcLogo from "../../assets/images/molobtc_official_logo_1781542833685.jpg";
 
 export function AdminLayout() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -47,7 +48,7 @@ export function AdminLayout() {
       <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white h-16 shrink-0 sticky top-0 z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
         <NavLink to="/admin" className="flex items-center">
           <img 
-            src="/src/assets/images/molobtc_official_logo_1781542833685.jpg" 
+            src={molobtcLogo} 
             alt="Molo BTC Logo" 
             className="h-9 w-auto object-contain"
           />
@@ -86,7 +87,7 @@ export function AdminLayout() {
                 <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
                   <div className="flex items-center">
                     <img 
-                      src="/src/assets/images/molobtc_official_logo_1781542833685.jpg" 
+                      src={molobtcLogo} 
                       alt="Molo BTC Logo" 
                       className="h-8 w-auto object-contain"
                     />
@@ -139,7 +140,7 @@ export function AdminLayout() {
           <NavLink to="/admin" className="flex items-center justify-center py-2">
             <div className="text-center">
               <img 
-                src="/src/assets/images/molobtc_official_logo_1781542833685.jpg" 
+                src={molobtcLogo} 
                 alt="Molo BTC Logo" 
                 className="h-12 w-auto mx-auto object-contain transform hover:scale-105 transition-transform"
                 referrerPolicy="no-referrer"

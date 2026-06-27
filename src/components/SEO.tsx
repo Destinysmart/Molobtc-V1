@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import molobtcLogo from "../assets/images/molobtc_official_logo_1781542833685.jpg";
 
 interface SEOProps {
   title?: string;
@@ -49,7 +50,7 @@ export function SEO({
     "@type": "Organization",
     "name": "Molo BTC Research Lab",
     "url": currentOrigin,
-    "logo": `${currentOrigin}/src/assets/images/molobtc_official_logo_1781542833685.jpg`,
+    "logo": `${currentOrigin}${molobtcLogo}`,
     "sameAs": [
       "https://github.com/MoloBTC-Org",
       "https://x.com/moloBTC"
@@ -78,7 +79,7 @@ export function SEO({
       "name": "Molo BTC Research Lab",
       "logo": {
         "@type": "ImageObject",
-        "url": `${currentOrigin}/src/assets/images/molobtc_official_logo_1781542833685.jpg`
+        "url": `${currentOrigin}${molobtcLogo}`
       }
     },
     "about": [
