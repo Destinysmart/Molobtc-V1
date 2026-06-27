@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { Navigation } from "../components/Navigation";
 import { Footer } from "../components/Footer";
 import { SEO } from "../components/SEO";
@@ -34,7 +34,10 @@ import {   ArrowRight,
   Check,
   GitFork,
   Star,
-  RefreshCw
+  RefreshCw,
+  Mail,
+  Twitter,
+  Trash2
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { PdfPreviewCanvas } from "../components/PdfPreviewCanvas";
@@ -210,9 +213,13 @@ export function HomePage() {
   // Molo AI Chat State
   const [userQuery, setUserQuery] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [chatHistory, setChatHistory] = useState<Array<{role: "user" | "ai"; text: string}>>([
-    { role: "ai", text: "Hey! I'm **Molo AI Explorer**, your guide to the African and global Bitcoin ecosystem. I write clear summaries of complex technical updates, developer tools, and lightning models. Ask me anything!" }
-  ]);
+  const [chatHistory, setChatHistory] = useState<Array<{role: "user" | "ai"; text: string}>>([]);
+  
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatHistory, isAiLoading]);
 
   // Active perspective inside custom Orange Lens widget
   const [activePerspective, setActivePerspective] = useState<string>("inflation");
@@ -760,60 +767,67 @@ export function HomePage() {
         </section>
 
         {/* SECTION: SUPPORT & DONATE */}
-        <section id="support" className="scroll-margin-top mb-24 max-w-4xl mx-auto">
-          <div className="bg-white rounded-3xl p-8 sm:p-12 border border-gray-150/80 shadow-md relative overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-400 to-brand-600" />
-            <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 h-64 w-64 rounded-full bg-brand-50/30 blur-3xl pointer-events-none" />
+        <section id="support" className="scroll-margin-top mb-24 max-w-4xl mx-auto px-4">
+          <div className="bg-[#FAF8F5] rounded-3xl p-6 sm:p-10 relative overflow-hidden border border-brand-100/10 shadow-[0_8px_30px_rgb(0,0,0,0.015)] transition-all duration-300 hover:shadow-[0_12px_40px_rgb(0,0,0,0.03)]">
+            <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 h-64 w-64 rounded-full bg-brand-50/20 blur-3xl pointer-events-none" />
             
-            <div className="text-center max-w-2xl mx-auto mb-10">
-              <span className="text-[10px] font-bold text-brand-600 uppercase tracking-widest bg-brand-50 px-2.5 py-1 rounded-md inline-flex items-center gap-1.5">
-                <Heart className="h-3.5 w-3.5 text-brand-500 fill-brand-500 animate-pulse" />
-                <span>Open Source Support</span>
+            <div className="text-center max-w-xl mx-auto mb-10">
+              <span className="text-[10px] font-bold text-brand-600 uppercase tracking-widest bg-brand-50/80 px-3 py-1 rounded-full inline-flex items-center gap-1.5 mb-3">
+                <Heart className="h-3 w-3 text-brand-500 fill-brand-500 animate-pulse" />
+                <span>Support Open Source</span>
               </span>
-              <h2 className="heading-display text-2xl sm:text-4xl font-extrabold text-gray-950 mt-3">Support Molo BTC</h2>
-              <p className="text-xs sm:text-sm text-gray-650 leading-relaxed mt-3">
-                Molo BTC is entirely free and user-supported. We don't host trackers, sell student analytics, or block knowledge behind paywalls. Every contribution goes toward servers, hosting, and keeping our interactive resources online.
+              <h2 className="heading-display text-2xl sm:text-4xl font-black text-gray-950">Support Molo BTC</h2>
+              <p className="text-xs sm:text-sm text-gray-550 leading-relaxed mt-2">
+                Help keep Bitcoin education free, tracker-free, and accessible to everyone. Your support directly funds server infrastructure and interactive tools.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="grid md:grid-cols-2 gap-8 items-stretch">
               {/* Left Widget Pane */}
-              <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100/80 shadow-inner flex flex-col justify-center items-center min-h-[260px]">
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-[0_12px_30px_rgba(0,0,0,0.015)] flex flex-col justify-center items-center min-h-[260px] transition-all duration-300 hover:shadow-[0_12px_30px_rgba(0,0,0,0.03)]">
                 <div id="blink-pay-button-container" className="w-full flex justify-center"></div>
               </div>
 
-              {/* Right Side Info & FAQ */}
-              <div className="space-y-4">
-                <div className="p-4 bg-[#FCF8F2] border border-brand-200/50 rounded-2xl flex items-start gap-3">
-                  <Sparkles className="h-4.5 w-4.5 text-brand-600 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="text-xs font-bold text-brand-950 uppercase tracking-wider">Functional Donation Widget</h4>
-                    <p className="text-[11px] text-gray-650 leading-relaxed mt-1">
-                      Supporting our Bitcoin education efforts is now fully live! Powered by <strong>Blink Bitcoin</strong>, you can contribute any custom amount directly via Lightning or On-Chain.
-                    </p>
+              {/* Right Side Info */}
+              <div className="flex flex-col justify-between space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-orange-50/80 flex items-center justify-center shrink-0 border border-brand-100/20">
+                      <Sparkles className="h-4 w-4 text-brand-600" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-gray-950 uppercase tracking-wider">Lightning & On-Chain</h4>
+                      <p className="text-[11px] text-gray-550 leading-relaxed mt-1">
+                        Contribute any custom amount instantly via Lightning or On-Chain. Powered securely by Blink Bitcoin.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-orange-50/80 flex items-center justify-center shrink-0 border border-brand-100/20">
+                      <Heart className="h-4 w-4 text-brand-600" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-gray-950 uppercase tracking-wider">100% Peer-to-Peer</h4>
+                      <p className="text-[11px] text-gray-550 leading-relaxed mt-1">
+                        No intermediaries, no trackers, no paywalls. Every satoshi directly supports server hosting and educational research.
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-3 pl-2">
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-bold text-gray-950 flex items-center gap-1.5">
-                      <Check className="h-3.5 w-3.5 text-brand-500" />
-                      Is this payment fully functional?
-                    </h4>
-                    <p className="text-[11px] text-gray-550 leading-normal">
-                      Yes! This widget is fully live and integrated with Blink Bitcoin. Any donations made here directly support moloBTC's hosting and ongoing development.
-                    </p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-bold text-gray-950 flex items-center gap-1.5">
-                      <Check className="h-3.5 w-3.5 text-brand-500" />
-                      Other ways to support?
-                    </h4>
-                    <p className="text-[11px] text-gray-550 leading-normal">
-                      Organic sharing is incredibly powerful! Star or contribute directly on our official <a href="https://github.com/MoloBTC-Org" target="_blank" rel="noreferrer" className="text-brand-600 font-bold hover:underline inline-flex items-center gap-0.5 inline">GitHub profile <ExternalLink className="h-3 w-3 inline" /></a>.
-                    </p>
-                  </div>
+                <div className="pt-4 border-t border-gray-100">
+                  <p className="text-[11px] text-gray-500">
+                    Contribute to our repository instead?{" "}
+                    <a 
+                      href="https://github.com/MoloBTC-Org" 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="text-brand-600 font-semibold hover:underline inline-flex items-center gap-1 hover:text-brand-700 transition-colors"
+                    >
+                      Star us on GitHub <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </p>
                 </div>
               </div>
             </div>
@@ -821,129 +835,190 @@ export function HomePage() {
           </div>
         </section>
 
-        {/* SECTION: MOLO AI EXPLORER TUTOR */}
-        <section id="molo-ai" className="mb-12 bg-[#120F0D] text-white rounded-3xl p-6 sm:p-10 relative overflow-hidden">
-          <span id="ai-explorer" className="absolute top-0 left-0" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-brand-900/40 via-transparent to-transparent pointer-events-none" />
-          
-          <div className="relative z-10 grid lg:grid-cols-12 gap-10">
+        {/* SECTION: CONTACT */}
+        <section id="contact" className="scroll-margin-top mb-24 max-w-4xl mx-auto px-4 -mt-12">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 sm:p-8 bg-white rounded-3xl border border-gray-150/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.03)] transition-all duration-300">
+            <div className="space-y-1 max-w-md text-left">
+              <h3 className="heading-display text-lg font-bold text-gray-950">Let's Build Together</h3>
+              <p className="text-xs sm:text-sm text-gray-550 leading-relaxed">
+                Have questions, collaboration ideas, or want to contribute? Reach out and connect with the Molo BTC team.
+              </p>
+            </div>
             
-            {/* Title & guidance */}
-            <div className="lg:col-span-4 text-left flex flex-col justify-between">
-              <div>
-                <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-400 bg-brand-950/80 px-2.5 py-1 rounded border border-brand-900/50 mb-4 tracking-wider uppercase">
-                  <Sparkles className="w-3.5 h-3.5 text-brand-400 animate-pulse" />
-                  Molo AI chat
-                </div>
-                <h3 className="heading-display text-2xl sm:text-3xl font-extrabold text-white leading-tight mb-4">
-                  AI Explorer & Community Router
-                </h3>
-                <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-6">
-                  Not sure where to begin your journey, how lightning payment splits work, or where to find active developer programs in Nigeria, Kenya, or South Africa? Ask Molo AI.
+            <div className="flex flex-wrap gap-3 items-center">
+              <a 
+                href="mailto:molobtc@proton.me" 
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-150 rounded-xl transition-all"
+              >
+                <Mail className="w-3.5 h-3.5 text-gray-500" />
+                <span>Email Us</span>
+              </a>
+              <a 
+                href="https://x.com/moloBTC" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-150 rounded-xl transition-all"
+              >
+                <Twitter className="w-3.5 h-3.5 text-gray-500" />
+                <span>Follow on X</span>
+              </a>
+              <a 
+                href="https://github.com/MoloBTC-Org" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-gray-950 hover:bg-gray-900 rounded-xl transition-all shadow-sm"
+              >
+                <Github className="w-3.5 h-3.5 text-gray-200" />
+                <span>GitHub</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION: MOLO AI EXPLORER TUTOR */}
+        <section id="molo-ai" className="scroll-margin-top mb-24 max-w-4xl mx-auto px-4">
+          <div className="bg-[#120F0D] text-white rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.05)] border border-white/[0.03]">
+            <span id="ai-explorer" className="absolute top-0 left-0" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-brand-950/40 via-transparent to-transparent pointer-events-none" />
+            
+            <div className="relative z-10 space-y-6">
+              {/* Header */}
+              <div className="text-center max-w-xl mx-auto mb-4">
+                <span className="text-[10px] font-bold text-brand-400 bg-brand-950/80 px-3 py-1 rounded-full inline-flex items-center gap-1.5 mb-3 border border-brand-900/40 uppercase tracking-widest">
+                  <Sparkles className="w-3 h-3 text-brand-400 animate-pulse" />
+                  <span>Interactive Assistant</span>
+                </span>
+                <h2 className="heading-display text-2xl sm:text-3xl font-black text-white">Molo AI</h2>
+                <p className="text-xs sm:text-sm text-gray-400 leading-relaxed mt-2">
+                  Ask any question about Bitcoin, Lightning, mining, economics, and open-source projects for instant, clear answers.
                 </p>
               </div>
 
-              {/* Sample queries */}
-              <div className="space-y-2 mt-4 lg:mt-0 text-left font-sans">
-                <span className="text-[10px] font-bold text-gray-550 uppercase tracking-wider block">Frequently Asked Queries:</span>
-                {[
-                  "Where can a developer find open source Bitcoin jobs?",
-                  "Explain Lightning Onion routing in simple terms",
-                  "What are active Bitcoin circular communities in Africa?",
-                  "Why does USSD technology help people receive Satoshi payments offline?"
-                ].map((q, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handleAiChat(q)}
-                    disabled={isAiLoading}
-                    className="w-full text-left text-xs bg-white/5 border border-white/10 hover:bg-white/10 hover:border-brand-500/50 p-2.5 rounded-lg transition-all line-clamp-1 block text-gray-300 transition-colors"
-                  >
-                    🚀 {q}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Chat output */}
-            <div className="lg:col-span-8 flex flex-col h-[400px] bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden">
-              
-              {/* Chat head */}
-              <div className="bg-white/[0.03] border-b border-white/10 px-4 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-gray-400">Node Status: Connected</span>
-                </div>
-                <button 
-                  onClick={() => setChatHistory([
-                    { role: "ai", text: "Hey! I'm **Molo AI Explorer**, your guide to the African and global Bitcoin ecosystem. I write clear summaries of complex technical updates, developer tools, and lightning models. Ask me anything!" }
-                  ])}
-                  className="p-1 px-2 hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors flex items-center gap-1.5 text-[10px] font-mono font-bold"
-                  title="Reset conversation"
-                >
-                  <RotateCcw className="w-3 h-3.5" />
-                  Clear History
-                </button>
-              </div>
-
-              {/* Chat body */}
-              <div className="flex-grow p-4 overflow-y-auto space-y-4 text-xs font-sans text-left">
-                {chatHistory.map((item, idx) => (
-                  <div 
-                    key={idx} 
-                    className={`flex ${item.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div className={`max-w-[85%] rounded-2xl p-4 leading-relaxed ${
-                      item.role === 'user' 
-                        ? 'bg-brand-600 text-white rounded-br-none font-semibold' 
-                        : 'bg-white/5 border border-white/10 text-gray-100 rounded-bl-none'
-                    }`}>
-                      {item.text.split("\n").map((line, lIdx) => {
-                        let parts = line.split("**");
-                        return (
-                          <p key={lIdx} className={lIdx > 0 ? "mt-2" : ""}>
-                            {parts.map((part, pIdx) => 
-                              pIdx % 2 === 1 ? <strong key={pIdx} className="text-brand-300 font-bold">{part}</strong> : part
-                            )}
-                          </p>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
+              {/* Chat Card (ChatGPT Inspired) */}
+              <div className="bg-[#181412] border border-white/5 rounded-2xl overflow-hidden flex flex-col h-[520px] shadow-2xl relative">
                 
-                {isAiLoading && (
-                  <div className="flex justify-start">
-                    <div className="bg-white/5 border border-white/10 text-gray-100 rounded-2xl rounded-bl-none p-4 flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                      <span className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                      <span className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce" />
-                      <span className="text-gray-400 font-mono text-[10px] ml-1">Molo AI routing answers...</span>
-                    </div>
+                {/* Chat Card Header */}
+                <div className="bg-white/[0.02] border-b border-white/5 px-4 sm:px-6 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-xs font-semibold tracking-wide text-gray-300">Molo AI</span>
+                    <span className="text-[9px] font-mono font-bold tracking-wider uppercase text-gray-500 bg-white/5 px-2 py-0.5 rounded-full">Connected</span>
                   </div>
-                )}
-              </div>
+                  {chatHistory.length > 0 && (
+                    <button 
+                      onClick={() => setChatHistory([])}
+                      className="hover:bg-white/5 p-1.5 px-3 rounded-lg text-gray-400 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium"
+                      title="Clear conversation"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-gray-400 hover:text-red-400 transition-colors" />
+                      <span className="hidden sm:inline">Clear Chat</span>
+                    </button>
+                  )}
+                </div>
 
-              {/* Chat input form */}
-              <div className="bg-white/[0.03] border-t border-white/10 p-3 flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Ask any Bitcoin ecosystem or concept query..."
-                  value={userQuery}
-                  onChange={(e) => setUserQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleAiChat(userQuery)}
-                  className="flex-grow bg-white/5 border border-white/10 outline-none focus:border-brand-500/70 focus:bg-white/8 rounded-xl px-4 py-3 text-xs text-white placeholder:text-gray-500 transition-all font-sans"
-                />
-                <button
-                  onClick={() => handleAiChat(userQuery)}
-                  disabled={isAiLoading || !userQuery.trim()}
-                  className="bg-brand-600 hover:bg-brand-500 text-white rounded-xl px-4 py-3 font-semibold transition-all shadow-md flex items-center justify-center disabled:opacity-45 shrink-0"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
+                {/* Chat Card Body */}
+                <div className="flex-grow p-4 sm:p-6 overflow-y-auto space-y-4 text-xs font-sans text-left flex flex-col">
+                  {chatHistory.length === 0 ? (
+                    /* Welcome State */
+                    <div className="flex-grow flex flex-col items-center justify-center text-center max-w-lg mx-auto py-6">
+                      <div className="w-12 h-12 rounded-2xl bg-brand-950 border border-brand-900/50 flex items-center justify-center mb-4">
+                        <Sparkles className="w-6 h-6 text-brand-400" />
+                      </div>
+                      <h3 className="text-lg font-bold text-white tracking-tight">Welcome to Molo AI</h3>
+                      <p className="text-xs text-gray-400 leading-relaxed mt-1 mb-8 max-w-sm">
+                        Your conversational Bitcoin knowledge assistant. Ask anything to get started.
+                      </p>
+                      
+                      {/* Suggested prompts displayed as modern chips */}
+                      <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        {[
+                          "Explain the Lightning Network",
+                          "What is self-custody?",
+                          "Find Bitcoin communities in Africa",
+                          "How does Bitcoin mining work?",
+                          "Recommend beginner resources"
+                        ].map((promptText, i) => (
+                          <button
+                            key={i}
+                            onClick={() => handleAiChat(promptText)}
+                            disabled={isAiLoading}
+                            className="text-left text-xs bg-white/[0.02] border border-white/5 hover:bg-white/[0.08] hover:border-brand-500/40 p-3 px-4 rounded-xl text-gray-300 transition-all active:scale-[0.98] duration-200 cursor-pointer block leading-snug"
+                          >
+                            {promptText}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    /* Chat History */
+                    <div className="space-y-4 flex-grow">
+                      {chatHistory.map((item, idx) => (
+                        <div 
+                          key={idx} 
+                          className={`flex ${item.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div className={`max-w-[85%] rounded-2xl p-4 leading-relaxed shadow-sm ${
+                            item.role === 'user' 
+                              ? 'bg-brand-600 text-white rounded-br-none font-medium' 
+                              : 'bg-white/[0.03] border border-white/5 text-gray-100 rounded-bl-none'
+                          }`}>
+                            {item.text.split("\n").map((line, lIdx) => {
+                              let parts = line.split("**");
+                              return (
+                                <p key={lIdx} className={lIdx > 0 ? "mt-2" : ""}>
+                                  {parts.map((part, pIdx) => 
+                                    pIdx % 2 === 1 ? <strong key={pIdx} className="text-brand-300 font-bold">{part}</strong> : part
+                                  )}
+                                </p>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+
+                      {isAiLoading && (
+                        <div className="flex justify-start">
+                          <div className="bg-white/[0.03] border border-white/5 text-gray-100 rounded-2xl rounded-bl-none p-4 flex items-center gap-2">
+                            <div className="flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                              <span className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                              <span className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce" />
+                            </div>
+                            <span className="text-gray-400 font-mono text-[10px] ml-1">Molo AI is typing...</span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div ref={messagesEndRef} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Sticky input at bottom */}
+                <div className="bg-white/[0.01] border-t border-white/5 p-3.5 sm:p-4">
+                  <div className="flex gap-2 items-center bg-[#201B18] border border-white/5 focus-within:border-brand-500/40 rounded-xl px-1.5 py-1.5 transition-all">
+                    <input
+                      type="text"
+                      placeholder="Ask any Bitcoin ecosystem or concept query..."
+                      value={userQuery}
+                      onChange={(e) => setUserQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleAiChat(userQuery)}
+                      disabled={isAiLoading}
+                      className="flex-grow bg-transparent outline-none border-none text-xs text-white placeholder:text-gray-500 px-3 py-2 font-sans"
+                    />
+                    <button
+                      onClick={() => handleAiChat(userQuery)}
+                      disabled={isAiLoading || !userQuery.trim()}
+                      className="bg-brand-600 hover:bg-brand-500 text-white rounded-lg p-2 font-semibold transition-all shadow-md flex items-center justify-center disabled:opacity-45 shrink-0 active:scale-95"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
               </div>
 
             </div>
-
           </div>
         </section>
 

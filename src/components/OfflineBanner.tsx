@@ -3,12 +3,19 @@ import { WifiOff, Wifi, CloudLightning, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 export function OfflineBanner() {
-  const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
+  const [isOnline, setIsOnline] = useState<boolean>(true); // Initialize as true to avoid false-positives in sandboxed frames
   const [showBackOnlineToast, setShowBackOnlineToast] = useState<boolean>(false);
+  const [isDismissed, setIsDismissed] = useState<boolean>(false);
 
   useEffect(() => {
+    // Sync with navigator.onLine on client mount safely
+    if (typeof navigator !== "undefined") {
+      setIsOnline(navigator.onLine);
+    }
+
     const handleOnline = () => {
       setIsOnline(true);
+      setIsDismissed(false); // Reset dismissal when network is restored
       setShowBackOnlineToast(true);
       // Automatically fade out the "Back Online" success toast after 4 seconds
       const timeout = setTimeout(() => {
@@ -34,7 +41,7 @@ export function OfflineBanner() {
   return (
     <AnimatePresence>
       {/* 1. persistent offline warning bar */}
-      {!isOnline && (
+      {!isOnline && !isDismissed && (
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -52,13 +59,20 @@ export function OfflineBanner() {
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
             </h4>
             <p className="text-[11px] font-bold text-amber-900/80 leading-relaxed font-sans">
-              Molo Research Node has lost contact with the server. Bookmarked articles and previously loaded summaries remain accessible!
+              The connection to the Molo BTC network has been interrupted. Your session is now in secure offline fallback mode—previously loaded research documents, cached articles, and Molo AI summaries remain fully accessible!
             </p>
             <div className="flex items-center gap-1.5 pt-1">
               <CloudLightning className="w-3.5 h-3.5 text-amber-600" />
               <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-amber-700">Offline-Fallback Active</span>
             </div>
           </div>
+          <button 
+            onClick={() => setIsDismissed(true)}
+            className="text-amber-500 hover:text-amber-700 p-1 shrink-0 ml-auto transition-colors"
+            aria-label="Dismiss offline notification"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </motion.div>
       )}
 

@@ -475,14 +475,39 @@ Use these insights to answer any requests with maximum expertise. Be the definit
         systemInstruction += `\nCurrently, the user is exploring the specific research paper/topic/repository: "${topic}". Frame your responses to build off on or explain details related to this topic or repository when helpful, but directly answer their question.`;
       }
 
-      const result = await client.models.generateContent({
-        model: "gemini-3.5-flash",
-        contents: prompt,
-        config: {
-          systemInstruction,
-          temperature: 0.7,
-        },
-      });
+      let result;
+      try {
+        result = await client.models.generateContent({
+          model: "gemini-3.5-flash",
+          contents: prompt,
+          config: {
+            systemInstruction,
+            temperature: 0.7,
+          },
+        });
+      } catch (primaryError: any) {
+        console.warn("Primary model gemini-3.5-flash failed, attempting fallback to gemini-3.1-flash-lite:", primaryError);
+        try {
+          result = await client.models.generateContent({
+            model: "gemini-3.1-flash-lite",
+            contents: prompt,
+            config: {
+              systemInstruction,
+              temperature: 0.7,
+            },
+          });
+        } catch (secondaryError: any) {
+          console.warn("Fallback model gemini-3.1-flash-lite failed, attempting secondary fallback to gemini-flash-latest:", secondaryError);
+          result = await client.models.generateContent({
+            model: "gemini-flash-latest",
+            contents: prompt,
+            config: {
+              systemInstruction,
+              temperature: 0.7,
+            },
+          });
+        }
+      }
 
       res.json({ text: result.text || "I was unable to formulate a response. Please try again!" });
     } catch (e: any) {
