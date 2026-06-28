@@ -784,9 +784,9 @@ export function HomePage() {
                       <Sparkles className="h-4 w-4 text-brand-600" />
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-gray-950 uppercase tracking-wider">Lightning & On-Chain</h4>
+                      <h4 className="text-xs font-bold text-gray-950 uppercase tracking-wider">Lightning Network</h4>
                       <p className="text-[11px] text-gray-550 leading-relaxed mt-1">
-                        Contribute any custom amount instantly via Lightning or On-Chain. Powered securely by Blink Bitcoin.
+                        Contribute any custom amount instantly via the Lightning Network. Powered securely by Blink Bitcoin.
                       </p>
                     </div>
                   </div>
