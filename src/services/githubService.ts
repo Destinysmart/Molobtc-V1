@@ -30,7 +30,7 @@ const fallbackRepos: GitHubRepo[] = [
     id: "bitcoin-self-custody-research-ecosystem",
     name: "Bitcoin Self-Custody Research Ecosystem",
     description: "Tier 2 - Executive Overview & Reading Guide. Serves as the gateway to the Tier 2 operational collection, outlining structured reading paths for treasury, finance, and security teams.",
-    url: "https://github.com/MoloBTC-Org/bsrf/blob/main/begin%20here/03_Bitcoin_Self_Custody_Research_Ecosystem_Index_v1.md",
+    url: "https://github.com/MoloBTC-Org/bsrf/blob/main/begin_here/03_Bitcoin_Self_Custody_Research_Ecosystem_Index_v1.md",
     stars: 29,
     forks: 4,
     updated_at: "2026-06-16T12:00:00Z",
@@ -40,7 +40,7 @@ const fallbackRepos: GitHubRepo[] = [
     id: "capital-flow-regulations-objection-template",
     name: "Objection / Submission Template: Draft Capital Flow Regulations",
     description: "A comprehensive submission template addressing South Africa's Draft Capital Flow Management Regulations 2026, highlighting constitutional property protections and rights to private compute.",
-    url: "https://github.com/MoloBTC-Org/bsrf/blob/main/jurisdictions/south%20africa/South_Africa_Public_Comment_Template_v1.md",
+    url: "https://github.com/MoloBTC-Org/bsrf/blob/main/jurisdictions/south_africa/South_Africa_Public_Comment_Template_v1.md",
     stars: 53,
     forks: 14,
     updated_at: "2026-06-20T12:00:00Z",
@@ -60,7 +60,7 @@ const fallbackRepos: GitHubRepo[] = [
     id: "bitcoin-sovereignty-core-principles",
     name: "Bitcoin Sovereignty Core Principles",
     description: "The Authoritative Foundation of the Bitcoin Sovereignty Research Framework. Detailing the nine core principles including private compute, adjacent currency status, and protection against compelled disclosure.",
-    url: "https://github.com/MoloBTC-Org/bsrf/blob/main/begin%20here/01_Bitcoin_Sovereignty_Core_Principles_v1.md",
+    url: "https://github.com/MoloBTC-Org/bsrf/blob/main/begin_here/01_Bitcoin_Sovereignty_Core_Principles_v1.md",
     stars: 48,
     forks: 11,
     updated_at: "2026-06-05T12:00:00Z",
@@ -71,10 +71,10 @@ const fallbackRepos: GitHubRepo[] = [
 const rawUrls: Record<string, string> = {
   "bitcoin-self-custody-sovereign-infrastructure": "https://raw.githubusercontent.com/MoloBTC-Org/bsrf/main/foundations/04_Tier1_Sovereign_Monetary_Infrastructure_v1.md",
   "bitcoin-adjacent-currency-international-law": "https://raw.githubusercontent.com/MoloBTC-Org/bsrf/main/foundations/03_Tier1_Adjacent_Currency_v1.md",
-  "bitcoin-self-custody-research-ecosystem": "https://raw.githubusercontent.com/MoloBTC-Org/bsrf/main/begin%20here/03_Bitcoin_Self_Custody_Research_Ecosystem_Index_v1.md",
-  "capital-flow-regulations-objection-template": "https://raw.githubusercontent.com/MoloBTC-Org/bsrf/main/jurisdictions/south%20africa/South_Africa_Public_Comment_Template_v1.md",
+  "bitcoin-self-custody-research-ecosystem": "https://raw.githubusercontent.com/MoloBTC-Org/bsrf/main/begin_here/03_Bitcoin_Self_Custody_Research_Ecosystem_Index_v1.md",
+  "capital-flow-regulations-objection-template": "https://raw.githubusercontent.com/MoloBTC-Org/bsrf/main/jurisdictions/south_africa/South_Africa_Public_Comment_Template_v1.md",
   "bitcoin-as-sui-generis-bearer-property": "https://raw.githubusercontent.com/MoloBTC-Org/bsrf/main/foundations/02_Tier1_Sui_Generis_Bearer_Property_v1.md",
-  "bitcoin-sovereignty-core-principles": "https://raw.githubusercontent.com/MoloBTC-Org/bsrf/main/begin%20here/01_Bitcoin_Sovereignty_Core_Principles_v1.md"
+  "bitcoin-sovereignty-core-principles": "https://raw.githubusercontent.com/MoloBTC-Org/bsrf/main/begin_here/01_Bitcoin_Sovereignty_Core_Principles_v1.md"
 };
 
 const docsMap: Record<string, string> = {
@@ -272,7 +272,8 @@ export class GitHubService {
       console.warn(`[GitHubService] Express backend readme API unavailable for ${repoName}. Resolving sovereign direct/raw backup...`, err);
       
       // 1. Try to fetch directly from raw.githubusercontent.com (No CORS issues, perfect for Vercel SPA)
-      const rawUrl = rawUrls[repoName];
+      const rawKey = Object.keys(rawUrls).find(k => k.toLowerCase() === repoName.toLowerCase() || repoName.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(repoName.toLowerCase()));
+      const rawUrl = rawKey ? rawUrls[rawKey] : rawUrls[repoName];
       console.log(`[GitHubService] Checking direct Raw URL for ${repoName}: ${rawUrl || "None"}`);
       if (rawUrl) {
         try {
@@ -294,7 +295,8 @@ export class GitHubService {
       }
 
       // 2. Fallback to local pre-compiled high-fidelity documents
-      const offlineDoc = docsMap[repoName];
+      const docKey = Object.keys(docsMap).find(k => k.toLowerCase() === repoName.toLowerCase() || repoName.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(repoName.toLowerCase()));
+      const offlineDoc = docKey ? docsMap[docKey] : docsMap[repoName];
       console.log(`[GitHubService] Returning offline backup doc for ${repoName}. Exists: ${!!offlineDoc}`);
       return offlineDoc || `# Repository: ${repoName}\nThis is an active research project by MoloBTC exploring advanced Bitcoin utilities, scaling state mechanics, and legal sovereign frameworks across the continent.\n\n*Content resolved from offline cache.*`;
     }

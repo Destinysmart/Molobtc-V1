@@ -1,0 +1,355 @@
+{
+  "articles": [
+    {
+      "id": "res_pow_physics",
+      "title": "Thermodynamic Scarcity: The Physics of Proof-of-Work",
+      "subtitle": "Connecting digital security to raw physical thermodynamics. An ELI5 breakdown of how hashing math coordinates absolute scarcity.",
+      "featured_image": "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=2669&auto=format&fit=crop",
+      "author_id": "admin-1",
+      "category_id": "c1",
+      "status": "published",
+      "abstract": "This paper analyzes the intrinsic relationship between energy expenditures and digital ledger consensus. By requiring miners to perform millions of trillions of physical guesses (hashes) to generate blocks, Bitcoin links its digital ledger directly to real-world physics. We break down the mechanics of the ASICs, hash rates, and why physical hashes prove a record's authenticity, making digital ledger alteration physically impossible.",
+      "github_repo": "https://github.com/MoloBTC-Org/bsrf",
+      "download_file": "MoloBTC_Research_Thermodynamic_Scarcity.pdf",
+      "reading_time": "8 min read",
+      "content": "\n        <p>Bitcoin is often described as purely digital, but its core security mechanism, <strong>Proof-of-Work (PoW)</strong>, is rooted entirely in physical reality and the laws of thermodynamics.</p>\n        \n        <h2>1. The thermodynamic anchor</h2>\n        <p>In conventional database systems, data can be rewritten or modified instantly because there is no link between computation and physical physical work. Bitcoin binds its ledger's past history to real-world energy consumption.</p>\n        <p>To write a block of transactions to the blockchain, a computer (or miner) must find a cryptographic solution below a certain target value. This can only be done through raw trial-and-error—solving mathematical puzzle billions of times per second (hashing). This process requires hardware and electricity.</p>\n        \n        <h2>2. Why this protects transactions</h2>\n        <p>Because every block represents millions of dollars of spent electricity, any attacker wishing to rewrite previous transactions must re-spend the same enormous amount of electricity to create a heavier competing chain. The Laws of Physics, rather than banks or governments, protect the network from tampering.</p>\n        \n        <div class=\"glass-card p-6 my-6 border border-brand-100 rounded-2xl bg-brand-50/50\">\n          <h4 class=\"font-bold text-gray-900 mb-2\">💡 Under the Hood Analogy</h4>\n          <p class=\"text-sm text-gray-700 m-0\">Think of a gold coin. It has value because finding and mining gold requires intense physical work. Proof-of-Work is like a digital machine that melts real-world electricity and molds it directly into digital security. You cannot fake a hash, just like you cannot fake a block of gold.</p>\n        </div>\n\n        <h2>3. Solving the Byzantine Generals Problem</h2>\n        <p>The energy cost is not a waste—it is the single mechanism that allows completely anonymous, untrusteding strangers to agree on a single ledger of account without needing a centralized third-party referee.</p>\n      ",
+      "published_at": "2026-07-30T01:08:35.605Z",
+      "updated_at": "2026-07-30T15:01:55.605Z"
+    },
+    {
+      "id": "res_lightning_scale",
+      "title": "State Channels: Scaling Bitcoin Instantly Over Lightning",
+      "subtitle": "How off-chain peer locked boxes allow instant payment exchanges at the speed of light, while retaining raw on-chain security parameters.",
+      "featured_image": "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2670&auto=format&fit=crop",
+      "author_id": "pub-1",
+      "category_id": "c2",
+      "status": "published",
+      "abstract": "The Lightning Network is Bitcoin's primary Layer-2 protocol. This work explains how two peers can open a cryptographic 'state channel' by locking funds on the main network, then instantly route unlimited micro-payments offline. Transactions are verified in milliseconds by exchanging physical cryptographically signed updates, bypassing block congestion altogether.",
+      "github_repo": "https://github.com/MoloBTC-Org/bsrf",
+      "download_file": "MoloBTC_Lightning_State_Channels_Guide.pdf",
+      "reading_time": "6 min read",
+      "content": "\n        <p>The core Bitcoin protocol handles roughly 7 transactions per second due to block density limits. To scale Bitcoin to billions of global users as active money, we use the <strong>Lightning Network</strong>.</p>\n        \n        <h2>1. The bilateral ledger concept</h2>\n        <p>Imagine Alice and Bob buy coffee from each other daily. Writing every coffee cup onto the physical main blockchain (fees, wait times) is highly inefficient. Instead, they write their starting cash on a piece of paper, place it in a lockbox, and edit the tab privately. Only when they are done, they write the final totals to the chain.</p>\n        <p>This is a <strong>payment channel</strong>. Because drafts are cryptographically secure and signed using private keys, either peer can claim their correct share on-chain at any time if the other tries to cheat.</p>\n        \n        <h2>2. Routing via HTLCs</h2>\n        <p>The real power comes when channels link together. If Alice has a channel with Bob, and Bob has a channel with Charlie, Alice can pay Charlie instantly through Bob using <strong>Hash Time-Locked Contracts (HTLCs)</strong>. Bob acts as an automatic, zero-trust router, earning a tiny fee (Sats) for passing the pay packet.</p>\n\n        <div class=\"glass-card p-6 my-6 border border-brand-100 rounded-2xl bg-brand-50/50\">\n          <h4 class=\"font-bold text-gray-900 mb-2\">⚡ The Speed of Light</h4>\n          <p class=\"text-sm text-gray-700 m-0\">By moving payments off the main blockchain, Lightning allows instant, high-frequency micropayments. It converts Bitcoin from an expensive, slow settlement asset into a highly liquid currency suitable for physical vending machines, internet API paywalls, and streaming money.</p>\n        </div>\n      ",
+      "published_at": "2026-07-29T11:15:15.605Z",
+      "updated_at": "2026-07-30T15:01:55.605Z"
+    },
+    {
+      "id": "res_entropy_custody",
+      "title": "The Math of Entropy: Why True Self-Custody is Unbreakable",
+      "subtitle": "A deep mathematical look into random entropy, personal key security, and why guessing a 12-word seed phrase is physically impossible.",
+      "featured_image": "https://images.unsplash.com/photo-1450101499163-c8848c66cb85?q=80&w=2670&auto=format&fit=crop",
+      "author_id": "admin-1",
+      "category_id": "c3",
+      "status": "published",
+      "abstract": "Self-custody of Bitcoin gives individuals complete sovereignty, but understanding why it is secure requires looking at probability math. This paper explores the concept of cryptographic entropy—specifically, the 256 bits of randomness that constitute a private key. We prove why searching for a key is functionally impossible, even using all solar system computation.",
+      "github_repo": "https://github.com/MoloBTC-Org/bsrf",
+      "download_file": "MoloBTC_Custody_Entropy_Math_Walkthrough.pdf",
+      "reading_time": "10 min read",
+      "content": "\n        <p>When you hold Bitcoin in your own wallet, you are holding a giant, randomized mathematical secret. This secret is called your <strong>Private Key</strong>, and it is usually represented as a list of 12 or 24 human-readable words.</p>\n        \n        <h2>1. The scale of 2^256</h2>\n        <p>A Bitcoin private key is a number between 1 and 2^256. This number is so large that it is hard for the human brain to comprehend. There are more possible private keys than there are atoms in the observable universe.</p>\n        <p>When you generate a new wallet offline (spinning high-entropy randomness), you are effectively choosing a single atom in the universe. If someone wants to steal your Bitcoin by guessing your words, they have to pick that exact same atom on their first try.</p>\n        \n        <h2>2. Physical constraints of brute forcing</h2>\n        <p>Even if a supercomputer could guess billions of keys per second, the energy required to run the computing hardware would boil the Earth's oceans before it had a fraction of a percent chance of guessing your private key. This is why cryptographic self-custody is fundamentally secure against physical force guessing.</p>\n\n        <div class=\"glass-card p-6 my-6 border border-brand-100 rounded-2xl bg-brand-50/50\">\n          <h4 class=\"font-bold text-gray-900 mb-2\">🔒 Your Responsibility</h4>\n          <p class=\"text-sm text-gray-700 m-0\">Because the math is unbreakable, hackers do not attack the protocol—they attack the human. They try to trick you into typing your seed words on a connected computer, or they phish your backup. True custody means keeping those words physically written down on paper or steel, completely offline.</p>\n        </div>\n      ",
+      "published_at": "2026-07-28T21:21:55.605Z",
+      "updated_at": "2026-07-30T15:01:55.605Z"
+    },
+    {
+      "id": "res_utxo_design",
+      "title": "UTXO vs Account Models: Why Bitcoin Operates Like Physical Cash",
+      "subtitle": "Demystifying Unspent Transaction Outputs. Why Bitcoin does not have 'balances', but rather individual cryptographic digital cash bills.",
+      "featured_image": "https://images.unsplash.com/photo-1621504450181-5d356f61d307?q=80&w=2787&auto=format&fit=crop",
+      "author_id": "pub-1",
+      "category_id": "c4",
+      "status": "published",
+      "abstract": "Unlike modern digital banks or Ethereum which use account status ledgers (like checking accounts with a single balance), Bitcoin works strictly like physical cash. It tracks individual bills, known as Unspent Transaction Outputs (UTXOs). We prove why this cash-based design enables extreme parallel processing, superior security, and highly predictable smart contract states.",
+      "github_repo": "https://github.com/MoloBTC-Org/bsrf",
+      "download_file": "MoloBTC_Architecture_UTXO_vs_Account.pdf",
+      "reading_time": "7 min read",
+      "content": "\n        <p>To understand Bitcoin transactions, you must unlearn how conventional bank accounts work. Bitcoin does not have a concept of an \"account balance\" stored anywhere on the database. Instead, it tracks individual digital cash receipts called <strong>UTXOs (Unspent Transaction Outputs)</strong>.</p>\n        \n        <h2>1. The physical wallet analogy</h2>\n        <p>If you have $45 in your physical leather wallet, you do not have a single item that represents exactly \"forty-five value\". Instead, you might have two $20 bills and one $5 bill. When you buy a $15 item, you give the cashier a $20 bill, and they hand you back a $5 bill in change. Your wallet now contains one $20, and two $5 bills.</p>\n        <p>This is exactly how Bitcoin works. Each transaction completely spends existing UTXOs (inputs) and creates brand new UTXOs (outputs): one for the merchant's payment, and one sent back to your own address as 'change'. Your wallet app simply sums up all the UTXOs that your private key has the power to unlock, displaying it as a single 'balance'.</p>\n        \n        <h2>2. Key benefits of the UTXO design</h2>\n        <ul>\n          <li><strong>Greater Privacy:</strong> Users can easily receive funds on completely new addresses for every transaction, avoiding exposing their full cache of coin holdings.</li>\n          <li><strong>Massive Parallelism:</strong> Multiple transactions can be processed concurrently because they alter disparate UTXO cash outputs rather than vying to overwrite a single account balance space.</li>\n          <li><strong>Security:</strong> There are no 'double spends' or weird state bugs where a contract withdraws more money than is in an account, because once a UTXO is spent, it is destroyed forever from the unspent state database.</li>\n        </ul>\n      ",
+      "published_at": "2026-07-28T07:28:35.605Z",
+      "updated_at": "2026-07-30T15:01:55.605Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "c1",
+      "name": "Physical Protocol",
+      "slug": "physical-protocol",
+      "desc": "Energy metrics, hashing hardware, and thermodynamics"
+    },
+    {
+      "id": "c2",
+      "name": "Scaling & Lightning",
+      "slug": "scaling-lightning",
+      "desc": "Off-chain states, routing logic, and payment channels"
+    },
+    {
+      "id": "c3",
+      "name": "Security & Custody",
+      "slug": "security-custody",
+      "desc": "Entropy equations, multisig designs, and physical storage"
+    },
+    {
+      "id": "c4",
+      "name": "Monetary Economics",
+      "slug": "monetary-economics",
+      "desc": "Scarcity mathematics, game theory, and adoption vectors"
+    }
+  ],
+  "tags": [],
+  "users": [
+    {
+      "id": "admin-1",
+      "role": "admin",
+      "name": "Molo BTC Research Lab",
+      "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=200&auto=format&fit=crop"
+    },
+    {
+      "id": "pub-1",
+      "role": "publisher",
+      "name": "GitHub Open-Source Syndicate",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
+    },
+    {
+      "id": "user_1",
+      "role": "reader",
+      "name": "Satoshi Reader",
+      "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop",
+      "bio": "Bitcoin Core enthusiast & casual researcher of lightning micro-transactions and offline nodes.",
+      "country": "Ghana",
+      "lightning_address": "reader@8333.mobi",
+      "interests": [
+        "Scaling & Lightning",
+        "Monetary Economics"
+      ],
+      "preference": "ELI5_Beginner"
+    }
+  ],
+  "perspectives": {
+    "inflation": {
+      "title": "Inflation Guard",
+      "factLine": "Hedge local currency depreciation",
+      "stat": "Cedi/Naira/Pula vs BTC limits",
+      "description": "Unlike fiat systems subject to sudden sovereign supply spikes, Bitcoin strictly caps total supply at 21M, providing an immutable mathematical store of value.",
+      "highlight": "Nodes: Hard Cap ➔ 21M ➔ Distributed Hash Ledger"
+    },
+    "inclusion": {
+      "title": "Financial Inclusion",
+      "factLine": "Open-source global settlement rails",
+      "stat": "USSD Tipping & Offline Nodes",
+      "description": "Bypasses geographical banking blockades using peer-to-peer lightning channels and offline USSD interfaces like Machankura, allowing anyone with a generic mobile phone to save and transact value.",
+      "highlight": "Nodes: USSD Gateway ➔ Lightning Node ➔ Instant Settlement"
+    },
+    "mining": {
+      "title": "Energy & Mining Monetisation",
+      "factLine": "Bootstrapping remote mini-grids",
+      "stat": "Gridless Geothermal / Methane Capture",
+      "description": "Stranded energy from African waterfalls, gases, and rivers is harvested by flexible modular computing mines who purchase excess load, funding the setup of local mini-grids.",
+      "highlight": "Nodes: Excess Hydro ➔ Modular Container Miners ➔ Rural Power Grid"
+    },
+    "remittance": {
+      "title": "Lightning Payments",
+      "factLine": "Ditching cross-border agency commissions",
+      "stat": "99% cheaper than legacy wire models",
+      "description": "Enables instant micro-remittances and trans-African trading over Layer 2 Lightning networks without intermediaries or currency conversion tariffs.",
+      "highlight": "Nodes: Sender Wallet ➔ Onion Routing Hub ➔ Payee Instantly"
+    }
+  },
+  "ecosystemTabs": {
+    "learn": {
+      "title": "Learn Bitcoin",
+      "subtitle": "Find educational pathways & resources",
+      "curatedPaths": [
+        {
+          "name": "Saylor Academy - CS120 Bitcoin Course",
+          "url": "https://www.saylor.org/courses/cs120/",
+          "desc": "Free comprehensive computer science overview of Bitcoin architecture and logic."
+        },
+        {
+          "name": "Mi Primer Bitcoin (My First Bitcoin)",
+          "url": "https://miprimerbitcoin.io/",
+          "desc": "Open-source diploma curriculum designed for teaching high schools next-generation money."
+        },
+        {
+          "name": "Baka Academy",
+          "url": "https://github.com/MoloBTC-Org",
+          "desc": "Interactive localized community meetups and digital resource guides across sub-Saharan Africa."
+        }
+      ]
+    },
+    "build": {
+      "title": "Build Bitcoin",
+      "subtitle": "Developer pathways & open-source tools",
+      "curatedPaths": [
+        {
+          "name": "Btrust Developer Fellowship",
+          "url": "https://btrust.org/",
+          "desc": "Mentorship and resources for African engineers seeking to become Bitcoin Core contributors."
+        },
+        {
+          "name": "Bitcoin Dev Kit (BDK)",
+          "url": "https://bitcoindevkit.org/",
+          "desc": "Simplified libraries for crafting multi-platform wallets and transaction scripts with ease."
+        },
+        {
+          "name": "Lightning Dev Kit (LDK)",
+          "url": "https://lightningdevkit.org/",
+          "desc": "Integrate lightning invoice routing directly inside custom client-side React apps."
+        }
+      ]
+    },
+    "mine": {
+      "title": "Mine Bitcoin",
+      "subtitle": "Explore modular mining & energy operators",
+      "curatedPaths": [
+        {
+          "name": "Gridless Energy Solutions",
+          "url": "https://gridless.com/",
+          "desc": "Leading the charge of distributed micro-mining grids using stranded hydro energy in East Africa."
+        },
+        {
+          "name": "Mining Mechanics Simplified Guide",
+          "url": "#research-workspace",
+          "desc": "Our downloadable handbook detailing hashing hardware, mining pools, and container setups."
+        }
+      ]
+    },
+    "use": {
+      "title": "Use Bitcoin",
+      "subtitle": "Wallets, lightning tools & interfaces",
+      "curatedPaths": [
+        {
+          "name": "Machankura USSD Wallet",
+          "url": "https://8333.mobi/",
+          "desc": "Send and receive Lightning satoshis using basic GSM feature phones without active internet."
+        },
+        {
+          "name": "Phoenix Wallet (Self-Custodial)",
+          "url": "https://phoenix.acinq.co/",
+          "desc": "Easiest zero-configuration custodial-free wallet handling lightning updates on the fly."
+        },
+        {
+          "name": "Alby Browser Extension",
+          "url": "https://getalby.com/",
+          "desc": "Direct web-based Lightning authorization for tipping, apps, and decentralized web interactions."
+        }
+      ]
+    },
+    "work": {
+      "title": "Work in Bitcoin",
+      "subtitle": "Jobs, grants, fellowships & opportunities",
+      "curatedPaths": [
+        {
+          "name": "Bitlance",
+          "url": "https://bitlance.work",
+          "desc": "A peer-to-peer freelancing and work-and-earn platform for Bitcoin and Lightning bounties."
+        },
+        {
+          "name": "Bitcoin Jobs Global Board",
+          "url": "https://bitcoinjobs.co/",
+          "desc": "Aggregated engineering, design, marketing, and editorial placements globally and remote."
+        },
+        {
+          "name": "Superlative Open Source Directory",
+          "url": "https://github.com/MoloBTC-Org",
+          "desc": "Discover active bounties, developer fellowships, and localized community internships."
+        }
+      ]
+    }
+  },
+  "africanLensChapters": {
+    "inflation": {
+      "header": "Bitcoin & Inflation Realities",
+      "location": "East & West Africa Core Trends",
+      "stat": "Average 15-30% currency adjustment",
+      "thesis": "When monetary councils issue double-digit fiat supplies to plug budget shortfalls, citizen purchasing power bleeds into sovereign reserves. Local developers and traders use Bitcoin's immutable 21 million hardcap as an inflation-impermeable safety net."
+    },
+    "savings": {
+      "header": "Bitcoin Savings Dynamics",
+      "location": "Sub-Saharan Long-Term Treasury",
+      "stat": "24/7 Unstoppable Liquid Asset",
+      "thesis": "Traditional high-interest bank accounts fail to beat inflation and suffer from withdrawal ceilings. By storing capital in self-custody cold storage wallets, ordinary citizens run their own personal treasury systems with absolute sovereignty."
+    },
+    "lightning": {
+      "header": "Remittance Over Lightning Networks",
+      "location": "Diaspora Trade Corridor Mapping",
+      "stat": "Fees slashed from 12% to under < 0.1%",
+      "thesis": "Western Union/fiat wire fees drain hundreds of millions annually from regional families. Lightning network routing operates natively across borders 24/7/365, settling instantly for fractions of a single satoshi cent."
+    },
+    "energy": {
+      "header": "Stranded Energy Harvesting",
+      "location": "Rift Valley Geothermal & Run-of-River Hydro",
+      "stat": "Unlocking stranded rural potential",
+      "thesis": "High infrastructure costs prevent remote African regions from connecting to national power grids. Modular Bitcoin mining farms act as instant buyer-of-last-resort for remote hydro-turbines, subsidizing rural setup costs."
+    },
+    "circular": {
+      "header": "Circular Satoshi Economies",
+      "location": "Bitcoin Ekasi (SA) & Local Mini-Markets",
+      "stat": "Closed-loop closed sovereign payments",
+      "thesis": "By keeping satoshis localized—enabling children, grocers, and micro-vendors to accept and spend lightning tips directly—local communities completely bypass high transaction taxes and centralized card tariffs."
+    },
+    "momo": {
+      "header": "Mobile Money vs Bitcoin Interoperability",
+      "location": "USSD Tectonic Bridges",
+      "stat": "Bridging 500M+ active Momo accounts",
+      "thesis": "Mobile money (M-Pesa, MTN Mobile) is incredibly accessible but suffers from closed geographical boundaries. USSD-powered lightning bridges allow local mobile money providers to interact globally with the Bitcoin ledger."
+    }
+  },
+  "github_repos": [
+    {
+      "id": "bitcoin-self-custody-sovereign-infrastructure",
+      "name": "Bitcoin Self-Custody as Sovereign Monetary Infrastructure",
+      "description": "Historical Patterns, Risk Principles, and Organizational Implementation. A policy whitepaper outlining multi-signature architectures, air-gapped signing, and full-node validation aligned with industrial security standard ISA/IEC 62443.",
+      "url": "https://github.com/MoloBTC-Org/bsrf/blob/main/foundations/04_Tier1_Sovereign_Monetary_Infrastructure_v1.md",
+      "stars": 0,
+      "forks": 0,
+      "updated_at": "2026-06-09T12:00:00Z",
+      "language": "PDF/Markdown"
+    },
+    {
+      "id": "bitcoin-adjacent-currency-international-law",
+      "name": "Bitcoin as Adjacent Currency Under International Law",
+      "description": "The Global Case for Sui Generis Bearer Property, Separate Local Realization Taxation, and Double-Tax Coordination Principles. Grounded in Natural Law and Austrian economics.",
+      "url": "https://github.com/MoloBTC-Org/bsrf/blob/main/foundations/03_Tier1_Adjacent_Currency_v1.md",
+      "stars": 0,
+      "forks": 0,
+      "updated_at": "2026-06-15T12:00:00Z",
+      "language": "PDF/Markdown"
+    },
+    {
+      "id": "bitcoin-self-custody-research-ecosystem",
+      "name": "Bitcoin Self-Custody Research Ecosystem",
+      "description": "Tier 2 - Executive Overview & Reading Guide. Serves as the gateway to the Tier 2 operational collection, outlining structured reading paths for treasury, finance, and security teams.",
+      "url": "https://github.com/MoloBTC-Org/bsrf/blob/main/begin_here/03_Bitcoin_Self_Custody_Research_Ecosystem_Index_v1.md",
+      "stars": 0,
+      "forks": 0,
+      "updated_at": "2026-06-16T12:00:00Z",
+      "language": "PDF/Markdown"
+    },
+    {
+      "id": "capital-flow-regulations-objection-template",
+      "name": "Objection / Submission Template: Draft Capital Flow Regulations",
+      "description": "A comprehensive submission template addressing South Africa's Draft Capital Flow Management Regulations 2026, highlighting constitutional property protections and rights to private compute.",
+      "url": "https://github.com/MoloBTC-Org/bsrf/blob/main/jurisdictions/south_africa/South_Africa_Public_Comment_Template_v1.md",
+      "stars": 0,
+      "forks": 0,
+      "updated_at": "2026-06-20T12:00:00Z",
+      "language": "PDF/LaTeX"
+    },
+    {
+      "id": "bitcoin-as-sui-generis-bearer-property",
+      "name": "Bitcoin as Sui Generis Bearer Property",
+      "description": "The Natural-Law and Austrian Case for Tax-Free Treatment of Self-Custodied Bitcoin. A focused deductive argument analyzing digital scarcity and the limits of legitimate state coercion.",
+      "url": "https://github.com/MoloBTC-Org/bsrf/blob/main/foundations/02_Tier1_Sui_Generis_Bearer_Property_v1.md",
+      "stars": 0,
+      "forks": 0,
+      "updated_at": "2026-06-12T12:00:00Z",
+      "language": "PDF/Markdown"
+    },
+    {
+      "id": "bitcoin-sovereignty-core-principles",
+      "name": "Bitcoin Sovereignty Core Principles",
+      "description": "The Authoritative Foundation of the Bitcoin Sovereignty Research Framework. Detailing the nine core principles including private compute, adjacent currency status, and protection against compelled disclosure.",
+      "url": "https://github.com/MoloBTC-Org/bsrf/blob/main/begin_here/01_Bitcoin_Sovereignty_Core_Principles_v1.md",
+      "stars": 0,
+      "forks": 0,
+      "updated_at": "2026-06-05T12:00:00Z",
+      "language": "PDF/Markdown"
+    }
+  ]
+}

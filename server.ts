@@ -562,7 +562,7 @@ Use these insights to answer any requests with maximum expertise. Be the definit
           id: "bitcoin-self-custody-research-ecosystem",
           name: "Bitcoin Self-Custody Research Ecosystem",
           description: "Tier 2 - Executive Overview & Reading Guide. Serves as the gateway to the Tier 2 operational collection, outlining structured reading paths for treasury, finance, and security teams.",
-          url: "https://github.com/MoloBTC-Org/bsrf/blob/main/begin%20here/03_Bitcoin_Self_Custody_Research_Ecosystem_Index_v1.md",
+          url: "https://github.com/MoloBTC-Org/bsrf/blob/main/begin_here/03_Bitcoin_Self_Custody_Research_Ecosystem_Index_v1.md",
           stars: bsrfStatsCache.stars,
           forks: bsrfStatsCache.forks,
           updated_at: "2026-06-16T12:00:00Z",
@@ -572,7 +572,7 @@ Use these insights to answer any requests with maximum expertise. Be the definit
           id: "capital-flow-regulations-objection-template",
           name: "Objection / Submission Template: Draft Capital Flow Regulations",
           description: "A comprehensive submission template addressing South Africa's Draft Capital Flow Management Regulations 2026, highlighting constitutional property protections and rights to private compute.",
-          url: "https://github.com/MoloBTC-Org/bsrf/blob/main/jurisdictions/south%20africa/South_Africa_Public_Comment_Template_v1.md",
+          url: "https://github.com/MoloBTC-Org/bsrf/blob/main/jurisdictions/south_africa/South_Africa_Public_Comment_Template_v1.md",
           stars: bsrfStatsCache.stars,
           forks: bsrfStatsCache.forks,
           updated_at: "2026-06-20T12:00:00Z",
@@ -592,7 +592,7 @@ Use these insights to answer any requests with maximum expertise. Be the definit
           id: "bitcoin-sovereignty-core-principles",
           name: "Bitcoin Sovereignty Core Principles",
           description: "The Authoritative Foundation of the Bitcoin Sovereignty Research Framework. Detailing the nine core principles including private compute, adjacent currency status, and protection against compelled disclosure.",
-          url: "https://github.com/MoloBTC-Org/bsrf/blob/main/begin%20here/01_Bitcoin_Sovereignty_Core_Principles_v1.md",
+          url: "https://github.com/MoloBTC-Org/bsrf/blob/main/begin_here/01_Bitcoin_Sovereignty_Core_Principles_v1.md",
           stars: bsrfStatsCache.stars,
           forks: bsrfStatsCache.forks,
           updated_at: "2026-06-05T12:00:00Z",
@@ -700,7 +700,12 @@ This document presents the nine non-negotiable principles required to preserve h
 `
     };
 
-    const fallbackText = docsMap[repoName] || `# Repository: ${repoName}\nThis is an active research project by MoloBTC exploring advanced Bitcoin utilities, scaling state mechanics, and legal sovereign frameworks across the continent.\n\n*Content fetched from database.*`;
+    const matchingKey = Object.keys(docsMap).find(k => 
+      k.toLowerCase() === repoName.toLowerCase() || 
+      repoName.toLowerCase().includes(k.toLowerCase()) ||
+      k.toLowerCase().includes(repoName.toLowerCase())
+    );
+    const fallbackText = (matchingKey ? docsMap[matchingKey] : docsMap[repoName]) || `# Repository: ${repoName}\nThis is an active research project by MoloBTC exploring advanced Bitcoin utilities, scaling state mechanics, and legal sovereign frameworks across the continent.\n\n*Content fetched from database.*`;
     res.json({ content: fallbackText });
   });
 

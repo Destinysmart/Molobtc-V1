@@ -288,7 +288,7 @@ export function HomePage() {
       if (typeof BlinkPayButton !== 'undefined') {
         try {
           BlinkPayButton.init({
-            username: 'jabulanijakes',
+            username: 'molobtc',
             containerId: 'blink-pay-button-container',
             themeMode: 'light',
             language: 'en',
@@ -377,7 +377,7 @@ export function HomePage() {
         {/* Background Image Container */}
         <div className="absolute inset-0 w-full h-full select-none pointer-events-none">
           <img 
-            src="https://res.cloudinary.com/dqrptx2qp/image/upload/v1782481905/Molobtc_header_llkobw.png" 
+            src="https://res.cloudinary.com/dqrptx2qp/image/upload/v1785424033/Image_2024-02-08_at_04.18_ujbm5g.jpg" 
             alt="moloBTC - See Bitcoin Through The Orange Lens" 
             className="w-full h-full object-cover object-center"
             referrerPolicy="no-referrer"

@@ -59,8 +59,9 @@ export function useGithubState() {
     }));
 
     try {
-      const readmeText = await githubService.getRepositoryReadme(repo.name);
-      console.log(`[useGithubState] selectRepository() successfully fetched content of length ${readmeText.length} for ${repo.name}`);
+      const repoIdentifier = repo.id || repo.name;
+      const readmeText = await githubService.getRepositoryReadme(repoIdentifier);
+      console.log(`[useGithubState] selectRepository() successfully fetched content of length ${readmeText.length} for ${repoIdentifier}`);
       setRepoState((prev) => ({
         ...prev,
         repoContent: readmeText,
