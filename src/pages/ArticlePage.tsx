@@ -235,7 +235,7 @@ export function ArticlePage() {
 
         {/* Featured Image */}
         {article.featured_image && (
-          <div className="w-full aspect-[21/9] rounded-3xl overflow-hidden bg-gray-100 mb-16 shadow-sm border border-gray-100">
+          <div className="w-full aspect-[21/9] rounded-3xl overflow-hidden bg-gray-100 mb-16 shadow-md">
             <img
               src={article.featured_image}
               alt={article.title}
@@ -251,7 +251,7 @@ export function ArticlePage() {
             {/* Table of Contents */}
             {toc.length > 0 && (
               <div className="flex flex-col">
-                <h3 className="text-xs font-bold text-gray-900 tracking-widest uppercase mb-4">
+                <h3 className="text-xs font-semibold text-gray-700 mb-3">
                   Table of Contents
                 </h3>
                 <nav className="flex flex-col gap-3">
@@ -276,7 +276,7 @@ export function ArticlePage() {
 
             {/* Social Sharing */}
             <div>
-              <h3 className="text-xs font-bold text-gray-900 tracking-widest uppercase mb-4">
+              <h3 className="text-xs font-semibold text-gray-700 mb-3">
                 Share
               </h3>
               <div className="flex items-center gap-2">
@@ -354,17 +354,17 @@ export function ArticlePage() {
             />
 
             {/* Author Bio Footer */}
-            <div className="mt-16 bg-[#FFFBF7] rounded-3xl p-8 sm:p-10 border border-brand-100 flex flex-col sm:flex-row gap-6 sm:gap-8 items-center sm:items-start group transition-all hover:shadow-md">
+            <div className="mt-16 bg-[#FFFBF7] rounded-3xl p-8 sm:p-10 shadow-sm flex flex-col sm:flex-row gap-6 sm:gap-8 items-center sm:items-start group transition-all hover:shadow-md">
               <img
                 src={author?.avatar || "https://i.pravatar.cc/150?u=admin"}
                 alt={author?.name || "Author"}
-                className="h-24 w-24 sm:h-28 sm:w-28 rounded-full border-4 border-white shadow-sm shrink-0 object-cover"
+                className="h-24 w-24 sm:h-28 sm:w-28 rounded-full shadow-sm shrink-0 object-cover"
               />
               <div className="flex-1 flex flex-col items-center sm:items-start text-center sm:text-left">
                 <h3 className="heading-display text-2xl font-bold text-gray-900 mb-2">
                   {author?.name || "Bitlance Team"}
                 </h3>
-                <div className="flex items-center justify-center sm:justify-start gap-4 text-sm font-semibold text-gray-500 mb-3 bg-white px-3 py-1.5 rounded-full border border-gray-100 shadow-sm inline-flex">
+                <div className="flex items-center justify-center sm:justify-start gap-4 text-sm font-semibold text-gray-500 mb-3 bg-white px-3 py-1.5 rounded-full shadow-sm inline-flex">
                   <span className="flex items-center gap-1.5">
                     <FileText className="w-4 h-4 text-brand-500" />{" "}
                     {authorStats.totalArticles} Articles
@@ -383,11 +383,11 @@ export function ArticlePage() {
                 <div className="flex items-center gap-4">
                   <button
                     onClick={toggleFollow}
-                    className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold border transition-colors shadow-sm
+                    className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold transition-colors shadow-sm
                     ${
                       isFollowing
-                        ? "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
-                        : "bg-brand-500 border-transparent text-white hover:bg-brand-600"
+                        ? "bg-white text-gray-700 hover:bg-gray-50 shadow-sm"
+                        : "bg-brand-500 text-white hover:bg-brand-600"
                     }`}
                   >
                     {isFollowing ? (
@@ -407,7 +407,7 @@ export function ArticlePage() {
         </div>
 
         {/* Mobile Social Bar */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200 p-4 flex items-center justify-around z-50">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.06)] p-4 flex items-center justify-around z-50">
           <button
             onClick={() => {
               const url = `https://bitlance.com/article/${article.slug || article.id}`;

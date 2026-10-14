@@ -53,7 +53,9 @@ export function SEO({
     "logo": `${currentOrigin}${molobtcLogo}`,
     "sameAs": [
       "https://github.com/MoloBTC-Org",
-      "https://x.com/moloBTC"
+      "https://x.com/moloBTC",
+      "https://www.youtube.com/watch?v=CM03_3vOqWM&t=9s",
+      "https://www.bitcoinafricastory.com/news"
     ]
   };
 

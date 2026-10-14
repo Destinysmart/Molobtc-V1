@@ -68,7 +68,7 @@ export function PdfPreviewCanvas({ repoId, repoName, onDownload }: PdfPreviewCan
   };
 
   return (
-    <div id="pdf-interactive-viewer" className="flex flex-col bg-gray-150 border border-gray-200 rounded-2xl overflow-hidden shadow-xs w-full h-[580px] font-sans">
+    <div id="pdf-interactive-viewer" className="flex flex-col bg-gray-100 border border-gray-200/60 rounded-2xl overflow-hidden shadow-xs w-full h-[580px] font-sans">
       {/* Top Bar / Acrobat-style controls */}
       <div className="bg-gray-900 text-white px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 border-b border-gray-800 shadow-sm shrink-0 select-none">
         

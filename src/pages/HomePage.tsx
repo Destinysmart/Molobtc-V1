@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import { Navigation } from "../components/Navigation";
 import { Footer } from "../components/Footer";
 import { SEO } from "../components/SEO";
+import { ExternalMentions } from "../components/ExternalMentions";
 import { useGithubState } from "../hooks/useGithubState";
 import {   ArrowRight, 
   BookOpen, 
@@ -37,7 +38,8 @@ import {   ArrowRight,
   RefreshCw,
   Mail,
   Twitter,
-  Trash2
+  Trash2,
+  Copy
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { PdfPreviewCanvas } from "../components/PdfPreviewCanvas";
@@ -144,14 +146,14 @@ export function HomePage() {
   // Helper to resolve repository category
   const getRepoCategory = (repoName: string): string => {
     const name = repoName.toLowerCase();
-    if (name.includes("law") || name.includes("sovereign") || name.includes("objection") || name.includes("bearer") || name.includes("license")) {
+    if (name.includes("law") || name.includes("sovereign") || name.includes("objection") || name.includes("bearer") || name.includes("license") || name.includes("bsol") || name.includes("bsrf")) {
       return "Sovereignty & Legal";
     }
-    if (name.includes("infrastructure") || name.includes("physics") || name.includes("energy") || name.includes("scarcity") || name.includes("thermo")) {
-      return "Physics & Energy";
+    if (name.includes("infrastructure") || name.includes("physics") || name.includes("energy") || name.includes("scarcity") || name.includes("thermo") || name.includes("bbpp") || name.includes("protocol") || name.includes("node")) {
+      return "Physics & Protocol";
     }
-    if (name.includes("principles") || name.includes("ecosystem") || name.includes("channel") || name.includes("lightning") || name.includes("networks")) {
-      return "Networks & Scaling";
+    if (name.includes("principles") || name.includes("ecosystem") || name.includes("channel") || name.includes("lightning") || name.includes("networks") || name.includes("agent") || name.includes("sgas") || name.includes("grok") || name.includes("ai")) {
+      return "Networks & AI Tooling";
     }
     return "Sovereignty & Legal"; // default fallback
   };
@@ -280,19 +282,31 @@ export function HomePage() {
   }, []);
 
   // Blink Donation Script Loader & Initializer
+  const [blinkLoaded, setBlinkLoaded] = useState(false);
+  const [blinkFailed, setBlinkFailed] = useState(false);
+  const [copiedLightning, setCopiedLightning] = useState(false);
+
   useEffect(() => {
     let script = document.getElementById("blink-donation-script") as HTMLScriptElement | null;
+    let attempts = 0;
     
     const initWidget = () => {
       const BlinkPayButton = (window as any).BlinkPayButton;
       if (typeof BlinkPayButton !== 'undefined') {
         try {
+          const container = document.getElementById("blink-pay-button-container");
+          if (container) {
+            container.innerHTML = ""; // clear previous instances if re-initializing
+          }
+          const containerWidth = container ? container.clientWidth : 300;
+          const responsiveBtnWidth = Math.min(310, Math.max(250, (containerWidth > 40 ? containerWidth - 24 : 280)));
           BlinkPayButton.init({
             username: 'molobtc',
             containerId: 'blink-pay-button-container',
             themeMode: 'light',
             language: 'en',
             defaultAmount: 1000,
+            buttonWidth: responsiveBtnWidth,
             supportedCurrencies: [
               {
                 "code": "sats",
@@ -307,24 +321,31 @@ export function HomePage() {
             ],
             debug: false
           });
+          setBlinkLoaded(true);
+          setBlinkFailed(false);
         } catch (e) {
           console.error("Error initializing BlinkPayButton:", e);
+          setBlinkFailed(true);
         }
+      } else if (attempts < 25) {
+        attempts++;
+        setTimeout(initWidget, 120);
       } else {
-        setTimeout(initWidget, 100);
+        setBlinkFailed(true);
       }
     };
 
     if (!script) {
       script = document.createElement("script");
       script.id = "blink-donation-script";
-      script.src = "https://blinkbitcoin.github.io/donation-button.blink.sv/js/blink-pay-button.js";
+      script.src = "https://donation-button.blink.sv/js/blink-pay-button.js";
       script.async = true;
       script.onload = () => {
         initWidget();
       };
       script.onerror = (err) => {
         console.error("Failed to load Blink Pay button script:", err);
+        setBlinkFailed(true);
       };
       document.body.appendChild(script);
     } else {
@@ -332,10 +353,7 @@ export function HomePage() {
     }
 
     return () => {
-      const container = document.getElementById("blink-pay-button-container");
-      if (container) {
-        container.innerHTML = "";
-      }
+      // clean up if needed
     };
   }, []);
 
@@ -389,16 +407,6 @@ export function HomePage() {
         {/* Content Container */}
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center md:items-start text-center md:text-left justify-center h-full text-white">
           <div className="max-w-2xl bg-black/30 md:bg-transparent backdrop-blur-sm md:backdrop-blur-none p-6 sm:p-8 md:p-0 rounded-3xl border border-white/5 md:border-none">
-            {/* Tagline Badge */}
-            <motion.span 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-block bg-brand-500/90 text-white text-[11px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-6 font-mono border border-brand-400/25 shadow-lg shadow-brand-500/20"
-            >
-              Orange Lens Research
-            </motion.span>
-
             {/* Title / Header */}
             <motion.h1
               initial={{ opacity: 0, y: 15 }}
@@ -460,7 +468,7 @@ export function HomePage() {
               initial={{ opacity: 0, y: 50, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 50, scale: 0.95 }}
-              className="fixed bottom-6 right-6 z-[80] max-w-md bg-white rounded-2xl border-l-4 border-brand-500 shadow-2xl p-5 flex items-start gap-4 border border-gray-100"
+              className="fixed bottom-6 right-6 z-[80] max-w-md bg-white rounded-2xl shadow-[0_16px_40px_rgba(0,0,0,0.12)] p-5 flex items-start gap-4"
             >
               <div className="flex-shrink-0 bg-brand-50 text-brand-600 rounded-xl p-2.5">
                 <Download className="w-6 h-6 stroke-[2]" />
@@ -487,14 +495,14 @@ export function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-150 shadow-sm hover:shadow-xl transition-all hover:border-brand-300 flex flex-col justify-between group cursor-pointer"
+              className="bg-white p-6 sm:p-8 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col justify-between group cursor-pointer"
               onClick={() => {
                 const el = document.querySelector("#research");
                 el?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 bg-orange-50 text-brand-500 rounded-2xl flex items-center justify-center border border-brand-100 group-hover:bg-brand-500 group-hover:text-white transition-all transform group-hover:scale-105 duration-300">
+                <div className="w-12 h-12 bg-orange-50 text-brand-500 rounded-2xl flex items-center justify-center group-hover:bg-brand-500 group-hover:text-white transition-all transform group-hover:scale-105 duration-300">
                   <BookOpen className="w-6 h-6" />
                 </div>
                 <h3 className="heading-display text-xl sm:text-2xl font-bold text-gray-950 group-hover:text-brand-600 transition-colors">Research</h3>
@@ -503,7 +511,7 @@ export function HomePage() {
                 </p>
                 <div className="pt-2 flex flex-wrap gap-1.5">
                   {["Proof of Work", "Lightning Network", "Self-Custody", "Monetary Economics"].map((tag) => (
-                    <span key={tag} className="bg-gray-50 text-gray-500 font-mono text-[9px] px-2 py-0.5 rounded border border-gray-150">
+                    <span key={tag} className="bg-gray-100/70 text-gray-600 font-mono text-[10px] px-2.5 py-1 rounded-md">
                       {tag}
                     </span>
                   ))}
@@ -520,14 +528,14 @@ export function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-150 shadow-sm hover:shadow-xl transition-all hover:border-brand-300 flex flex-col justify-between group cursor-pointer"
+              className="bg-white p-6 sm:p-8 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col justify-between group cursor-pointer"
               onClick={() => {
                 const el = document.querySelector("#molo-ai");
                 el?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 bg-orange-50 text-brand-500 rounded-2xl flex items-center justify-center border border-brand-100 group-hover:bg-brand-500 group-hover:text-white transition-all transform group-hover:scale-105 duration-300">
+                <div className="w-12 h-12 bg-orange-50 text-brand-500 rounded-2xl flex items-center justify-center group-hover:bg-brand-500 group-hover:text-white transition-all transform group-hover:scale-105 duration-300">
                   <Compass className="w-6 h-6" />
                 </div>
                 <h3 className="heading-display text-xl sm:text-2xl font-bold text-gray-950 group-hover:text-brand-600 transition-colors">Discover</h3>
@@ -536,7 +544,7 @@ export function HomePage() {
                 </p>
                 <div className="pt-2 flex flex-wrap gap-1.5">
                   {["Molo AI", "Bitcoin Q&A", "Research Assistant", "Lightning", "Open Source"].map((tag) => (
-                    <span key={tag} className="bg-gray-50 text-gray-500 font-mono text-[9px] px-2 py-0.5 rounded border border-gray-150">
+                    <span key={tag} className="bg-gray-100/70 text-gray-600 font-mono text-[10px] px-2.5 py-1 rounded-md">
                       {tag}
                     </span>
                   ))}
@@ -553,14 +561,14 @@ export function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-150 shadow-sm hover:shadow-xl transition-all hover:border-brand-300 flex flex-col justify-between group cursor-pointer md:col-span-2 lg:col-span-1"
+              className="bg-white p-6 sm:p-8 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col justify-between group cursor-pointer md:col-span-2 lg:col-span-1"
               onClick={() => {
                 const el = document.querySelector("#support");
                 el?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 bg-orange-50 text-brand-500 rounded-2xl flex items-center justify-center border border-brand-100 group-hover:bg-brand-500 group-hover:text-white transition-all transform group-hover:scale-105 duration-300">
+                <div className="w-12 h-12 bg-orange-50 text-brand-500 rounded-2xl flex items-center justify-center group-hover:bg-brand-500 group-hover:text-white transition-all transform group-hover:scale-105 duration-300">
                   <Briefcase className="w-6 h-6" />
                 </div>
                 <h3 className="heading-display text-xl sm:text-2xl font-bold text-gray-950 group-hover:text-brand-600 transition-colors">Connect</h3>
@@ -569,7 +577,7 @@ export function HomePage() {
                 </p>
                 <div className="pt-2 flex flex-wrap gap-1.5">
                   {["Donations", "Open Source", "Community", "Bitcoin", "Support"].map((tag) => (
-                    <span key={tag} className="bg-gray-50 text-gray-500 font-mono text-[9px] px-2 py-0.5 rounded border border-gray-150">
+                    <span key={tag} className="bg-gray-100/70 text-gray-600 font-mono text-[10px] px-2.5 py-1 rounded-md">
                       {tag}
                     </span>
                   ))}
@@ -587,9 +595,8 @@ export function HomePage() {
         <section id="research" className="scroll-margin-top mb-24">
           
           {/* Repositioned Research Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-gray-100 pb-8 gap-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
             <div className="max-w-2xl">
-              <span className="text-[11px] font-bold text-brand-600 uppercase tracking-widest block mb-2">curated archives</span>
               <h2 className="heading-display text-2xl sm:text-4xl font-extrabold text-gray-950">
                 Research That Makes Bitcoin Easier To Understand
               </h2>
@@ -606,7 +613,7 @@ export function HomePage() {
                 placeholder="Search specific summaries..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-xs sm:text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 placeholder:text-gray-400"
+                className="w-full bg-neutral-100/80 hover:bg-neutral-100 focus:bg-white rounded-xl py-2.5 pl-10 pr-4 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-brand-500/25 placeholder:text-gray-400 transition-all shadow-sm"
               />
             </div>
           </div>
@@ -618,7 +625,7 @@ export function HomePage() {
               className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                 selectedCategory === "all" 
                   ? "bg-gray-950 text-white shadow-md shadow-gray-950/20" 
-                  : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+                  : "bg-neutral-100 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/70"
               }`}
             >
               All Research
@@ -630,7 +637,7 @@ export function HomePage() {
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                   selectedCategory === cat 
                     ? "bg-gray-950 text-white shadow-md shadow-gray-950/20" 
-                    : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+                    : "bg-neutral-100 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/70"
                 }`}
               >
                 {cat}
@@ -639,14 +646,14 @@ export function HomePage() {
           </div>
 
           {/* GitHub instructions block */}
-          <div className="bg-brand-50/40 border border-brand-100 rounded-2xl p-4 sm:p-5 mb-8 flex flex-col sm:flex-row items-center gap-4">
+          <div className="bg-orange-50/50 rounded-2xl p-4 sm:p-5 mb-8 flex flex-col sm:flex-row items-center gap-4">
             <div className="w-10 h-10 rounded-full bg-brand-500/10 flex items-center justify-center shrink-0">
               <Github className="w-5 h-5 text-brand-600" />
             </div>
             <div className="text-center sm:text-left">
               <h4 className="text-xs sm:text-sm font-bold text-gray-900">Sovereign Source Integration Enabled</h4>
               <p className="text-[11px] sm:text-xs text-gray-500 mt-1 leading-relaxed">
-                Reading public repositories directly from <strong>github.com/MoloBTC-Org</strong>. This system fetches the legal license files, markdown logs, and open-source specifications to train our on-site <strong>Molo AI</strong>.
+                Reading public repositories directly from <strong>github.com/MoloBTC-Org</strong>. This system synchronizes the BSOL open-source license, BBPP monetary node specifications, SGAS sovereign agent suite, and foundational BSRF research papers to train our on-site <strong>Molo AI</strong>.
               </p>
             </div>
           </div>
@@ -655,7 +662,7 @@ export function HomePage() {
           <div className="grid md:grid-cols-2 gap-8">
             {isGithubLoading ? (
               Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="bg-white rounded-3xl border border-gray-100 p-6 space-y-4 animate-pulse">
+                <div key={i} className="bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-6 space-y-4 animate-pulse">
                   <div className="flex justify-between items-center">
                     <div className="h-4 bg-gray-200 rounded w-24" />
                     <div className="h-4 bg-gray-200 rounded w-12" />
@@ -675,12 +682,12 @@ export function HomePage() {
                 return (
                   <div
                     key={repo.id}
-                    className="bg-white rounded-3xl border border-gray-100 hover:border-brand-100 shadow-sm flex flex-col justify-between overflow-hidden hover:shadow-xl transition-all group cursor-pointer"
+                    className="bg-white rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)] hover:-translate-y-1 flex flex-col justify-between overflow-hidden transition-all duration-300 group cursor-pointer"
                     onClick={() => handleSelectRepo(repo)}
                   >
                     <div className="p-6">
                       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-                        <span className="bg-brand-50 text-brand-700 font-mono text-[9px] font-bold px-2 py-0.5 rounded border border-brand-100 uppercase tracking-wider">
+                        <span className="bg-brand-50 text-brand-700 font-mono text-[11px] font-semibold px-2.5 py-1 rounded-lg">
                           ⚡ {repoCat}
                         </span>
 
@@ -704,13 +711,13 @@ export function HomePage() {
                         {repo.description}
                       </p>
 
-                      <div className="flex items-center gap-4 text-[11px] font-mono text-gray-450 border-t border-gray-50 pt-3">
+                      <div className="flex items-center gap-4 text-[11px] font-mono text-gray-450 pt-3">
                         <span>Format: <strong className="text-gray-700">{repo.language || "PDF"}</strong></span>
                         <span>Updated: <strong className="text-gray-700">{repo.updated_at ? new Date(repo.updated_at).toLocaleDateString() : "Just now"}</strong></span>
                       </div>
                     </div>
 
-                    <div className="bg-[#FFFDFB] border-t border-gray-50 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+                    <div className="bg-neutral-50/70 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
                       <span className="text-xs font-semibold text-brand-600 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1.5">
                         Read Repository Files <ArrowRight className="w-4 h-4" />
                       </span>
@@ -733,7 +740,7 @@ export function HomePage() {
                           onClick={(e) => {
                             e.stopPropagation();
                           }}
-                          className="p-1.5 px-3 bg-white text-gray-600 hover:text-gray-900 font-mono text-[10px] font-bold border border-gray-200 hover:border-brand-500 rounded-xl transition-all shadow-sm"
+                          className="p-1.5 px-3 bg-white text-gray-700 hover:text-gray-950 hover:bg-gray-100 font-mono text-[10px] font-bold rounded-xl transition-all shadow-sm"
                         >
                           GITHUB ↗
                         </a>
@@ -745,7 +752,7 @@ export function HomePage() {
             )}
 
             {!isGithubLoading && filteredRepos.length === 0 && (
-              <div className="col-span-2 text-center py-16 bg-white rounded-3xl border border-dashed border-gray-200">
+              <div className="col-span-2 text-center py-16 bg-neutral-50/80 rounded-3xl">
                 <Github className="w-12 h-12 text-gray-300 mx-auto mb-4 stroke-[1.5]" />
                 <p className="font-bold text-gray-600">No matching GitHub repositories synced</p>
                 <p className="text-gray-450 text-xs mt-1">Try shifting your search phrase or choosing another category</p>
@@ -754,68 +761,141 @@ export function HomePage() {
           </div>
         </section>
 
+        {/* SECTION: EXTERNAL MENTIONS & AUTHORITY */}
+        <ExternalMentions />
+
         {/* SECTION: SUPPORT & DONATE */}
-        <section id="support" className="scroll-margin-top mb-24 max-w-4xl mx-auto px-4">
-          <div className="bg-[#FAF8F5] rounded-3xl p-6 sm:p-10 relative overflow-hidden border border-brand-100/10 shadow-[0_8px_30px_rgb(0,0,0,0.015)] transition-all duration-300 hover:shadow-[0_12px_40px_rgb(0,0,0,0.03)]">
-            <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 h-64 w-64 rounded-full bg-brand-50/20 blur-3xl pointer-events-none" />
-            
-            <div className="text-center max-w-xl mx-auto mb-10">
-              <span className="text-[10px] font-bold text-brand-600 uppercase tracking-widest bg-brand-50/80 px-3 py-1 rounded-full inline-flex items-center gap-1.5 mb-3">
-                <Heart className="h-3 w-3 text-brand-500 fill-brand-500 animate-pulse" />
-                <span>Support Open Source</span>
-              </span>
-              <h2 className="heading-display text-2xl sm:text-4xl font-black text-gray-950">Support Molo BTC</h2>
-              <p className="text-xs sm:text-sm text-gray-550 leading-relaxed mt-2">
-                Help keep Bitcoin education free, tracker-free, and accessible to everyone. Your support directly funds server infrastructure and interactive tools.
+        <section id="support" className="scroll-margin-top mb-24 max-w-4xl mx-auto px-0 sm:px-4">
+          <div className="bg-white rounded-3xl p-4 sm:p-8 md:p-10 relative overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.03)] border border-black/[0.04] transition-all duration-300">
+            <div className="text-center max-w-xl mx-auto mb-8 sm:mb-10 px-2">
+              <h2 className="heading-display text-2xl sm:text-4xl font-extrabold text-gray-950 tracking-tight">Support Molo BTC</h2>
+              <p className="text-xs sm:text-sm text-gray-500 leading-relaxed mt-2 max-w-lg mx-auto">
+                Help keep Bitcoin education free, tracker-free, and accessible across Africa. Your support directly funds server infrastructure and interactive research.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 items-stretch">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch w-full max-w-md md:max-w-none mx-auto justify-items-center">
               {/* Left Widget Pane */}
-              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-[0_12px_30px_rgba(0,0,0,0.015)] flex flex-col justify-center items-center min-h-[260px] transition-all duration-300 hover:shadow-[0_12px_30px_rgba(0,0,0,0.03)]">
-                <div id="blink-pay-button-container" className="w-full flex justify-center"></div>
+              <div className="w-full max-w-md mx-auto bg-neutral-50/80 p-5 sm:p-7 rounded-2xl border border-black/[0.05] shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between items-center text-center min-h-[300px]">
+                
+                {/* Embedded Blink Container with Loading / Fallback State */}
+                <div className="w-full flex-1 flex flex-col items-center justify-center relative">
+                  {/* Container for the official Blink script */}
+                  <div 
+                    id="blink-pay-button-container" 
+                    className="w-full flex flex-col justify-center items-center min-h-[200px] mx-auto overflow-hidden"
+                  />
+
+                  {/* Fallback & Helper if script is loading or blocked by extensions/adblock */}
+                  {(!blinkLoaded || blinkFailed) && (
+                    <div className="w-full flex flex-col items-center justify-center p-4 text-center">
+                      <div className="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center mb-3">
+                        <Bitcoin className="w-6 h-6 text-brand-600" />
+                      </div>
+                      <h4 className="text-sm font-bold text-gray-900 mb-1">
+                        {blinkFailed ? "Send via Lightning / Blink" : "Loading Lightning Checkout..."}
+                      </h4>
+                      <p className="text-xs text-gray-500 mb-4 max-w-xs">
+                        Donate directly with Lightning to <span className="font-semibold text-gray-800">molobtc@blink.sv</span>
+                      </p>
+                      
+                      <div className="flex flex-col sm:flex-row gap-2 w-full max-w-xs">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText("molobtc@blink.sv");
+                            setCopiedLightning(true);
+                            setTimeout(() => setCopiedLightning(false), 2500);
+                          }}
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-white hover:bg-gray-100 text-gray-800 rounded-xl border border-black/[0.06] transition-colors cursor-pointer shadow-xs"
+                        >
+                          {copiedLightning ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-green-600" />
+                              <span>Copied Address!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5 text-gray-500" />
+                              <span>Copy Lightning Address</span>
+                            </>
+                          )}
+                        </button>
+                        <a
+                          href="https://blink.sv/molobtc"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-orange-500 to-brand-600 hover:from-orange-600 hover:to-brand-700 rounded-xl shadow-sm transition-all"
+                        >
+                          <span>Open Blink</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Direct Lightning Address Pill */}
+                <div className="w-full mt-4 pt-3 border-t border-black/[0.05] flex flex-col sm:flex-row items-center justify-between gap-2.5 text-[11px] text-gray-500 text-center sm:text-left">
+                  <span className="flex items-center justify-center gap-1.5 flex-wrap">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                    <span>Lightning: <strong className="text-gray-800 font-medium">molobtc@blink.sv</strong></span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText("molobtc@blink.sv");
+                      setCopiedLightning(true);
+                      setTimeout(() => setCopiedLightning(false), 2500);
+                    }}
+                    className="text-brand-600 hover:text-brand-700 font-semibold inline-flex items-center gap-1 transition-colors hover:underline cursor-pointer shrink-0"
+                  >
+                    {copiedLightning ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedLightning ? "Copied" : "Copy"}</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Right Side Info */}
-              <div className="flex flex-col justify-between space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-orange-50/80 flex items-center justify-center shrink-0 border border-brand-100/20">
-                      <Sparkles className="h-4 w-4 text-brand-600" />
+              {/* Right Side Info Cards */}
+              <div className="w-full max-w-md mx-auto flex flex-col justify-between space-y-3.5 sm:space-y-4">
+                <div className="space-y-3.5 sm:space-y-4 w-full">
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3.5 bg-neutral-50/80 p-5 rounded-2xl border border-black/[0.05] shadow-[0_2px_12px_rgba(0,0,0,0.02)] w-full">
+                    <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center shrink-0 mx-auto sm:mx-0">
+                      <Sparkles className="h-5 w-5 text-brand-600" />
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-gray-950 uppercase tracking-wider">Lightning Network</h4>
-                      <p className="text-[11px] text-gray-550 leading-relaxed mt-1">
-                        Contribute any custom amount instantly via the Lightning Network. Powered securely by Blink Bitcoin.
+                    <div className="w-full flex flex-col items-center sm:items-start text-center sm:text-left">
+                      <h4 className="text-sm font-bold text-gray-950">Instant Lightning Payments</h4>
+                      <p className="text-xs text-gray-500 leading-relaxed mt-1 max-w-sm sm:max-w-none">
+                        Contribute any amount instantly via Bitcoin Lightning with sub-cent fees. Powered securely by the Blink Bitcoin API.
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-orange-50/80 flex items-center justify-center shrink-0 border border-brand-100/20">
-                      <Heart className="h-4 w-4 text-brand-600" />
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3.5 bg-neutral-50/80 p-5 rounded-2xl border border-black/[0.05] shadow-[0_2px_12px_rgba(0,0,0,0.02)] w-full">
+                    <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center shrink-0 mx-auto sm:mx-0">
+                      <Heart className="h-5 w-5 text-brand-600" />
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-gray-950 uppercase tracking-wider">100% Peer-to-Peer</h4>
-                      <p className="text-[11px] text-gray-550 leading-relaxed mt-1">
-                        No intermediaries, no trackers, no paywalls. Every satoshi directly supports server hosting and educational research.
+                    <div className="w-full flex flex-col items-center sm:items-start text-center sm:text-left">
+                      <h4 className="text-sm font-bold text-gray-950">100% Peer-to-Peer & Sovereign</h4>
+                      <p className="text-xs text-gray-500 leading-relaxed mt-1 max-w-sm sm:max-w-none">
+                        No intermediaries, no tracking scripts, and no paywalls. Every satoshi directly covers research tools, paper publication, and servers.
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-gray-100">
-                  <p className="text-[11px] text-gray-500">
-                    Contribute to our repository instead?{" "}
-                    <a 
-                      href="https://github.com/MoloBTC-Org" 
-                      target="_blank" 
-                      rel="noreferrer" 
-                      className="text-brand-600 font-semibold hover:underline inline-flex items-center gap-1 hover:text-brand-700 transition-colors"
-                    >
-                      Star us on GitHub <ExternalLink className="h-3 w-3" />
-                    </a>
+                <div className="bg-brand-50/50 p-4 rounded-2xl border border-brand-500/15 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left w-full">
+                  <p className="text-xs text-gray-700">
+                    Want to contribute code or research instead?
                   </p>
+                  <a 
+                    href="https://github.com/MoloBTC-Org" 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className="shrink-0 text-xs font-semibold text-brand-600 hover:text-brand-700 hover:underline inline-flex items-center gap-1 transition-colors"
+                  >
+                    GitHub <ExternalLink className="h-3 w-3" />
+                  </a>
                 </div>
               </div>
             </div>
@@ -824,8 +904,8 @@ export function HomePage() {
         </section>
 
         {/* SECTION: CONTACT */}
-        <section id="contact" className="scroll-margin-top mb-24 max-w-4xl mx-auto px-4 -mt-12">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 sm:p-8 bg-white rounded-3xl border border-gray-150/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.03)] transition-all duration-300">
+        <section id="contact" className="scroll-margin-top mb-24 max-w-4xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 sm:p-8 bg-white rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-neutral-100 hover:shadow-[0_12px_36px_rgba(0,0,0,0.06)] transition-all duration-300">
             <div className="space-y-1 max-w-md text-left">
               <h3 className="heading-display text-lg font-bold text-gray-950">Let's Build Together</h3>
               <p className="text-xs sm:text-sm text-gray-550 leading-relaxed">
@@ -836,7 +916,7 @@ export function HomePage() {
             <div className="flex flex-wrap gap-3 items-center">
               <a 
                 href="mailto:molobtc@proton.me" 
-                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-150 rounded-xl transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-gray-700 bg-gray-100/80 hover:bg-gray-200/80 rounded-xl transition-all"
               >
                 <Mail className="w-3.5 h-3.5 text-gray-500" />
                 <span>Email Us</span>
@@ -845,7 +925,7 @@ export function HomePage() {
                 href="https://x.com/moloBTC" 
                 target="_blank" 
                 rel="noreferrer" 
-                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-150 rounded-xl transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-gray-700 bg-gray-100/80 hover:bg-gray-200/80 rounded-xl transition-all"
               >
                 <Twitter className="w-3.5 h-3.5 text-gray-500" />
                 <span>Follow on X</span>
@@ -872,10 +952,6 @@ export function HomePage() {
             <div className="relative z-10 space-y-6">
               {/* Header */}
               <div className="text-center max-w-xl mx-auto mb-4">
-                <span className="text-[10px] font-bold text-brand-400 bg-brand-950/80 px-3 py-1 rounded-full inline-flex items-center gap-1.5 mb-3 border border-brand-900/40 uppercase tracking-widest">
-                  <Sparkles className="w-3 h-3 text-brand-400 animate-pulse" />
-                  <span>Interactive Assistant</span>
-                </span>
                 <h2 className="heading-display text-2xl sm:text-3xl font-black text-white">Molo AI</h2>
                 <p className="text-xs sm:text-sm text-gray-400 leading-relaxed mt-2">
                   Ask any question about Bitcoin, Lightning, mining, economics, and open-source projects for instant, clear answers.
@@ -890,7 +966,7 @@ export function HomePage() {
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                     <span className="text-xs font-semibold tracking-wide text-gray-300">Molo AI</span>
-                    <span className="text-[9px] font-mono font-bold tracking-wider uppercase text-gray-500 bg-white/5 px-2 py-0.5 rounded-full">Connected</span>
+                    <span className="text-[10px] font-sans font-medium text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full">Connected</span>
                   </div>
                   {chatHistory.length > 0 && (
                     <button 
@@ -1031,10 +1107,10 @@ export function HomePage() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ duration: 0.4 }}
-                className="relative z-10 w-full max-w-4xl rounded-3xl bg-white p-6 sm:p-10 text-left shadow-2xl border border-gray-150 inline-block overflow-hidden"
+                className="relative z-10 w-full max-w-4xl rounded-3xl bg-white p-6 sm:p-10 text-left shadow-2xl inline-block overflow-hidden"
               >
                 {/* Header elements */}
-                <div className="flex items-center justify-between border-b border-gray-100 pb-5 mb-6">
+                <div className="flex items-center justify-between pb-5 mb-6">
                   <div className="flex items-center gap-3">
                     <span className="bg-brand-500 text-white font-mono text-[10px] font-bold px-2.5 py-1 rounded">
                       🐙 LIVE REPO SPEC
@@ -1051,7 +1127,7 @@ export function HomePage() {
 
                   <button 
                     onClick={() => handleSelectRepo(null)}
-                    className="p-1 px-3 bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-500 rounded-xl text-xs font-bold font-mono transition-colors"
+                    className="p-1 px-3 bg-gray-100 hover:bg-gray-200 text-gray-750 rounded-xl text-xs font-bold font-mono transition-colors cursor-pointer"
                   >
                     CLOSE [ESC]
                   </button>
@@ -1062,7 +1138,7 @@ export function HomePage() {
                   {/* Left Dynamic File Content Stream */}
                   <div className="md:col-span-8 space-y-6">
                     <div>
-                      <h3 className="heading-display text-2xl sm:text-3xl font-extrabold text-gray-950 leading-tight">
+                      <h3 className="heading-display text-2xl sm:text-4xl font-extrabold text-gray-950 leading-tight">
                         {selectedRepo.name}
                       </h3>
                       <p className="text-semibold text-gray-650 mt-2 text-xs sm:text-sm">
@@ -1071,13 +1147,13 @@ export function HomePage() {
                     </div>
 
                     {/* Navigation Tabs inside Modal */}
-                    <div className="flex border-b border-gray-200 gap-6">
+                    <div className="flex items-center gap-2 p-1 bg-gray-100 rounded-xl">
                       <button
                         onClick={() => setActiveModalTab("pdf")}
-                        className={`pb-3 text-sm font-semibold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
+                        className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
                           activeModalTab === "pdf"
-                            ? "border-brand-500 text-brand-600 font-bold"
-                            : "border-transparent text-gray-500 hover:text-gray-900"
+                            ? "bg-white text-gray-950 shadow-sm font-bold"
+                            : "text-gray-600 hover:text-gray-950"
                         }`}
                       >
                         <BookOpen className="w-4 h-4" />
@@ -1085,10 +1161,10 @@ export function HomePage() {
                       </button>
                       <button
                         onClick={() => setActiveModalTab("readme")}
-                        className={`pb-3 text-sm font-semibold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
+                        className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
                           activeModalTab === "readme"
-                            ? "border-brand-500 text-brand-600 font-bold"
-                            : "border-transparent text-gray-500 hover:text-gray-900"
+                            ? "bg-white text-gray-950 shadow-sm font-bold"
+                            : "text-gray-600 hover:text-gray-950"
                         }`}
                       >
                         <Github className="w-4 h-4" />
@@ -1106,8 +1182,7 @@ export function HomePage() {
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        <div className="bg-[#FFFDFB] border border-brand-100/70 p-4 rounded-xl flex items-center gap-2.5">
-                          <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shrink-0" />
+                        <div className="bg-[#FFFDFB] p-4 rounded-xl flex items-center gap-2.5 shadow-sm">
                           <p className="text-[11px] text-gray-600 m-0">
                             Dynamic content pulled directly from the GitHub repository files. No hardcoded mock data.
                           </p>
@@ -1115,13 +1190,13 @@ export function HomePage() {
 
                         {isRepoContentLoading ? (
                           <div className="space-y-4 py-8">
-                            <div className="h-4 bg-gray-150 rounded w-1/3 animate-pulse" />
+                            <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse" />
                             <div className="h-4 bg-gray-100 rounded w-5/6 animate-pulse" />
                             <div className="h-4 bg-gray-100 rounded w-4/5 animate-pulse" />
                             <div className="h-4 bg-gray-100 rounded w-full animate-pulse" />
                           </div>
                         ) : (
-                          <div className="bg-gray-50 border border-gray-150 rounded-2xl p-5 sm:p-6 text-gray-850 font-sans max-h-[420px] overflow-y-auto shadow-inner text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
+                          <div className="bg-gray-50/80 rounded-2xl p-5 sm:p-6 text-gray-850 font-sans max-h-[420px] overflow-y-auto text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
                             {repoContent}
                           </div>
                         )}
@@ -1130,13 +1205,13 @@ export function HomePage() {
                   </div>
 
                   {/* Right metadata / GitHub action links panel */}
-                  <div className="md:col-span-4 bg-[#FCFAF7] border border-gray-150 p-5 rounded-2xl min-h-[300px] flex flex-col justify-between">
+                  <div className="md:col-span-4 bg-[#FCFAF7] p-5 rounded-2xl min-h-[300px] flex flex-col justify-between shadow-sm">
                     <div>
-                      <span className="text-[10px] font-mono tracking-wider font-bold text-gray-400 uppercase block mb-4">Repository Coordinates</span>
+                      <span className="text-xs font-semibold text-gray-500 block mb-4">Repository Details</span>
                       
                       <div className="space-y-4">
                         <div>
-                          <span className="text-[10px] text-gray-550 uppercase block">GitHub Link:</span>
+                          <span className="text-[11px] font-medium text-gray-500 block">GitHub Link:</span>
                           <a 
                             href={selectedRepo.url} 
                             target="_blank" 
@@ -1150,24 +1225,24 @@ export function HomePage() {
                         </div>
 
                         <div>
-                          <span className="text-[10px] text-gray-550 uppercase block">Code Language:</span>
+                          <span className="text-[11px] font-medium text-gray-500 block">Code Language:</span>
                           <span className="text-xs font-bold text-gray-800 mt-1 block">{selectedRepo.language || "Markdown"}</span>
                         </div>
 
                         <div>
-                          <span className="text-[10px] text-gray-550 uppercase block">Host Entity:</span>
+                          <span className="text-[11px] font-medium text-gray-500 block">Host Entity:</span>
                           <span className="text-xs font-bold text-gray-800 mt-1 block">molobtc (Sovereign Unit)</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Bottom downloads/discuss trigger */}
-                    <div className="mt-8 pt-6 border-t border-gray-200">
+                    <div className="mt-8 pt-6">
                       <a
                         href={selectedRepo.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="w-full bg-gray-950 hover:bg-gray-900 text-white rounded-xl py-3 text-xs sm:text-sm font-semibold transition-all shadow-md inline-flex items-center justify-center gap-2 border border-gray-950"
+                        className="w-full bg-gray-950 hover:bg-gray-900 text-white rounded-xl py-3 text-xs sm:text-sm font-semibold transition-all shadow-md inline-flex items-center justify-center gap-2 cursor-pointer"
                       >
                         <Github className="w-4 h-4" />
                         Clone From GitHub
@@ -1183,7 +1258,7 @@ export function HomePage() {
                             setUserQuery(`Can you explain the main mechanics and context of the molobtc repo: "${repoName}"?`);
                           }, 300);
                         }}
-                        className="w-full border border-gray-200 hover:border-brand-500/50 bg-white hover:bg-gray-50 text-gray-750 hover:text-brand-600 rounded-xl py-2.5 text-xs font-semibold mt-2 transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer"
+                        className="w-full bg-white hover:bg-gray-50 text-gray-750 hover:text-brand-600 rounded-xl py-2.5 text-xs font-semibold mt-2 transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
                       >
                         <Sparkles className="w-3.5 h-3.5 text-brand-500 font-bold" />
                         Discuss with Molo AI

@@ -240,5 +240,97 @@ export const documentsData: Record<string, DocPage[]> = {
         "2. Protecting these nine pillars is critical to preserving human transaction rights across the continent and beyond."
       ]
     }
+  ],
+  "bsrf": [
+    {
+      header: "BSRF CANONICAL RESEARCH REPOSITORY — SPECIFICATION V1.0",
+      title: "Bitcoin Sovereignty Research Framework",
+      subtitle: "Legal, Policy, and Sovereign Monetary Infrastructure Repository",
+      authors: "Jacques Strydom, PMP (Jabulani Jakes) & MoloBTC Research Division",
+      institution: "MoloBTC-Org Sovereign Commons",
+      abstractTitle: "CANONICAL RESEARCH OVERVIEW",
+      abstract: "The Bitcoin Sovereignty Research Framework (BSRF) is the primary open research repository for the legal, tax, and policy recognition of Bitcoin as an adjacent currency and sui generis bearer property. It provides institutional whitepapers, industrial security blueprints (ISA/IEC 62443), and constitutional objection templates for regulatory bodies across Africa and worldwide.",
+      sections: [
+        {
+          heading: "I. REPOSITORY ARCHITECTURE & POLICY TRACKS",
+          paragraphs: [
+            "The BSRF repository houses both Tier 1 philosophical foundations and Tier 2 operational implementations for organizations, institutional treasuries, and sovereign researchers.",
+            "Topics span jurisdictional responses, South Africa Capital Flow Management objection templates, international double-tax coordination protocols, and enterprise multi-signature key architecture."
+          ]
+        }
+      ],
+      footnotes: [
+        "1. Canonical Repository: https://github.com/MoloBTC-Org/bsrf. Published under BSOL v1.0."
+      ]
+    }
+  ],
+  "bsol": [
+    {
+      header: "BSOL V1.0 — BITCOIN SOVEREIGN OPEN SOURCE LICENSE",
+      title: "Bitcoin Sovereign Open Source License (BSOL) v1.0",
+      subtitle: "Canonical Home & Sovereign Bitcoin Knowledge Declaration",
+      authors: "Published by MoloBTC-Org • Steward: Jacques Strydom, PMP (Jabulani Jakes)",
+      institution: "MoloBTC-Org Open Commons",
+      abstractTitle: "A BITCOIN-NATIVE GIFT TO THE COMMONS",
+      abstract: "BSOL is a Bitcoin-native gift license for Bitcoin-related code, research papers, curricula, declarations, designs, and reference implementations. It treats knowledge and code as non-rivalrous, unconditionally refuses enclosure, and places zero liability or toll on recipients.",
+      sections: [
+        {
+          heading: "I. THE PHILOSOPHY OF NON-ENCLOSURE",
+          paragraphs: [
+            "This text is not Bitcoin and confers no authority over Bitcoin. Bitcoin proliferated because of the protocol and the absence of a licensor. This license exists only to refuse enclosure of the Work.",
+            "Anyone who publishes a work under BSOL is gifting that work freely to the commons. The recipient may use it without asking, without conditions, and without responsibility to the publisher. Attribution is voluntary."
+          ]
+        }
+      ],
+      footnotes: [
+        "1. Canonical home: https://github.com/MoloBTC-Org/bsol. Steward: Jacques Strydom, PMP."
+      ]
+    }
+  ],
+  "bbpp": [
+    {
+      header: "BBPP ARCHITECTURE — MONETARY-EFFICIENT BITCOIN NODES",
+      title: "Bitcoin Best Practice Protocol (BBPP)",
+      subtitle: "Framework and Future Client for Monetary-Efficient Bitcoin Nodes",
+      authors: "MoloBTC-Org Protocol Research Working Group",
+      institution: "MoloBTC-Org / BBPP Working Group",
+      abstractTitle: "MEASURABLE MONETARY EFFICIENCY",
+      abstract: "BBPP is a purpose-driven framework for Bitcoin full nodes that treats monetary efficiency as a quantifiable engineering discipline. It focuses on sensible policy defaults, antispam rules, DATUM decentralized template generation, and modular post-validation storage without breaking consensus.",
+      sections: [
+        {
+          heading: "I. THREE-FORCE MODEL & POLICY DEFAULTS",
+          paragraphs: [
+            "BBPP prioritizes monetary transactions, zero datacarriersize, and parasite filter defaults to ensure Bitcoin nodes remain accessible and performant.",
+            "By decoupling mining template generation via DATUM, BBPP empowers hashers with decentralized template sovereignty while retaining identical SHA-256 consensus."
+          ]
+        }
+      ],
+      footnotes: [
+        "1. Canonical repository: https://github.com/MoloBTC-Org/bbpp. License: BSOL v1.0."
+      ]
+    }
+  ],
+  "sgas": [
+    {
+      header: "SOVEREIGN GROK AGENT SUITE (SGAS) — V1.0.1",
+      title: "Sovereign Grok Agent Suite (SGAS) v1.0.1",
+      subtitle: "Modular Architecture for Sovereign, Secure AI Agent Systems",
+      authors: "Jacques Strydom, PMP (@JabulaniJakes) in collaboration with Grok (xAI)",
+      institution: "MoloBTC-Org Distribution Hub",
+      abstractTitle: "LOCAL-FIRST SECURE AGENT HARNESS",
+      abstract: "SGAS is a comprehensive guide and architectural suite for building autonomous AI agents with Grok Build in maximum-security (local-first) mode. It combines Zero Trust MCP servers, hardware-aware execution tiers, and strict isolation for emerging-market and sovereign computing setups.",
+      sections: [
+        {
+          heading: "I. ZERO TRUST MCP & SOVEREIGN INFRASTRUCTURE",
+          paragraphs: [
+            "Autonomous agents operate in sandboxed environments with verifiable permissions, preventing involuntary code leakage and third-party credential exposure.",
+            "SGAS provides concrete hardware-aware tiers from Entry Tier laptops to high-availability self-hosted Start9 personal servers."
+          ]
+        }
+      ],
+      footnotes: [
+        "1. Canonical repository: https://github.com/MoloBTC-Org/sgas. Published under BSOL v1.0."
+      ]
+    }
   ]
 };

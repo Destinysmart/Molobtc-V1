@@ -63,6 +63,26 @@
       "content": "\n        <p>To understand Bitcoin transactions, you must unlearn how conventional bank accounts work. Bitcoin does not have a concept of an \"account balance\" stored anywhere on the database. Instead, it tracks individual digital cash receipts called <strong>UTXOs (Unspent Transaction Outputs)</strong>.</p>\n        \n        <h2>1. The physical wallet analogy</h2>\n        <p>If you have $45 in your physical leather wallet, you do not have a single item that represents exactly \"forty-five value\". Instead, you might have two $20 bills and one $5 bill. When you buy a $15 item, you give the cashier a $20 bill, and they hand you back a $5 bill in change. Your wallet now contains one $20, and two $5 bills.</p>\n        <p>This is exactly how Bitcoin works. Each transaction completely spends existing UTXOs (inputs) and creates brand new UTXOs (outputs): one for the merchant's payment, and one sent back to your own address as 'change'. Your wallet app simply sums up all the UTXOs that your private key has the power to unlock, displaying it as a single 'balance'.</p>\n        \n        <h2>2. Key benefits of the UTXO design</h2>\n        <ul>\n          <li><strong>Greater Privacy:</strong> Users can easily receive funds on completely new addresses for every transaction, avoiding exposing their full cache of coin holdings.</li>\n          <li><strong>Massive Parallelism:</strong> Multiple transactions can be processed concurrently because they alter disparate UTXO cash outputs rather than vying to overwrite a single account balance space.</li>\n          <li><strong>Security:</strong> There are no 'double spends' or weird state bugs where a contract withdraws more money than is in an account, because once a UTXO is spent, it is destroyed forever from the unspent state database.</li>\n        </ul>\n      ",
       "published_at": "2026-07-28T07:28:35.605Z",
       "updated_at": "2026-07-30T15:01:55.605Z"
+    },
+    {
+      "id": "res_sa_regulation_fight",
+      "slug": "can-south-africa-control-bitcoin-regulation-fight",
+      "title": "Can South Africa Control Bitcoin? The Regulation Fight",
+      "subtitle": "Analysis of the National Treasury draft capital flow regulations, featuring @jabulanijakes of MoloBTC and David Ansara (Free Market Foundation).",
+      "featured_image": "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=2670&auto=format&fit=crop",
+      "author_id": "admin-1",
+      "category_id": "c4",
+      "status": "published",
+      "abstract": "South Africa's National Treasury and Reserve Bank proposed draft Capital Flow Management Regulations seeking to place Bitcoin under legacy exchange controls. In this featured analysis by Bitcoin Africa Story and high-level policy dialogue with the Free Market Foundation (FMF), MoloBTC demonstrates why these proposals are technologically and constitutionally unenforceable against cryptographic bearer property.",
+      "github_repo": "https://github.com/MoloBTC-Org/bsrf",
+      "external_source": "Bitcoin Africa Story",
+      "external_url": "https://www.bitcoinafricastory.com/news",
+      "youtube_url": "https://www.youtube.com/watch?v=CM03_3vOqWM&t=9s",
+      "download_file": "MoloBTC_South_Africa_Capital_Flow_Regulations_Objection.pdf",
+      "reading_time": "6 min read",
+      "content": "<h2>1. The 1961 Paper Framework vs. 21st-Century Mathematics</h2><p>Traditional exchange controls rely on chokepoints: commercial banks, physical borders, and centralized clearinghouses. When a citizen attempts to transfer fiat currency abroad, bank tellers or SWIFT gateways can freeze the transaction at will.</p><p>Bitcoin completely breaks this assumption. Bitcoin is not an IOU issued by an intermediary; it is <strong>Sui Generis Bearer Property</strong> governed by distributed cryptographic mathematics. Private keys exist as pure entropy—numbers between 1 and 2^256—which can be held in memory, on paper, or on an air-gapped microcontroller.</p><h2>2. Why Capital Controls on Bitcoin are Unenforceable</h2><p>As Jabu Jakes and the Free Market Foundation highlight, any government attempting to impose capital control declarations on self-custodied Bitcoin faces insurmountable computational and legal hurdles: no central registrar, protection of private compute, and the constitutional impossibility of compelling disclosure of mental entropy.</p>",
+      "published_at": "2026-08-10T10:00:00.000Z",
+      "updated_at": "2026-08-10T10:00:00.000Z"
     }
   ],
   "categories": [
@@ -292,13 +312,53 @@
   },
   "github_repos": [
     {
+      "id": "bsrf",
+      "name": "Bitcoin Sovereignty Research Framework (BSRF)",
+      "description": "A professional research repository for the legal and policy treatment of Bitcoin as sui generis bearer property and adjacent currency. Includes foundational whitepapers, ISA/IEC 62443 custody blueprints, and capital regulation objections.",
+      "url": "https://github.com/MoloBTC-Org/bsrf",
+      "stars": 3,
+      "forks": 0,
+      "updated_at": "2026-09-30T10:47:52Z",
+      "language": "Markdown / Policy"
+    },
+    {
+      "id": "bsol",
+      "name": "Bitcoin Sovereign Open Source License (BSOL) v1.0",
+      "description": "Canonical home of BSOL v1.0 and the Sovereign Bitcoin Knowledge Declaration. A Bitcoin-native gift license treating knowledge as non-rivalrous, refusing enclosure, and establishing sovereign rights.",
+      "url": "https://github.com/MoloBTC-Org/bsol",
+      "stars": 1,
+      "forks": 0,
+      "updated_at": "2026-09-03T13:07:11Z",
+      "language": "Legal / License"
+    },
+    {
+      "id": "bbpp",
+      "name": "Bitcoin Best Practice Protocol (BBPP)",
+      "description": "Framework and future client for monetary-efficient Bitcoin nodes. Identical consensus. Policy and defaults may differ. Documentation first, addressing policy defaults, spam filters, and DATUM templates.",
+      "url": "https://github.com/MoloBTC-Org/bbpp",
+      "stars": 0,
+      "forks": 0,
+      "updated_at": "2026-10-04T20:17:32Z",
+      "language": "C++ / Protocol"
+    },
+    {
+      "id": "sgas",
+      "name": "Sovereign Grok Agent Suite (SGAS) v1.0.1",
+      "description": "A modular collection of documents for building sovereign, secure, and practical AI agent systems with Grok Build for Bitcoin protocol and sovereign research.",
+      "url": "https://github.com/MoloBTC-Org/sgas",
+      "stars": 1,
+      "forks": 0,
+      "updated_at": "2026-10-04T19:28:10Z",
+      "language": "Makefile / Agentic"
+    },
+    {
       "id": "bitcoin-self-custody-sovereign-infrastructure",
       "name": "Bitcoin Self-Custody as Sovereign Monetary Infrastructure",
       "description": "Historical Patterns, Risk Principles, and Organizational Implementation. A policy whitepaper outlining multi-signature architectures, air-gapped signing, and full-node validation aligned with industrial security standard ISA/IEC 62443.",
       "url": "https://github.com/MoloBTC-Org/bsrf/blob/main/foundations/04_Tier1_Sovereign_Monetary_Infrastructure_v1.md",
-      "stars": 0,
+      "stars": 3,
       "forks": 0,
-      "updated_at": "2026-06-09T12:00:00Z",
+      "updated_at": "2026-09-30T10:47:52Z",
       "language": "PDF/Markdown"
     },
     {
@@ -306,9 +366,9 @@
       "name": "Bitcoin as Adjacent Currency Under International Law",
       "description": "The Global Case for Sui Generis Bearer Property, Separate Local Realization Taxation, and Double-Tax Coordination Principles. Grounded in Natural Law and Austrian economics.",
       "url": "https://github.com/MoloBTC-Org/bsrf/blob/main/foundations/03_Tier1_Adjacent_Currency_v1.md",
-      "stars": 0,
+      "stars": 3,
       "forks": 0,
-      "updated_at": "2026-06-15T12:00:00Z",
+      "updated_at": "2026-09-30T10:47:52Z",
       "language": "PDF/Markdown"
     },
     {
@@ -316,9 +376,9 @@
       "name": "Bitcoin Self-Custody Research Ecosystem",
       "description": "Tier 2 - Executive Overview & Reading Guide. Serves as the gateway to the Tier 2 operational collection, outlining structured reading paths for treasury, finance, and security teams.",
       "url": "https://github.com/MoloBTC-Org/bsrf/blob/main/begin_here/03_Bitcoin_Self_Custody_Research_Ecosystem_Index_v1.md",
-      "stars": 0,
+      "stars": 3,
       "forks": 0,
-      "updated_at": "2026-06-16T12:00:00Z",
+      "updated_at": "2026-09-30T10:47:52Z",
       "language": "PDF/Markdown"
     },
     {
@@ -326,9 +386,9 @@
       "name": "Objection / Submission Template: Draft Capital Flow Regulations",
       "description": "A comprehensive submission template addressing South Africa's Draft Capital Flow Management Regulations 2026, highlighting constitutional property protections and rights to private compute.",
       "url": "https://github.com/MoloBTC-Org/bsrf/blob/main/jurisdictions/south_africa/South_Africa_Public_Comment_Template_v1.md",
-      "stars": 0,
+      "stars": 3,
       "forks": 0,
-      "updated_at": "2026-06-20T12:00:00Z",
+      "updated_at": "2026-09-30T10:47:52Z",
       "language": "PDF/LaTeX"
     },
     {
@@ -336,9 +396,9 @@
       "name": "Bitcoin as Sui Generis Bearer Property",
       "description": "The Natural-Law and Austrian Case for Tax-Free Treatment of Self-Custodied Bitcoin. A focused deductive argument analyzing digital scarcity and the limits of legitimate state coercion.",
       "url": "https://github.com/MoloBTC-Org/bsrf/blob/main/foundations/02_Tier1_Sui_Generis_Bearer_Property_v1.md",
-      "stars": 0,
+      "stars": 3,
       "forks": 0,
-      "updated_at": "2026-06-12T12:00:00Z",
+      "updated_at": "2026-09-30T10:47:52Z",
       "language": "PDF/Markdown"
     },
     {
@@ -346,10 +406,56 @@
       "name": "Bitcoin Sovereignty Core Principles",
       "description": "The Authoritative Foundation of the Bitcoin Sovereignty Research Framework. Detailing the nine core principles including private compute, adjacent currency status, and protection against compelled disclosure.",
       "url": "https://github.com/MoloBTC-Org/bsrf/blob/main/begin_here/01_Bitcoin_Sovereignty_Core_Principles_v1.md",
-      "stars": 0,
+      "stars": 3,
       "forks": 0,
-      "updated_at": "2026-06-05T12:00:00Z",
+      "updated_at": "2026-09-30T10:47:52Z",
       "language": "PDF/Markdown"
+    }
+  ],
+  "externalMentions": [
+    {
+      "id": "mention-fmf-interview",
+      "type": "video",
+      "title": "Can South Africa's Government Control Bitcoin?",
+      "source": "Free Market Foundation (FMF)",
+      "source_url": "https://www.youtube.com/watch?v=CM03_3vOqWM&t=9s",
+      "video_id": "CM03_3vOqWM",
+      "embed_start_time": 9,
+      "badge": "Policy Dialogue & Interview",
+      "date": "2026",
+      "speakers": [
+        "David Ansara (CEO, Free Market Foundation)",
+        "Jabulani Jakes (@jabulanijakes, Founder of MoloBTC)"
+      ],
+      "description": "@jabulanijakes of MoloBTC sat down with David Ansara, the CEO of the Free Market Foundation (FMF), to discuss South Africa's draft capital flow management regulations and government proposals regarding Bitcoin and cryptocurrencies.",
+      "quote": "You cannot freeze private cryptographic memory. By linking consensus to raw physics rather than political decrees, Bitcoin renders legacy exchange controls obsolete.",
+      "highlights": [
+        "Analysis of South Africa's Draft Capital Flow Management Regulations 2026",
+        "Why Bitcoin is Sui Generis Bearer Property, not traditional capital",
+        "The constitutional right to private compute and running independent nodes",
+        "Technological unenforceability of compelled seed phrase disclosure and exchange controls"
+      ]
+    },
+    {
+      "id": "mention-bitcoin-africa-story",
+      "type": "article",
+      "title": "Can South Africa Control Bitcoin? The Regulation Fight",
+      "source": "Bitcoin Africa Story",
+      "source_url": "https://www.bitcoinafricastory.com/news",
+      "badge": "Featured Press Article",
+      "date": "2026",
+      "speakers": [
+        "Jabu Jakes (@jabulanijakes, MoloBTC)",
+        "Free Market Foundation (FMF)"
+      ],
+      "description": "South Africa's Treasury wants to place Bitcoin under capital controls. This investigative report breaks down why MoloBTC's Jabu Jakes and the Free Market Foundation argue these draft rules are unenforceable and what policymakers fundamentally misunderstand.",
+      "quote": "South Africa's regulatory push attempts to apply 1961 paper-money assumptions to 21st-century mathematical bearer property. It is fundamentally impossible to police private compute.",
+      "highlights": [
+        "Deep dive into the SARB and National Treasury draft exchange control proposals",
+        "How open-source Bitcoin research frameworks empower public comment submissions",
+        "Constitutional property safeguards protecting personal cryptographic self-custody",
+        "Why African builders and treasuries turn to state-proof monetary rails"
+      ]
     }
   ]
 }

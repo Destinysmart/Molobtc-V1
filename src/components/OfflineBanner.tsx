@@ -54,16 +54,16 @@ export function OfflineBanner() {
             <WifiOff className="w-5 h-5 animate-pulse" />
           </div>
           <div className="flex-1 space-y-1">
-            <h4 className="text-xs font-black tracking-wider uppercase font-mono text-amber-800 flex items-center gap-1.5">
+            <h4 className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
               <span>Connection Interrupted</span>
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
             </h4>
-            <p className="text-[11px] font-bold text-amber-900/80 leading-relaxed font-sans">
+            <p className="text-[11px] font-medium text-amber-900/80 leading-relaxed font-sans">
               The connection to the Molo BTC network has been interrupted. Your session is now in secure offline fallback mode—previously loaded research documents, cached articles, and Molo AI summaries remain fully accessible!
             </p>
             <div className="flex items-center gap-1.5 pt-1">
               <CloudLightning className="w-3.5 h-3.5 text-amber-600" />
-              <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-amber-700">Offline-Fallback Active</span>
+              <span className="text-[10px] font-medium text-amber-700">Offline-Fallback Active</span>
             </div>
           </div>
           <button 
@@ -89,7 +89,7 @@ export function OfflineBanner() {
             <Wifi className="w-5 h-5" />
           </div>
           <div className="flex-1 space-y-0.5">
-            <h4 className="text-xs font-black tracking-wider uppercase font-mono text-emerald-800">
+            <h4 className="text-xs font-bold text-emerald-900">
               Synchronized & Connected
             </h4>
             <p className="text-[11px] font-bold text-emerald-900/80 leading-relaxed font-sans">

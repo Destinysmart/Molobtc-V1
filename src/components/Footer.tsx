@@ -5,7 +5,7 @@ export function Footer() {
   return (
     <>
       {/* Contextual CTA */}
-      <section className="bg-gradient-to-b from-white to-[#FFFBF7] border-t border-gray-100 py-16 px-4 text-center">
+      <section className="bg-gradient-to-b from-white to-[#FFFBF7] py-16 px-4 text-center">
         <div className="mx-auto max-w-2xl">
           <h2 className="heading-display text-2xl font-bold text-gray-900 mb-4">
             Demystify Bitcoin for Everyone
@@ -17,7 +17,7 @@ export function Footer() {
              <a href="https://github.com/MoloBTC-Org" target="_blank" rel="noreferrer" className="w-full sm:w-auto rounded-xl bg-gray-950 px-6 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 transition-all shadow-md inline-flex items-center justify-center gap-2">
                Explore Molo BTC on GitHub
              </a>
-             <a href="#molo-ai" className="w-full sm:w-auto rounded-xl border border-gray-200 bg-white px-6 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-all inline-flex items-center justify-center">
+             <a href="#molo-ai" className="w-full sm:w-auto rounded-xl bg-white shadow-sm hover:shadow px-6 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-all inline-flex items-center justify-center">
                Ask Molo AI a Question
              </a>
           </div>
@@ -25,7 +25,7 @@ export function Footer() {
       </section>
 
       {/* Simple Footer */}
-      <footer className="bg-[#FFFBF7] border-t border-gray-100 py-12">
+      <footer className="bg-[#FFFBF7] py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-start justify-between gap-8 text-sm">
           <div className="max-w-md space-y-4">
             <div className="flex items-center h-10">
@@ -39,17 +39,13 @@ export function Footer() {
             <p className="text-gray-600 leading-relaxed text-xs">
               MoloBTC is an open-source Bitcoin research and discovery platform helping Africans understand, navigate, and participate in the Bitcoin ecosystem.
             </p>
-            <div className="text-[11px] text-brand-600 font-bold tracking-wide uppercase space-y-1">
-              <div>Research Bitcoin.</div>
-              <div>Discover Opportunities.</div>
-              <div>Navigate The Ecosystem.</div>
-            </div>
           </div>
           
           <div className="flex flex-col gap-4">
             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Quick Navigation</span>
             <div className="flex flex-wrap gap-4 md:flex-col md:gap-3 text-gray-500 font-medium">
               <a href="/#research" className="hover:text-gray-900 transition-colors">Research</a>
+              <a href="/#media" className="hover:text-gray-900 transition-colors">Media & Policy</a>
               <a href="/#molo-ai" className="hover:text-gray-900 transition-colors">Molo AI</a>
               <a href="/#support" className="hover:text-gray-900 transition-colors">Support & Donate</a>
               <a href="https://github.com/MoloBTC-Org" target="_blank" rel="noreferrer" className="hover:text-gray-900 transition-colors">GitHub profile</a>

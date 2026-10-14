@@ -17,7 +17,7 @@ export function ArticleTemplate() {
           <h1 className="heading-display text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
             How to secure a High-Paying Remote Tech Job in Bitcoin
           </h1>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 border-b border-gray-100 pb-8">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 pb-8">
             <div className="flex items-center gap-2">
                <img src="https://i.pravatar.cc/150?u=1" alt="Author" className="h-10 w-10 rounded-full" />
                <span className="font-medium text-gray-900">David L.</span>
@@ -37,7 +37,7 @@ export function ArticleTemplate() {
         </header>
 
         {/* AEO: Quick Answer Box */}
-        <div className="mb-10 rounded-2xl bg-brand-50 border border-brand-100 p-6 shadow-sm">
+        <div className="mb-10 rounded-2xl bg-orange-50/70 p-6 shadow-sm">
           <h3 className="font-bold text-brand-900 mb-2 flex items-center gap-2">
             <span className="bg-brand-500 text-white rounded-md px-2 py-0.5 text-xs">AEO Quick Answer</span>
           </h3>
@@ -47,7 +47,7 @@ export function ArticleTemplate() {
         </div>
 
         {/* AEO: Key Takeaways */}
-        <div className="mb-10 rounded-2xl bg-gray-50 border border-gray-200 p-6">
+        <div className="mb-10 rounded-2xl bg-gray-50 p-6 shadow-sm">
           <h3 className="font-bold text-gray-900 mb-4">Key Takeaways</h3>
           <ul className="space-y-2 text-gray-700 list-disc list-inside marker:text-brand-500">
             <li>Open-source contributions often outweigh traditional resumes.</li>
@@ -85,8 +85,8 @@ export function ArticleTemplate() {
         </div>
 
         {/* Author Bio */}
-        <div className="mt-16 bg-[#FFFBF7] rounded-3xl p-8 sm:p-10 border border-brand-100 flex flex-col sm:flex-row gap-6 sm:gap-8 items-center sm:items-start group transition-all hover:shadow-md">
-          <img src="https://i.pravatar.cc/150?u=1" alt="David L." className="h-24 w-24 sm:h-28 sm:w-28 rounded-full border-4 border-white shadow-sm shrink-0 object-cover" />
+        <div className="mt-16 bg-[#FFFBF7] rounded-3xl p-8 sm:p-10 shadow-sm flex flex-col sm:flex-row gap-6 sm:gap-8 items-center sm:items-start group transition-all hover:shadow-md">
+          <img src="https://i.pravatar.cc/150?u=1" alt="David L." className="h-24 w-24 sm:h-28 sm:w-28 rounded-full shadow-sm shrink-0 object-cover" />
           <div className="flex-1 flex flex-col items-center sm:items-start text-center sm:text-left">
             <h3 className="heading-display text-2xl font-bold text-gray-900 mb-2">David L.</h3>
             <p className="text-gray-600 mb-6 text-sm sm:text-base leading-relaxed">
@@ -97,10 +97,10 @@ export function ArticleTemplate() {
                 View Bitlance Profile <ArrowRight className="h-4 w-4 ml-1.5" />
               </a>
               <div className="flex items-center gap-2 ml-2">
-                <a href="#" className="p-2 text-gray-400 hover:text-gray-900 bg-white rounded-full border border-gray-200 transition-colors">
+                <a href="#" className="p-2 text-gray-400 hover:text-gray-900 bg-white rounded-full shadow-sm hover:shadow transition-all">
                   <Twitter className="h-4 w-4" />
                 </a>
-                <a href="#" className="p-2 text-gray-400 hover:text-gray-900 bg-white rounded-full border border-gray-200 transition-colors">
+                <a href="#" className="p-2 text-gray-400 hover:text-gray-900 bg-white rounded-full shadow-sm hover:shadow transition-all">
                   <Linkedin className="h-4 w-4" />
                 </a>
               </div>
@@ -109,12 +109,12 @@ export function ArticleTemplate() {
         </div>
 
         {/* Suggested Reading */}
-        <div className="mt-20 pt-16 border-t border-gray-100">
+        <div className="mt-20 pt-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <h3 className="text-2xl font-bold text-gray-900">Suggested Reading</h3>
             <div className="flex gap-2">
-               <a href="#" className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-semibold text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors border border-gray-200">#RemoteWork</a>
-               <a href="#" className="inline-flex items-center rounded-md bg-brand-50 px-2 py-1 text-xs font-semibold text-brand-600 hover:bg-brand-100 transition-colors border border-brand-100">#BitcoinCareers</a>
+               <a href="#" className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-colors">#RemoteWork</a>
+               <a href="#" className="inline-flex items-center rounded-md bg-orange-100/70 px-2.5 py-1 text-xs font-semibold text-brand-700 hover:bg-orange-200/70 transition-colors">#BitcoinCareers</a>
             </div>
           </div>
           
@@ -124,7 +124,7 @@ export function ArticleTemplate() {
                  <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2670&auto=format&fit=crop" alt="Article cover" className="h-full w-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out" />
               </div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-semibold text-brand-600 uppercase tracking-wider">Bitcoin Careers</span>
+                <span className="text-xs font-semibold text-brand-600">Bitcoin Careers</span>
               </div>
               <h4 className="heading-display text-xl font-bold text-gray-900 mb-2 leading-snug group-hover:text-brand-600 transition-colors">
                 10 Best Niches for Bitcoin Freelancers in 2026
@@ -141,7 +141,7 @@ export function ArticleTemplate() {
                  <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=2670&auto=format&fit=crop" alt="Article cover" className="h-full w-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out" />
               </div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-semibold text-brand-600 uppercase tracking-wider">Client Acquisition</span>
+                <span className="text-xs font-semibold text-brand-600">Client Acquisition</span>
               </div>
               <h4 className="heading-display text-xl font-bold text-gray-900 mb-2 leading-snug group-hover:text-brand-600 transition-colors">
                 Building a Portfolio That Bitcoin Companies Love

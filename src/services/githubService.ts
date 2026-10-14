@@ -6,14 +6,56 @@
 import { GitHubRepo } from "../types";
 
 const fallbackRepos: GitHubRepo[] = [
+  // Official Top-Level Repositories
+  {
+    id: "bsrf",
+    name: "Bitcoin Sovereignty Research Framework (BSRF)",
+    description: "A professional research repository for the legal and policy treatment of Bitcoin as sui generis bearer property and adjacent currency. Includes foundational whitepapers, ISA/IEC 62443 custody blueprints, and capital regulation objections.",
+    url: "https://github.com/MoloBTC-Org/bsrf",
+    stars: 3,
+    forks: 0,
+    updated_at: "2026-09-30T10:47:52Z",
+    language: "Markdown / Policy",
+  },
+  {
+    id: "bsol",
+    name: "Bitcoin Sovereign Open Source License (BSOL) v1.0",
+    description: "Canonical home of BSOL v1.0 and the Sovereign Bitcoin Knowledge Declaration. A Bitcoin-native gift license treating knowledge as non-rivalrous, refusing enclosure, and establishing sovereign rights.",
+    url: "https://github.com/MoloBTC-Org/bsol",
+    stars: 1,
+    forks: 0,
+    updated_at: "2026-09-03T13:07:11Z",
+    language: "Legal / License",
+  },
+  {
+    id: "bbpp",
+    name: "Bitcoin Best Practice Protocol (BBPP)",
+    description: "Framework and future client for monetary-efficient Bitcoin nodes. Identical consensus. Policy and defaults may differ. Documentation first, addressing policy defaults, spam filters, and DATUM templates.",
+    url: "https://github.com/MoloBTC-Org/bbpp",
+    stars: 0,
+    forks: 0,
+    updated_at: "2026-10-04T20:17:32Z",
+    language: "C++ / Protocol",
+  },
+  {
+    id: "sgas",
+    name: "Sovereign Grok Agent Suite (SGAS) v1.0.1",
+    description: "A modular collection of documents for building sovereign, secure, and practical AI agent systems with Grok Build for Bitcoin protocol and sovereign research.",
+    url: "https://github.com/MoloBTC-Org/sgas",
+    stars: 1,
+    forks: 0,
+    updated_at: "2026-10-04T19:28:10Z",
+    language: "Makefile / Agentic",
+  },
+  // Foundational Research Papers and Tracks under BSRF
   {
     id: "bitcoin-self-custody-sovereign-infrastructure",
     name: "Bitcoin Self-Custody as Sovereign Monetary Infrastructure",
     description: "Historical Patterns, Risk Principles, and Organizational Implementation. A policy whitepaper outlining multi-signature architectures, air-gapped signing, and full-node validation aligned with industrial security standard ISA/IEC 62443.",
     url: "https://github.com/MoloBTC-Org/bsrf/blob/main/foundations/04_Tier1_Sovereign_Monetary_Infrastructure_v1.md",
-    stars: 42,
-    forks: 8,
-    updated_at: "2026-06-09T12:00:00Z",
+    stars: 3,
+    forks: 0,
+    updated_at: "2026-09-30T10:47:52Z",
     language: "PDF/Markdown",
   },
   {
@@ -21,9 +63,9 @@ const fallbackRepos: GitHubRepo[] = [
     name: "Bitcoin as Adjacent Currency Under International Law",
     description: "The Global Case for Sui Generis Bearer Property, Separate Local Realization Taxation, and Double-Tax Coordination Principles. Grounded in Natural Law and Austrian economics.",
     url: "https://github.com/MoloBTC-Org/bsrf/blob/main/foundations/03_Tier1_Adjacent_Currency_v1.md",
-    stars: 37,
-    forks: 5,
-    updated_at: "2026-06-15T12:00:00Z",
+    stars: 3,
+    forks: 0,
+    updated_at: "2026-09-30T10:47:52Z",
     language: "PDF/Markdown",
   },
   {
@@ -31,9 +73,9 @@ const fallbackRepos: GitHubRepo[] = [
     name: "Bitcoin Self-Custody Research Ecosystem",
     description: "Tier 2 - Executive Overview & Reading Guide. Serves as the gateway to the Tier 2 operational collection, outlining structured reading paths for treasury, finance, and security teams.",
     url: "https://github.com/MoloBTC-Org/bsrf/blob/main/begin_here/03_Bitcoin_Self_Custody_Research_Ecosystem_Index_v1.md",
-    stars: 29,
-    forks: 4,
-    updated_at: "2026-06-16T12:00:00Z",
+    stars: 3,
+    forks: 0,
+    updated_at: "2026-09-30T10:47:52Z",
     language: "PDF/Markdown",
   },
   {
@@ -41,9 +83,9 @@ const fallbackRepos: GitHubRepo[] = [
     name: "Objection / Submission Template: Draft Capital Flow Regulations",
     description: "A comprehensive submission template addressing South Africa's Draft Capital Flow Management Regulations 2026, highlighting constitutional property protections and rights to private compute.",
     url: "https://github.com/MoloBTC-Org/bsrf/blob/main/jurisdictions/south_africa/South_Africa_Public_Comment_Template_v1.md",
-    stars: 53,
-    forks: 14,
-    updated_at: "2026-06-20T12:00:00Z",
+    stars: 3,
+    forks: 0,
+    updated_at: "2026-09-30T10:47:52Z",
     language: "PDF/LaTeX",
   },
   {
@@ -51,9 +93,9 @@ const fallbackRepos: GitHubRepo[] = [
     name: "Bitcoin as Sui Generis Bearer Property",
     description: "The Natural-Law and Austrian Case for Tax-Free Treatment of Self-Custodied Bitcoin. A focused deductive argument analyzing digital scarcity and the limits of legitimate state coercion.",
     url: "https://github.com/MoloBTC-Org/bsrf/blob/main/foundations/02_Tier1_Sui_Generis_Bearer_Property_v1.md",
-    stars: 31,
-    forks: 6,
-    updated_at: "2026-06-12T12:00:00Z",
+    stars: 3,
+    forks: 0,
+    updated_at: "2026-09-30T10:47:52Z",
     language: "PDF/Markdown",
   },
   {
@@ -61,14 +103,18 @@ const fallbackRepos: GitHubRepo[] = [
     name: "Bitcoin Sovereignty Core Principles",
     description: "The Authoritative Foundation of the Bitcoin Sovereignty Research Framework. Detailing the nine core principles including private compute, adjacent currency status, and protection against compelled disclosure.",
     url: "https://github.com/MoloBTC-Org/bsrf/blob/main/begin_here/01_Bitcoin_Sovereignty_Core_Principles_v1.md",
-    stars: 48,
-    forks: 11,
-    updated_at: "2026-06-05T12:00:00Z",
+    stars: 3,
+    forks: 0,
+    updated_at: "2026-09-30T10:47:52Z",
     language: "PDF/Markdown",
   }
 ];
 
 const rawUrls: Record<string, string> = {
+  "bsrf": "https://raw.githubusercontent.com/MoloBTC-Org/bsrf/main/README.md",
+  "bsol": "https://raw.githubusercontent.com/MoloBTC-Org/bsol/main/README.md",
+  "bbpp": "https://raw.githubusercontent.com/MoloBTC-Org/bbpp/main/README.md",
+  "sgas": "https://raw.githubusercontent.com/MoloBTC-Org/sgas/main/README.md",
   "bitcoin-self-custody-sovereign-infrastructure": "https://raw.githubusercontent.com/MoloBTC-Org/bsrf/main/foundations/04_Tier1_Sovereign_Monetary_Infrastructure_v1.md",
   "bitcoin-adjacent-currency-international-law": "https://raw.githubusercontent.com/MoloBTC-Org/bsrf/main/foundations/03_Tier1_Adjacent_Currency_v1.md",
   "bitcoin-self-custody-research-ecosystem": "https://raw.githubusercontent.com/MoloBTC-Org/bsrf/main/begin_here/03_Bitcoin_Self_Custody_Research_Ecosystem_Index_v1.md",
@@ -78,6 +124,60 @@ const rawUrls: Record<string, string> = {
 };
 
 const docsMap: Record<string, string> = {
+  "bsrf": `# Bitcoin Sovereignty Research Framework (BSRF)
+**A professional research repository for the legal and policy treatment of Bitcoin as sui generis bearer property and adjacent currency.**
+*Canonical Repository: https://github.com/MoloBTC-Org/bsrf*  
+*License: Bitcoin Sovereign Open Source License (BSOL v1.0)*
+
+## Scope and Purpose
+This repository provides legal, policy, and technical blueprints establishing:
+1. **Sui Generis Bearer Property**: Digital scarcity homesteading through Proof-of-Work energy expenditure.
+2. **Adjacent Currency Recognition**: Bitcoin functioning as an autonomous global commons currency beyond administrative double taxation.
+3. **Right to Sovereign Compute**: The constitutional protection of running self-hosted validation nodes.
+4. **ISA/IEC 62443 Enterprise Custody**: Applying industrial automation zones and conduits to institutional key security.
+`,
+  "bsol": `# Bitcoin Sovereign Open Source License (BSOL) v1.0
+**Canonical home of BSOL v1.0 and the Sovereign Bitcoin Knowledge Declaration.**
+*Published by: MoloBTC-Org*  
+*Steward: Jacques Strydom, PMP (Jabulani Jakes)*  
+*Website: www.MoloBTC.africa*
+
+## What this is
+BSOL is a Bitcoin-native gift license.
+It is for Bitcoin-related code, papers, analyses, curricula, declarations, designs, and reference implementations.
+It treats knowledge and code as non-rivalrous. It refuses enclosure. It places no responsibility on the user of a work published under it.
+
+## How to use it
+1. Copy \`LICENSE.md\` into the root of your project.
+2. If you want people to find the terms, point to that file. That is the whole method.
+Attribution is voluntary. If you name the source, you are recording a method, not paying a toll.
+`,
+  "bbpp": `# Bitcoin Best Practice Protocol (BBPP)
+**Framework first. Explicit client later. Identical consensus.**
+*Published by: MoloBTC-Org*  
+*License: BSOL v1.0*
+
+## Core Mission
+A purpose-driven project for Bitcoin (and other UTXO proof-of-work payment networks) that treats **monetary efficiency** as something you can measure, not a slogan.
+
+## Key Principles & Scope
+- **Policy Defaults & Antispam**: Zero datacarriersize, parasite rejection, and seven active antispam rules.
+- **Template Sovereignty**: DATUM decentralized mining template generation (hasher sees the mempool).
+- **Post-Validation Storage**: Efficient monetary node architectures.
+- **Non-Goals**: No consensus changes, no hard fork on the primary line, no arbitrary on-chain bloat.
+`,
+  "sgas": `# Sovereign Grok Agent Suite (SGAS) v1.0.1
+**A modular collection of documents for building sovereign, secure, and practical AI agent systems with Grok Build.**
+*Canonical hub: github.com/MoloBTC-Org/sgas*  
+*License: BSOL v1.0*  
+*Authorship: Jacques Strydom, PMP (@JabulaniJakes) in collaboration with Grok (xAI)*
+
+## Architecture
+- **Sovereignty & Local-First**: Worktrees, plan mode, strict permissions, and private compute.
+- **Zero Trust MCP Servers**: Secure tool calling interfaces for autonomous agents.
+- **Hardware-Aware Tiers**: Entry, Balanced, and Top tiers supporting emerging-market infrastructure.
+- **Grok-Native Pipelines**: Full integration from prompt engineering to local execution.
+`,
   "bitcoin-self-custody-sovereign-infrastructure": `# Bitcoin Self-Custody as Sovereign Monetary Infrastructure
 **Historical Patterns, Risk Principles, and Organizational Implementation**
 *Compiled by Jabulani Jakes, Research Collaboration with Grok (built by xAI), 9 June 2026*
@@ -89,11 +189,6 @@ This policy whitepaper synthesizes three essential layers of organizational sove
 3. **Practical Implementation Pathways**: Detailing multi-signature setups, air-gapped signing computers, and localized full-node routing.
 
 It positions self-custody not as a simple IT preference, but as a core fiduciary and sovereign responsibility for modern institutions.
-
-## Crucial Security Implementations
-- **Air-Gapped Signers**: Utilizing dedicated, non-networked hardware micro-controllers for localized key generation and transaction signing.
-- **Multisig Configurations**: Transitioning from single-point-of-failure storage to 2-of-3 or 3-of-5 distributed setups across geographical boundaries.
-- **Sovereign Node Validation**: Routing all transaction broadcasts and state checks through a dedicated self-hosted full node rather than third-party APIs.
 `,
   "bitcoin-adjacent-currency-international-law": `# Bitcoin as Adjacent Currency Under International Law
 **The Case for Sui Generis Bearer Property, Separate Local Realization Taxation, and Double-Tax Coordination**
@@ -101,65 +196,45 @@ It positions self-custody not as a simple IT preference, but as a core fiduciary
 
 ## Abstract & Legal Position
 This research establishes the global normative case for treating self-custodied Bitcoin as an *adjacent currency* operating in the international commons of protocol and energy. 
-
-Because Bitcoin exists as memorized or mathematically recovered knowledge rather than physical or state-licensed property, it defies traditional territorial jurisdictional boundaries. We argue that:
 - Bitcoin is functionally a **Sui Generis Bearer Asset**.
 - Mere holding, moving, or unrealized appreciation must remain outside the tax base.
-- States should limit taxing rights strictly to local, realized economic activity (e.g., conversion to local fiat or local commercial purchases).
-- Tax rates and rules must be coordinated internationally via principles analogous to Double Tax Agreements (DTAs) to prevent rights-violating capital blockades.
+- States should limit taxing rights strictly to local, realized economic activity.
 `,
   "bitcoin-self-custody-research-ecosystem": `# Bitcoin Self-Custody Research Ecosystem
 **Tier 2 — Executive Overview & Reading Guide**
 *Prepared by Jacques Strydom, PMP (Project Owner & Creator) & MoloBTC, June 2026*
 
 ## Introduction
-This reading guide serves as the authoritative gateway to the Tier 2 operational research collection. The collection consists of three companion papers designed to enable boards, treasury officers, and technical security teams to align competencies and implement robust Bitcoin custody:
-
-1. **Centralized Monetary Governance**: A review of monetary history and the recurring patterns of administrative debasement.
-2. **Organizational Risk-Mitigation Framework**: A technical audit blueprint analyzing counterparty exposures and mitigation protocols.
-3. **Critical Monetary Infrastructure**: Practical training and implementation pathways for industrial-grade offline operations.
-
-This ecosystem provides the conceptual scaffolding necessary for complete institutional self-determination and capital preservation.
+This reading guide serves as the authoritative gateway to the Tier 2 operational research collection for boards, treasury officers, and technical security teams.
 `,
   "capital-flow-regulations-objection-template": `# Objection & Submission Template: Capital Flow Management
 **Objection to the Draft Capital Flow Management Regulations 2026**
 *Prepared by MoloBTC, June 2026*
 
 ## Summary of Objection
-This template provides the legal and constitutional grounds to object to proposed Capital Flow Management restrictions. It outlines how administrative attempts to restrict outbound transactions or compel disclosure of cryptographic keys violate fundamental rights:
-- **Constitutional Property Protections**: Restricting private transacting operates as an unconstitutional administrative seizure.
-- **Privacy of Mind**: Compelled disclosure of memorized brain-wallets or private words violates the absolute privacy of human consciousness.
-- **Right to Private Compute**: Running a Bitcoin full node is a protected expression of mathematical speech and private calculation.
-
-The document contains pre-drafted alternative legislative language designed to recognize Bitcoin as a *sui generis* adjacent currency rather than an exportable capital asset.
+This template provides the legal and constitutional grounds to object to proposed Capital Flow Management restrictions, defending property protections, privacy of mind, and the right to private compute.
 `,
   "bitcoin-as-sui-generis-bearer-property": `# Bitcoin as Sui Generis Bearer Property
 **The Natural-Law and Austrian Case for Tax-Free Treatment of Self-Custodied Bitcoin**
 *Prepared by Jabulani Jakes & Grok, June 2026*
 
 ## Core Deductive Arguments
-This paper outlines the philosophical and economic case for the exemption of self-custodied Bitcoin from arbitrary capital levies and holding taxes:
-1. **Energy-Based Homesteading**: Bitcoin arises spontaneously through purposeful energy expenditure (Proof of Work). It represents direct physical homesteading in the digital digital commons.
-2. **Absence of State Privilege**: Unlike corporate stocks, real estate, or fiat banking deposits, Bitcoin requires no state infrastructure, courts, or registries to exist or transfer securely.
-3. **The Nature of Holding**: Holding a private key is merely holding mathematical knowledge. Taxing the mere holding of knowledge is an unprecedented and illegitimate overreach of administrative coercion.
-
-We conclude that the state has no rightful claim to levy taxes on the mere holding, movement, or unrealized appreciation of self-custodied cryptographic keys.
+This paper outlines the philosophical and economic case for the exemption of self-custodied Bitcoin from arbitrary capital levies and holding taxes.
 `,
   "bitcoin-sovereignty-core-principles": `# Bitcoin Sovereignty Core Principles
 **The Authoritative Foundation of the Bitcoin Sovereignty Research Framework**
 *Published by MoloBTC Research Lab, Version 1.0, June 2026*
 
 ## The Nine Pillars of Sovereignty
-This document presents the nine non-negotiable principles required to preserve human liberty and transaction rights in the digital age:
-1. **Sui Generis Bearer Property**: Bitcoin is an absolute, issuer-free, self-secured bearer asset.
-2. **Adjacent Currency Recognition**: Bitcoin operates as a sovereign parallel currency in the global protocol commons.
-3. **Right to Sovereign Private Compute**: The absolute right to run open-source software, including Bitcoin full nodes, on private devices.
-4. **Self-Custody as the Highest Standard**: Fiduciary and personal custody must be direct and independent of intermediaries.
-5. **No Compelled Key Disclosure**: Protection of private seed words as sacred, non-disclosable mental information.
-6. **Realization-Based Taxation with Territorial Nexus**: Strictly taxing only conversion events, never holding or transport.
-7. **Absolute Freedom of Transaction**: Banning censorship or blacklisting at the protocol or local application layers.
-8. **Thermodynamic Consensus Security**: Preserving pure, unmanipulated Proof-of-Work against administrative regulatory capture.
-9. **No Issuer-Dependence**: Clearly separating Bitcoin from debt-based, centralized, or issuer-dependent utility tokens.
+1. Sui Generis Bearer Property
+2. Adjacent Currency Recognition
+3. Right to Sovereign Private Compute
+4. Self-Custody as the Highest Standard
+5. No Compelled Key Disclosure
+6. Realization-Based Taxation with Territorial Nexus
+7. Absolute Freedom of Transaction
+8. Thermodynamic Consensus Security
+9. No Issuer-Dependence
 `
 };
 
@@ -211,24 +286,35 @@ export class GitHubService {
       
       // Attempt to retrieve live stars/forks count directly from GitHub API for real-time authenticity
       try {
-        console.log("[GitHubService] Fetching live stats directly from public GitHub API: https://api.github.com/repos/MoloBTC-Org/bsrf");
-        const ghRes = await fetch("https://api.github.com/repos/MoloBTC-Org/bsrf", {
+        console.log("[GitHubService] Fetching live stats directly from public GitHub API: https://api.github.com/orgs/MoloBTC-Org/repos");
+        const ghRes = await fetch("https://api.github.com/orgs/MoloBTC-Org/repos", {
           headers: { "Accept": "application/vnd.github.v3+json" }
         });
         console.log("[GitHubService] Public GitHub API response status:", ghRes.status, "OK:", ghRes.ok);
         if (ghRes.ok) {
           const ghData = await ghRes.json();
-          console.log("[GitHubService] Public GitHub API response parsed:", ghData);
-          const stars = ghData.stargazers_count ?? 42;
-          const forks = ghData.forks_count ?? 8;
-          console.log(`[GitHubService] Applying live stats - Stars: ${stars}, Forks: ${forks} to fallbackRepos.`);
-          const mapped = fallbackRepos.map(repo => ({
-            ...repo,
-            stars,
-            forks
-          }));
-          console.log("[GitHubService] Mapped fallback repos:", mapped);
-          return mapped;
+          if (Array.isArray(ghData)) {
+            const statsMap: Record<string, { stars: number; forks: number; updated_at?: string }> = {};
+            ghData.forEach((r: any) => {
+              statsMap[r.name.toLowerCase()] = {
+                stars: r.stargazers_count ?? 0,
+                forks: r.forks_count ?? 0,
+                updated_at: r.updated_at
+              };
+            });
+            const mapped = fallbackRepos.map(repo => {
+              const directStat = statsMap[repo.id.toLowerCase()];
+              const parentStat = statsMap["bsrf"];
+              return {
+                ...repo,
+                stars: directStat ? directStat.stars : (parentStat ? parentStat.stars : repo.stars),
+                forks: directStat ? directStat.forks : (parentStat ? parentStat.forks : repo.forks),
+                updated_at: directStat?.updated_at || parentStat?.updated_at || repo.updated_at
+              };
+            });
+            console.log("[GitHubService] Mapped fallback repos with live GitHub stats:", mapped);
+            return mapped;
+          }
         } else {
           console.warn("[GitHubService] Public GitHub API returned non-ok status. Might be rate-limited.");
         }
