@@ -254,7 +254,7 @@ export function ExternalMentions() {
                       <a
                         href={item.url}
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener"
                         className="group/img block w-full h-full relative"
                       >
                         <img
@@ -305,7 +305,7 @@ export function ExternalMentions() {
                     <a
                       href={item.url}
                       target="_blank"
-                      rel="noopener noreferrer"
+                      rel="noopener"
                       className="hover:text-brand-600 transition-colors"
                     >
                       {item.title}
@@ -323,7 +323,7 @@ export function ExternalMentions() {
                   <a
                     href={item.url}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
                     className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 active:scale-95 ${
                       isVideo
                         ? "bg-brand-500 hover:bg-brand-600 text-white shadow-sm shadow-brand-500/20"

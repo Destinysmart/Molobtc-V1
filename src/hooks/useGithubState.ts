@@ -5,11 +5,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { GitHubRepo, RepoState } from "../types";
-import { githubService } from "../services/githubService";
+import { githubService, fallbackRepos } from "../services/githubService";
 
 export function useGithubState() {
   const [repoState, setRepoState] = useState<RepoState>({
-    repos: [],
+    repos: fallbackRepos,
     selectedRepo: null,
     repoContent: "",
     isLoadingRepos: false,

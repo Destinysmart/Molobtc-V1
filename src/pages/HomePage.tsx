@@ -66,7 +66,7 @@ function TypewriterHeader() {
   const fullText = "See Bitcoin Through The Orange Lens";
   const baseLength = 20; // Length of "See Bitcoin Through "
   
-  const [displayText, setDisplayText] = useState("");
+  const [displayText, setDisplayText] = useState(fullText);
   const [isDeleting, setIsDeleting] = useState(false);
   const [typingSpeed, setTypingSpeed] = useState(80);
 
@@ -713,7 +713,7 @@ export function HomePage() {
 
                       <div className="flex items-center gap-4 text-[11px] font-mono text-gray-450 pt-3">
                         <span>Format: <strong className="text-gray-700">{repo.language || "PDF"}</strong></span>
-                        <span>Updated: <strong className="text-gray-700">{repo.updated_at ? new Date(repo.updated_at).toLocaleDateString() : "Just now"}</strong></span>
+                        <span>Updated: <strong className="text-gray-700">{repo.updated_at ? repo.updated_at.split('T')[0] : "Recent"}</strong></span>
                       </div>
                     </div>
 

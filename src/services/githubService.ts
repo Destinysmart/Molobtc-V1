@@ -390,4 +390,4 @@ export class GitHubService {
 }
 
 export const githubService = GitHubService.getInstance();
-
+export { fallbackRepos };

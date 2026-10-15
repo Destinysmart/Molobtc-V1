@@ -8,8 +8,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { OfflineBanner } from "./components/OfflineBanner";
 
+import { HomePage } from "./pages/HomePage";
+
 // Dynamic optimized code-splitting chunks
-const HomePage = lazy(() => import("./pages/HomePage").then(m => ({ default: m.HomePage })));
 const ArticlePage = lazy(() => import("./pages/ArticlePage").then(m => ({ default: m.ArticlePage })));
 const DonatePage = lazy(() => import("./pages/DonatePage").then(m => ({ default: m.DonatePage })));
 
