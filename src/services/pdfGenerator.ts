@@ -1,11 +1,11 @@
-import { jsPDF } from "jspdf";
 import { documentsData, DocPage } from "./pdfDocuments";
 
 /**
  * Generates and downloads a high-fidelity, multi-page academic PDF
  * representing the full content of a sovereign MoloBTC research paper.
  */
-export function downloadSovereignPdf(repoId: string, repoName: string): void {
+export async function downloadSovereignPdf(repoId: string, repoName: string): Promise<void> {
+  const { jsPDF } = await import("jspdf");
   const currentDoc: DocPage[] = documentsData[repoId] || documentsData["bitcoin-self-custody-sovereign-infrastructure"];
   const totalPages = currentDoc.length;
 

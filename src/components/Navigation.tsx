@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { 
   Bitcoin, 
   Menu, 
@@ -16,8 +16,9 @@ import {
   Scale
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { SearchOverlay } from "./SearchOverlay";
 import molobtcLogo from "../assets/images/molobtc_official_logo_1781542833685.jpg";
+
+const SearchOverlay = lazy(() => import("./SearchOverlay").then(m => ({ default: m.SearchOverlay })));
 
 export function Navigation() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -73,12 +74,12 @@ export function Navigation() {
           {/* Quick Search Button */}
           <button
             onClick={() => setIsSearchOpen(true)}
-            className="flex items-center gap-2 px-3 py-1.5 text-xs text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-200/70 transition-colors cursor-pointer"
-            title="Search (⌘K)"
+            className="flex items-center gap-2 px-3.5 py-1.5 text-xs text-gray-600 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-200/70 transition-colors cursor-pointer"
+            title="Search"
+            aria-label="Search research and articles"
           >
             <Search className="w-3.5 h-3.5 text-gray-500" />
             <span className="hidden sm:inline font-medium">Search</span>
-            <kbd className="hidden lg:inline-block text-[10px] bg-white px-1.5 py-0.5 rounded border border-gray-200 text-gray-400 font-mono">⌘K</kbd>
           </button>
 
           {/* Mobile Menu trigger */}
@@ -94,7 +95,11 @@ export function Navigation() {
         </div>
       </div>
     </nav>
-    <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+    {isSearchOpen && (
+      <Suspense fallback={null}>
+        <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      </Suspense>
+    )}
 
     {/* Responsive Modern Mobile Side Overlay Drawer */}
     <AnimatePresence>

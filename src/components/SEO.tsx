@@ -16,7 +16,7 @@ interface SEOProps {
 }
 
 export function SEO({
-  title = "Molo BTC - Beginner-Friendly Bitcoin Research Workspace",
+  title = "Molo BTC - Sovereign Bitcoin Research Platform",
   description = "Breaking down the physical, digital, and monetary complexity of Bitcoin into beautiful, easily digestible open-source research summaries.",
   image = "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=2670&auto=format&fit=crop",
   url = "https://github.com/MoloBTC-Org",
@@ -96,7 +96,7 @@ export function SEO({
         "sameAs": "https://en.wikipedia.org/wiki/Proof_of_work"
       }
     ],
-    "educationalLevel": "Beginner-Friendly Science Workspace",
+    "educationalLevel": "Beginner-Friendly Science Platform",
     "learningResourceType": "Analytical Research Study",
     ...(articleBody ? { "articleBody": articleBody.substring(0, 10000) } : {}),
     ...(keyTakeaways ? { "abstract": keyTakeaways.join(". ") } : {})

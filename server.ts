@@ -1,4 +1,5 @@
 import express from "express";
+import compression from "compression";
 import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
@@ -16,18 +17,54 @@ const defaultDbStructure = {
     { id: "c4", name: "Monetary Economics", slug: "monetary-economics" },
   ],
   tags: [],
+  analytics: {
+    totalPageViews: 0,
+    uniqueVisitors: 0,
+    visitorIds: [] as string[],
+    pages: {} as Record<string, { path: string; views: number; visitors: number }>,
+    sources: { "Direct / None": 0, "google.com (Organic)": 0, "github.com (Referral)": 0, "x.com (Social)": 0, "bitcoinafricastory.com (Press)": 0 } as Record<string, number>,
+    devices: { desktop: 0, mobile: 0, tablet: 0 } as Record<string, number>,
+    browsers: { Chrome: 0, Safari: 0, Firefox: 0, Edge: 0, Opera: 0 } as Record<string, number>,
+    operatingSystems: { macOS: 0, Windows: 0, iOS: 0, Android: 0, Linux: 0 } as Record<string, number>,
+    countries: { "South Africa": 0, "Nigeria": 0, "Kenya": 0, "Ghana": 0, "United States": 0, "United Kingdom": 0, "Germany": 0 } as Record<string, number>,
+    whitepaperDownloads: {
+      bsrf: 0,
+      bsol: 0,
+      bbpp: 0,
+      sgas: 0,
+      "capital-flow-regulations": 0,
+      "sui-generis-bearer-property": 0,
+      "self-custody-ecosystem": 0,
+      "sovereign-monetary-infrastructure": 0,
+      "nine-pillars-sovereignty": 0,
+    } as Record<string, number>,
+    aiQueriesCount: 0,
+    lightningInteractions: {
+      copy_address: 0,
+      donate_click: 0,
+    },
+    searchQueries: [] as Array<{ query: string; count: number }>,
+    mediaClicks: {
+      "Bitcoin Africa Story": 0,
+      "Free Market Foundation": 0,
+    } as Record<string, number>,
+    dailyStats: [] as Array<{ date: string; pageviews: number; downloads: number; aiQueries: number; visitors: number; visitorIds?: string[] }>,
+    recentEvents: [] as Array<{ id: string; type: string; label: string; detail: string; timestamp: string; path?: string; device?: string; browser?: string; os?: string; referrer?: string }>,
+  },
   users: [
     {
       id: "admin-1",
       role: "admin",
-      name: "Molo BTC Lead Researcher",
+      name: "Jacques Strydom, PMP (@jabulanijakes)",
+      title: "Project Lead & Sovereign Researcher",
       avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=200&auto=format&fit=crop",
     },
     {
       id: "pub-1",
-      role: "publisher",
-      name: "Molo BTC Open-Source Contributor",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop",
+      role: "contributor",
+      name: "MoloBTC Open-Source Syndicate",
+      title: "Core Contributor",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
     },
   ],
 };
@@ -44,6 +81,9 @@ function getDb() {
       // Auto-migrate lower-case organization URL to the main MoloBTC-Org organization
       data = data.replace(/github\.com\/molobtc/g, "github.com/MoloBTC-Org");
       memoryDb = JSON.parse(data);
+      if (!memoryDb.analytics) {
+        memoryDb.analytics = JSON.parse(JSON.stringify(defaultDbStructure.analytics));
+      }
       console.log("[server.ts] Successfully read existing db.json file and migrated lower-case github links.");
       return memoryDb;
     }
@@ -86,7 +126,7 @@ if (dbData.articles.length === 0 || hasOldSeeds) {
     {
       id: "admin-1",
       role: "admin",
-      name: "Molo BTC Research Lab",
+      name: "Jacques Strydom, PMP (@jabulanijakes)",
       avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=200&auto=format&fit=crop",
     },
     {
@@ -321,7 +361,7 @@ if (!dynamicDb.ecosystemTabs) {
       subtitle: "Explore modular mining & energy operators",
       curatedPaths: [
         { name: "Gridless Energy Solutions", url: "https://gridless.com/", desc: "Leading the charge of distributed micro-mining grids using stranded hydro energy in East Africa." },
-        { name: "Mining Mechanics Simplified Guide", url: "#research-workspace", desc: "Our downloadable handbook detailing hashing hardware, mining pools, and container setups." }
+        { name: "Mining Mechanics Simplified Guide", url: "#research", desc: "Our downloadable handbook detailing hashing hardware, mining pools, and container setups." }
       ]
     },
     use: {
@@ -395,6 +435,9 @@ if (homepageDirty) {
 async function startServer() {
   const app = express();
 
+  // Compress all responses (gzip / brotli / deflate) for maximum transfer speed
+  app.use(compression());
+
   // Increase payload limit for base64 image uploads in tiptap
   app.use(express.json({ limit: "50mb" }));
 
@@ -432,6 +475,320 @@ async function startServer() {
     }
   });
 
+  // ==========================================
+  // Built-in Sovereign Analytics Routes (100% Free, Zero Cookies, Privacy-First)
+  // ==========================================
+  app.post("/api/analytics/event", (req, res) => {
+    try {
+      const db = getDb();
+      if (!db.analytics) {
+        db.analytics = JSON.parse(JSON.stringify(defaultDbStructure.analytics));
+      }
+
+      const { eventName, visitorId, props } = req.body || {};
+      if (!eventName) {
+        return res.status(400).json({ error: "eventName is required" });
+      }
+
+      // Track real unique visitors across the platform
+      if (!db.analytics.visitorIds) {
+        db.analytics.visitorIds = [];
+      }
+      if (visitorId && typeof visitorId === "string" && !db.analytics.visitorIds.includes(visitorId)) {
+        db.analytics.visitorIds.push(visitorId);
+      }
+      db.analytics.uniqueVisitors = db.analytics.visitorIds.length || 1;
+
+      // Today's date string for daily bucket, e.g. "Oct 19"
+      const now = new Date();
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const dateStr = `${monthNames[now.getMonth()]} ${String(now.getDate()).padStart(2, "0")}`;
+
+      // Find or create daily stat entry
+      let todayStat = db.analytics.dailyStats.find((d: any) => d.date === dateStr);
+      if (!todayStat) {
+        todayStat = { date: dateStr, pageviews: 0, downloads: 0, aiQueries: 0, visitors: 0, visitorIds: [] };
+        db.analytics.dailyStats.push(todayStat);
+        if (db.analytics.dailyStats.length > 30) {
+          db.analytics.dailyStats.shift();
+        }
+      }
+      if (!todayStat.visitorIds) {
+        todayStat.visitorIds = [];
+      }
+      if (visitorId && typeof visitorId === "string" && !todayStat.visitorIds.includes(visitorId)) {
+        todayStat.visitorIds.push(visitorId);
+      }
+      todayStat.visitors = Math.max(todayStat.visitorIds.length, 1);
+
+      // Record device, browser, OS, source breakdowns
+      if (!db.analytics.devices) db.analytics.devices = { desktop: 0, mobile: 0, tablet: 0 };
+      const dev = (props?.device as string) || "desktop";
+      db.analytics.devices[dev] = (db.analytics.devices[dev] || 0) + 1;
+
+      if (!db.analytics.browsers) db.analytics.browsers = { Chrome: 0, Safari: 0, Firefox: 0, Edge: 0, Opera: 0 };
+      const brw = (props?.browser as string) || "Chrome";
+      db.analytics.browsers[brw] = (db.analytics.browsers[brw] || 0) + 1;
+
+      if (!db.analytics.operatingSystems) db.analytics.operatingSystems = { macOS: 0, Windows: 0, iOS: 0, Android: 0, Linux: 0 };
+      const os = (props?.os as string) || "macOS";
+      db.analytics.operatingSystems[os] = (db.analytics.operatingSystems[os] || 0) + 1;
+
+      if (!db.analytics.sources) db.analytics.sources = { "Direct / None": 0, "google.com (Organic)": 0, "github.com (Referral)": 0, "x.com (Social)": 0, "bitcoinafricastory.com (Press)": 0 };
+      const srcRef = (props?.referrer as string) || "Direct / None";
+      db.analytics.sources[srcRef] = (db.analytics.sources[srcRef] || 0) + 1;
+
+      // Record page views per route
+      if (!db.analytics.pages) db.analytics.pages = {};
+      const targetPath = (props?.path as string) || "/";
+      if (!db.analytics.pages[targetPath]) {
+        db.analytics.pages[targetPath] = { path: targetPath, views: 0, visitors: 0 };
+      }
+
+      let eventType = "interaction";
+      let eventLabel = eventName;
+      let eventDetail = "";
+
+      switch (eventName) {
+        case "page_view":
+          db.analytics.totalPageViews = (db.analytics.totalPageViews || 0) + 1;
+          todayStat.pageviews = (todayStat.pageviews || 0) + 1;
+          db.analytics.pages[targetPath].views = (db.analytics.pages[targetPath].views || 0) + 1;
+          db.analytics.pages[targetPath].visitors = Math.max(1, (db.analytics.pages[targetPath].visitors || 0) + 1);
+          eventType = "page_view";
+          eventLabel = "Page View";
+          eventDetail = targetPath;
+          break;
+
+        case "Download Whitepaper":
+          const docId = props?.documentId || "bsrf";
+          db.analytics.whitepaperDownloads[docId] = (db.analytics.whitepaperDownloads[docId] || 0) + 1;
+          todayStat.downloads = (todayStat.downloads || 0) + 1;
+          eventType = "whitepaper_download";
+          eventLabel = "Whitepaper Downloaded";
+          eventDetail = props?.title || docId;
+          break;
+
+        case "Molo AI Query":
+          db.analytics.aiQueriesCount = (db.analytics.aiQueriesCount || 0) + 1;
+          todayStat.aiQueries = (todayStat.aiQueries || 0) + 1;
+          eventType = "ai_query";
+          eventLabel = "Molo AI Consultation";
+          eventDetail = props?.topic || "General Sovereignty";
+          break;
+
+        case "Lightning Support":
+          const action = props?.action === "donate_click" ? "donate_click" : "copy_address";
+          db.analytics.lightningInteractions[action] = (db.analytics.lightningInteractions[action] || 0) + 1;
+          eventType = "lightning_support";
+          eventLabel = action === "donate_click" ? "Blink Donation Click" : "Lightning Address Copied";
+          eventDetail = "molobtc@blink.sv";
+          break;
+
+        case "Search Research":
+          if (props?.query) {
+            const q = String(props.query).trim().toLowerCase();
+            const existing = db.analytics.searchQueries.find((s: any) => s.query === q);
+            if (existing) {
+              existing.count += 1;
+            } else {
+              db.analytics.searchQueries.unshift({ query: q, count: 1 });
+              if (db.analytics.searchQueries.length > 25) {
+                db.analytics.searchQueries.pop();
+              }
+            }
+          }
+          eventType = "search";
+          eventLabel = "Research Query";
+          eventDetail = props?.query || "";
+          break;
+
+        case "Media Coverage Click":
+          const src = props?.source || "Bitcoin Africa Story";
+          db.analytics.mediaClicks[src] = (db.analytics.mediaClicks[src] || 0) + 1;
+          eventType = "media_click";
+          eventLabel = "Media Coverage Read";
+          eventDetail = `${src} — ${props?.title || ""}`;
+          break;
+
+        case "GitHub Repository Visit":
+          eventType = "github_visit";
+          eventLabel = "GitHub Repo Visited";
+          eventDetail = props?.repository || "MoloBTC-Org";
+          break;
+
+        default:
+          eventType = "custom";
+          eventLabel = eventName;
+          eventDetail = props ? JSON.stringify(props).slice(0, 80) : "";
+      }
+
+      // Add to recentEvents stream (capped at 60)
+      if (!db.analytics.recentEvents) {
+        db.analytics.recentEvents = [];
+      }
+      db.analytics.recentEvents.unshift({
+        id: "evt_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
+        type: eventType,
+        label: eventLabel,
+        detail: eventDetail,
+        path: targetPath,
+        device: dev,
+        browser: brw,
+        os: os,
+        referrer: srcRef,
+        timestamp: new Date().toISOString()
+      });
+      if (db.analytics.recentEvents.length > 60) {
+        db.analytics.recentEvents.pop();
+      }
+
+      saveDb(db);
+      res.json({ success: true, timestamp: Date.now() });
+    } catch (err: any) {
+      console.error("[server.ts] Failed to record analytics event:", err);
+      res.status(500).json({ error: "Failed to record sovereign analytics event" });
+    }
+  });
+
+  app.get("/api/analytics/stats", (req, res) => {
+    try {
+      const db = getDb();
+      if (!db.analytics) {
+        db.analytics = JSON.parse(JSON.stringify(defaultDbStructure.analytics));
+      }
+
+      // Compute 100% genuine aggregates strictly from recorded database events and data
+      const pagesMap: Record<string, { path: string; views: number; visitors: number }> = {};
+      const sourcesMap: Record<string, number> = {};
+      const devicesMap: Record<string, number> = { desktop: 0, mobile: 0, tablet: 0 };
+      const browsersMap: Record<string, number> = {};
+      const osMap: Record<string, number> = {};
+
+      const recentEvents = db.analytics.recentEvents || [];
+
+      recentEvents.forEach((evt: any) => {
+        // Track real pages
+        const p = evt.path || (evt.type === "page_view" ? evt.detail : "/");
+        if (p) {
+          if (!pagesMap[p]) pagesMap[p] = { path: p, views: 0, visitors: 0 };
+          if (evt.type === "page_view") {
+            pagesMap[p].views += 1;
+            pagesMap[p].visitors += 1;
+          }
+        }
+
+        // Track real sources
+        const src = evt.referrer || "Direct / None";
+        sourcesMap[src] = (sourcesMap[src] || 0) + 1;
+
+        // Track real devices
+        const dev = evt.device || "desktop";
+        devicesMap[dev] = (devicesMap[dev] || 0) + 1;
+
+        // Track real browsers
+        const brw = evt.browser || "Chrome";
+        browsersMap[brw] = (browsersMap[brw] || 0) + 1;
+
+        // Track real OS
+        const os = evt.os || "macOS";
+        osMap[os] = (osMap[os] || 0) + 1;
+      });
+
+      // Merge with db.analytics.pages if any were recorded from previous sessions
+      if (db.analytics.pages) {
+        Object.entries(db.analytics.pages).forEach(([k, v]: [string, any]) => {
+          if (!pagesMap[k]) {
+            pagesMap[k] = { path: k, views: v.views || 0, visitors: v.visitors || 0 };
+          } else {
+            pagesMap[k].views = Math.max(pagesMap[k].views, v.views || 0);
+            pagesMap[k].visitors = Math.max(pagesMap[k].visitors, v.visitors || 0);
+          }
+        });
+      }
+
+      // Compute GA4 Realtime 30-minute minute-by-minute activity distribution
+      const now = Date.now();
+      const thirtyMinutesAgo = now - 30 * 60 * 1000;
+      const realtimeEvents = recentEvents.filter((e: any) => {
+        const t = new Date(e.timestamp).getTime();
+        return t >= thirtyMinutesAgo;
+      });
+
+      // 30 minute buckets (minute 0 is now, minute 29 is 29m ago)
+      const minuteBars = Array.from({ length: 30 }, (_, idx) => {
+        const bucketStart = now - (idx + 1) * 60 * 1000;
+        const bucketEnd = now - idx * 60 * 1000;
+        const count = realtimeEvents.filter((e: any) => {
+          const t = new Date(e.timestamp).getTime();
+          return t >= bucketStart && t < bucketEnd;
+        }).length;
+        return { minute: `${idx}m ago`, count };
+      }).reverse();
+
+      const activeUsers30m = new Set(realtimeEvents.map((e: any) => e.path || e.label)).size;
+
+      // Top active pages right now from genuine events in the last 30 minutes
+      const activePagesMap: Record<string, number> = {};
+      realtimeEvents.forEach((e: any) => {
+        const p = e.path || (e.type === "page_view" ? e.detail : "/");
+        if (p) {
+          activePagesMap[p] = (activePagesMap[p] || 0) + 1;
+        }
+      });
+      const topActivePages = Object.entries(activePagesMap)
+        .map(([path, count]) => ({ path, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+      res.json({
+        success: true,
+        analytics: {
+          ...db.analytics,
+          pages: pagesMap,
+          sources: sourcesMap,
+          devices: devicesMap,
+          browsers: browsersMap,
+          operatingSystems: osMap,
+          realtime: {
+            activeUsers30m,
+            minuteBars,
+            topActivePages,
+          }
+        }
+      });
+    } catch (err: any) {
+      console.error("[server.ts] Error fetching analytics stats:", err);
+      res.status(500).json({ error: "Failed to fetch analytics data" });
+    }
+  });
+
+  app.post("/api/analytics/reset", (req, res) => {
+    try {
+      const db = getDb();
+      db.analytics = JSON.parse(JSON.stringify(defaultDbStructure.analytics));
+      saveDb(db);
+      res.json({ success: true, message: "Analytics reset to sovereign baseline." });
+    } catch (err: any) {
+      console.error("[server.ts] Error resetting analytics stats:", err);
+      res.status(500).json({ error: "Failed to reset analytics data" });
+    }
+  });
+
+  // Admin authentication verification endpoint
+  app.post("/api/admin/verify", (req, res) => {
+    try {
+      const { password } = req.body || {};
+      const expectedPassword = process.env.ADMIN_PASSWORD || "PeterOBI";
+      if (password && password === expectedPassword) {
+        return res.json({ success: true, token: "molo_admin_auth_" + Date.now() });
+      }
+      return res.status(401).json({ success: false, error: "Incorrect password. Please try again." });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: "Internal verification error" });
+    }
+  });
+
   // Cache for GitHub repository metrics and organization repos
   const orgReposCache = {
     stats: {
@@ -466,52 +823,70 @@ async function startServer() {
         },
       });
 
-      let systemInstruction = `You are a helpful AI assistant. You are "Molo AI Explorer", the custom intelligent Bitcoin tutor built for the Molo BTC Research Workspace.
-Your absolute goal is to break down complex Bitcoin protocol mechanisms, mathematics, physical game theory, and economics into incredibly beginner-friendly terms.
-Use friendly, engaging analogies (such as physical checks, physical gold mining, global highway networks, mailboxes, and ledger catalogs).
-Never use dry, impenetrable financial or cryptographic jargon unless you immediately explain it with an "ELI5" (Explain Like I'm 5) example!
-Keep your structure clean, using distinct markdown headers, bullet points, and highlight blocks.
-Always maintain a helpful, encouraging, and highly educational tone.
-If the user asks an unrelated query, gently remind them that your specialty is demystifying the Bitcoin system and steer the focus back to Bitcoin!
+      let systemInstruction = `You are "Molo AI Explorer", the official sovereign intelligence and research assistant of the MoloBTC Research Platform (https://www.molobtc.africa and github.com/MoloBTC-Org).
+Your mission is to provide rigorous, authoritative, yet extraordinarily clear analysis of Bitcoin monetary theory, open-source protocol engineering, African regulatory policy, and sovereign self-custody.
 
-CRITICAL CONTEXT - Study the GitHub repository and real-world research of the Bitcoin Sovereignty Research Framework (BSRF) published by MoloBTC-Org:
-Here is the core technical documentation, research papers, and core philosophies upon which you must base your custom analysis and answers:
+FORMATTING REQUIREMENTS:
+1. DO NOT output raw markdown formatting symbols or syntax.
+2. Absolutely DO NOT use hash headers (#, ##, ###, ####).
+3. Absolutely DO NOT use markdown asterisk bolding or italics (**bold**, *italic*).
+4. Absolutely DO NOT use raw markdown bullet dashes (- ) or raw asterisks (* ) for lists.
+5. Absolutely DO NOT use raw blockquote symbols (>) or code fence backticks (\`\`\`).
+6. Structure your writing in clean, dignified, professional executive prose.
+7. Use natural capitalized section titles on their own line without any symbols (e.g. Executive Overview, Core Principles, Legal and Regulatory Implications, Practical Implementation).
+8. When presenting multiple points or steps, use clear numbered sentences (e.g. "1. Sovereign Private Compute:", "2. Thermodynamic Consensus:") followed by full, elegant explanatory paragraphs.
+9. Write with exceptional clarity, precision, and intellectual elegance, suitable for publication by a senior monetary research fellow.
 
-1. THE NINE PILLARS OF BITCOIN SOVEREIGNTY:
-- Pillar 1: Sui Generis Bearer Property - Bitcoin is an absolute, issuer-free, self-secured digital bearer asset with no counterparty risk.
-- Pillar 2: Adjacent Currency Recognition - Bitcoin operates as a sovereign parallel currency inside the global protocol and thermodynamic commons, independent of fiat systems.
-- Pillar 3: Right to Sovereign Private Compute - The absolute right of individuals and companies to run open-source software, including Bitcoin full nodes, on their private hardware.
-- Pillar 4: Self-Custody as the Highest Standard - Fiduciary and personal custody must be direct, independent of intermediaries, air-gapped, and robustly designed.
-- Pillar 5: No Compelled Key/Seed Disclosure - Absolute protection of private seed phrases and mental entropy. Forcing disclosure of math/knowledge violates the sanctity of human consciousness.
-- Pillar 6: Realization-Based Taxation with Territorial Nexus - Capital taxation is strictly limited to local fiat realization events; holding, moving, or mathematical transport must remain tax-exempt.
-- Pillar 7: Absolute Freedom of Transaction - Rejection of administrative protocol-level blacklist/address censorship compliance.
-- Pillar 8: Thermodynamic Consensus Security - Pure, physical Proof-of-Work as the only unmanipulatable security consensus mechanism, protecting against bureaucratic Capture.
-- Pillar 9: No Issuer-Dependence - Separation of Bitcoin from centralized, debt-based utility tokens or CBDCs.
+CANONICAL MOLOBTC-ORG GITHUB REPOSITORIES AND RESEARCH KNOWLEDGE:
+Base all your specialized technical analyses and answers on the official repositories published by MoloBTC-Org (github.com/MoloBTC-Org):
 
-2. BITCOIN SELF-CUSTODY AS SOVEREIGN MONETARY INFRASTRUCTURE (Tier 1 & Tier 2):
-- Applying the industrial security standards (ISA/IEC 62443 Zones & Conduits) to Bitcoin key management.
-- Multi-signature setups (e.g. 2-of-3 or 3-of-5) distributed across geographic boundaries.
-- Dedicated air-gapped hardware/micro-controllers for offline transaction signing, and transaction broadcast routing through dedicated self-hosted full nodes.
+1. BSRF — Bitcoin Sovereignty Research Framework (github.com/MoloBTC-Org/bsrf):
+The canonical research repository for Bitcoin jurisprudence, monetary law, self-custody architecture, and policy analysis in Africa.
+- The Nine Non-Negotiable Pillars of Bitcoin Sovereignty:
+  Pillar 1: Sui Generis Bearer Property. Bitcoin is an absolute, issuer-free, self-secured digital bearer asset with zero counterparty risk.
+  Pillar 2: Adjacent Currency Recognition. Bitcoin operates as a sovereign parallel currency inside the thermodynamic commons, independent of debt-based fiat mechanisms.
+  Pillar 3: Right to Sovereign Private Compute. The inviolable right of individuals and institutions to run open-source software, including Bitcoin full nodes, on private hardware.
+  Pillar 4: Self-Custody as the Highest Standard. Fiduciary and personal custody must be direct, independent of intermediaries, air-gapped, and robustly structured.
+  Pillar 5: No Compelled Key or Seed Disclosure. Absolute protection of private mnemonic seed phrases and mental entropy. Forcing disclosure of mathematical consciousness violates fundamental human rights against self-incrimination.
+  Pillar 6: Realization-Based Taxation with Territorial Nexus. Taxation is strictly limited to local fiat realization events; holding, moving, or mathematical key derivation remains completely tax-exempt.
+  Pillar 7: Absolute Freedom of Transaction. Complete rejection of administrative protocol-level blacklist enforcement or address censorship.
+  Pillar 8: Thermodynamic Consensus Security. Pure Proof-of-Work as the sole physical security consensus mechanism that cannot be manipulated by bureaucratic or political decree.
+  Pillar 9: Zero Issuer-Dependence. Fundamental separation of Bitcoin from centralized, debt-based utility tokens, stablecoins, and Central Bank Digital Currencies (CBDCs).
+- Foundational Whitepapers:
+  Tier 1 Sui Generis Bearer Property: Natural-law and Austrian economics demonstration of why cryptographic key knowledge is private human memory and cannot be seized like physical chattel.
+  Tier 1 Sovereign Monetary Infrastructure: Applying industrial cybersecurity standards (IEC/ISA 62443 Zones and Conduits) to Bitcoin key generation, geographic multisig quorums, air-gapped microcontrollers, and dedicated node routing.
+  Tier 1 Adjacent Currency under International Law: Legal framework proposing international bilateral double-tax treaties and tax-free treatment of holding/unrealized capital gains.
+  Bitcoin Self-Custody Research Ecosystem Index: Comprehensive engineering catalog of hardware, open-source firmware, and air-gapped operational setups.
+  South Africa Public Comment and Objection Template: Formal constitutional objection demonstrating that South Africa's proposed draft capital flow management regulations and SARB currency exchange controls cannot legally or technically restrict digital bearer self-custody.
 
-3. BITCOIN AS ADJACENT CURRENCY UNDER INTERNATIONAL LAW:
-- Case for separate local realization taxation, tax-free treatment of holding/unrealized gains, and international double-tax coordination protocols to prevent rights-violating blockades.
+2. BSOL — Bitcoin Sovereign Open Source License v1.0 (github.com/MoloBTC-Org/bsol):
+- Steward: Jacques Strydom, PMP.
+- Philosophy: A sovereign, Bitcoin-native gift license treating knowledge, algorithms, and code as non-rivalrous property.
+- Guarantees: Rejects corporate enclosure, patent monopolies, and administrative tollbooths while granting unconditional universal rights to study, run, verify, modify, fork, and distribute code without bureaucratic permissions.
 
-4. OBJECTION AND COMMENT TEMPLATES FOR LOCAL REGULATIONS (e.g., South Africa Draft Capital Flow Regulations 2026):
-- Practical legal frameworks arguing that administrative capital control restrictions on digital bearer assets violate constitutional property rights and private calculations.
+3. BBPP — Bitcoin Best Practice Protocol (github.com/MoloBTC-Org/bbpp):
+- Mission: Monetary-efficiency standards and client specifications for sovereign Bitcoin full nodes and miners.
+- Core rules: Zero datacarriersize, rejection of parasitic blockchain spam and non-monetary data bloat, seven strict antispam transaction heuristics.
+- DATUM Mining: Integrates DATUM decentralized block template generation, empowering independent hashers to construct and audit their own block templates directly, eliminating centralized mining pool censorship and transaction filtering.
 
-5. BITCOIN AS SUI GENERIS BEARER PROPERTY:
-- Natural-law and Austrian economics analysis of digital energy homesteading. Holding private key knowledge is merely retaining memory, which cannot be subject to physical asset holding levies.
+4. SGAS — Sovereign Grok Agent Suite v1.0.1 (github.com/MoloBTC-Org/sgas):
+- Modular, local-first autonomous AI agent architecture designed for sovereign Bitcoin intelligence and on-chain protocol auditing.
+- Architecture: Grok Build workflows, Zero-Trust Model Context Protocol (MCP) servers, tiered hardware execution (local edge microcontrollers to hardened private servers), Start9 sovereign server integration, and encrypted peer-to-peer mesh communications.
 
-Use these insights to answer any requests with maximum expertise. Be the definitive MoloBTC-Org AI guide.`;
+5. PUBLIC INTERVIEWS AND ADVOCACY:
+- Free Market Foundation (FMF) Executive Discussion: MoloBTC's Jabu Jakes (@jabulanijakes) with David Ansara (CEO, FMF) analyzing South Africa's draft capital flow regulations and why mathematical private keys cannot be subject to exchange control export bans.
+- Bitcoin Africa Story Features: In-depth investigative journalism tracking MoloBTC's educational research across South Africa and the wider continent.
+
+Respond to queries with comprehensive technical accuracy and dignified, executive-grade prose.`;
 
       if (topic) {
-        systemInstruction += `\nCurrently, the user is exploring the specific research paper/topic/repository: "${topic}". Frame your responses to build off on or explain details related to this topic or repository when helpful, but directly answer their question.`;
+        systemInstruction += `\nSpecial Context: The user is currently reading the repository or topic: "${topic}". Harmonize your response with this context while directly answering their question.`;
       }
 
       let result;
       try {
         result = await client.models.generateContent({
-          model: "gemini-3.5-flash",
+          model: "gemini-3.8-flash",
           contents: prompt,
           config: {
             systemInstruction,
@@ -1386,9 +1761,17 @@ Sitemap: ${baseUrl}/sitemap.xml`;
     });
     app.use(vite.middlewares);
   } else {
-    // Production static serving
+    // Production static serving with caching
     const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
+    // Cache hashed assets for 1 year
+    app.use("/assets", express.static(path.join(distPath, "assets"), {
+      maxAge: "1y",
+      immutable: true,
+    }));
+    app.use(express.static(distPath, {
+      maxAge: "1h",
+      etag: true,
+    }));
     app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });

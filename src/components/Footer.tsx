@@ -52,7 +52,7 @@ export function Footer() {
             </div>
           </div>
           
-          <p className="text-gray-400 self-end text-right text-xs">© {new Date().getFullYear()} Molo BTC. Open Source under Apache-2.0.</p>
+          <p className="text-gray-400 self-end text-right text-xs">© {new Date().getFullYear()} Molo BTC. Open source under BSOL v1.0.</p>
         </div>
       </footer>
     </>

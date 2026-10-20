@@ -1,27 +1,23 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { lazy, Suspense, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { OfflineBanner } from "./components/OfflineBanner";
-
+import { trackPageView } from "./services/analytics";
 import { HomePage } from "./pages/HomePage";
 
-// Dynamic optimized code-splitting chunks
-const ArticlePage = lazy(() => import("./pages/ArticlePage").then(m => ({ default: m.ArticlePage })));
-const DonatePage = lazy(() => import("./pages/DonatePage").then(m => ({ default: m.DonatePage })));
+function AnalyticsTracker() {
+  const location = useLocation();
+  useEffect(() => {
+    trackPageView(location.pathname + location.hash);
+  }, [location.pathname, location.hash]);
+  return null;
+}
 
-// Redesigned high-fidelity Admin Modules
+// Admin Layout & Sovereign Analytics Dashboard
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout").then(m => ({ default: m.AdminLayout })));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
-const AdminArticles = lazy(() => import("./pages/admin/AdminArticles").then(m => ({ default: m.AdminArticles })));
-const AdminUsers = lazy(() => import("./pages/admin/AdminUsers").then(m => ({ default: m.AdminUsers })));
-const AdminSettings = lazy(() => import("./pages/admin/AdminSettings").then(m => ({ default: m.AdminSettings })));
 
-// Super lightweight instant feedback indicator for slow 3G phones
+// Lightweight loading indicator
 function AsyncPageSync() {
   return (
     <div className="min-h-screen bg-[#FCFAF7] flex flex-col items-center justify-center p-6" id="loading-fallback">
@@ -34,7 +30,7 @@ function AsyncPageSync() {
         </div>
         <div>
           <p className="text-[10px] font-black uppercase tracking-widest text-gray-900 font-mono">Molo BTC Network</p>
-          <p className="text-[9px] font-bold text-gray-400 font-mono uppercase mt-0.5">Fetching Corridors...</p>
+          <p className="text-[9px] font-bold text-gray-400 font-mono uppercase mt-0.5">Connecting Sovereign Corridors...</p>
         </div>
       </div>
     </div>
@@ -45,20 +41,22 @@ export default function App() {
   return (
     <HelmetProvider>
       <BrowserRouter>
+        <AnalyticsTracker />
         <Suspense fallback={<AsyncPageSync />}>
           <OfflineBanner />
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/article/:slug" element={<ArticlePage />} />
-            <Route path="/donate" element={<DonatePage />} />
+            <Route path="/donate" element={<Navigate to="/#support" replace />} />
+            <Route path="/article/*" element={<Navigate to="/#research" replace />} />
 
-            {/* Redesigned Admin Console Routes */}
+            {/* Sovereign Analytics Admin Route */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
-              <Route path="articles" element={<AdminArticles />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="settings" element={<AdminSettings />} />
+              <Route path="*" element={<Navigate to="/admin" replace />} />
             </Route>
+
+            {/* Fallback to homepage */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
       </BrowserRouter>

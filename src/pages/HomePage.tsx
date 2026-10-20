@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, lazy, Suspense } from "react";
 import { Navigation } from "../components/Navigation";
 import { Footer } from "../components/Footer";
 import { SEO } from "../components/SEO";
@@ -42,9 +42,10 @@ import {   ArrowRight,
   Copy
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { PdfPreviewCanvas } from "../components/PdfPreviewCanvas";
+const PdfPreviewCanvas = lazy(() => import("../components/PdfPreviewCanvas").then(m => ({ default: m.PdfPreviewCanvas })));
 import { downloadSovereignPdf } from "../services/pdfGenerator";
 import { generateChatResponse } from "../services/geminiService";
+import { trackWhitepaperDownload, trackAiQuestion, trackLightningSupport } from "../services/analytics";
 
 // Types for Research Paper
 interface ResearchPaper {
@@ -164,6 +165,9 @@ export function HomePage() {
     setTimeout(() => {
       setShowDownloadAlert(null);
     }, 4500);
+
+    // Track download in Plausible Analytics
+    trackWhitepaperDownload(repo.id, repo.name);
 
     // Call the high-fidelity multi-page PDF downloader
     downloadSovereignPdf(repo.id, repo.name);
@@ -361,6 +365,9 @@ export function HomePage() {
   const handleAiChat = async (promptText: string) => {
     if (!promptText.trim()) return;
 
+    // Track AI query with Plausible Analytics
+    trackAiQuestion(promptText, selectedRepo ? selectedRepo.name : undefined);
+
     setChatHistory(prev => [...prev, { role: "user", text: promptText }]);
     setUserQuery("");
     setIsAiLoading(true);
@@ -395,9 +402,12 @@ export function HomePage() {
         {/* Background Image Container */}
         <div className="absolute inset-0 w-full h-full select-none pointer-events-none">
           <img 
-            src="https://res.cloudinary.com/dqrptx2qp/image/upload/v1785424033/Image_2024-02-08_at_04.18_ujbm5g.jpg" 
+            src="https://res.cloudinary.com/dqrptx2qp/image/upload/f_auto,q_auto,w_1600/v1785424033/Image_2024-02-08_at_04.18_ujbm5g.jpg" 
             alt="moloBTC - See Bitcoin Through The Orange Lens" 
             className="w-full h-full object-cover object-center"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             referrerPolicy="no-referrer"
           />
           {/* Gentle, cinematic gradient overlay to ensure readability */}
@@ -694,11 +704,11 @@ export function HomePage() {
                         <div className="flex items-center gap-3 text-gray-500 font-mono text-xs">
                           <span className="flex items-center gap-1">
                             <Star className="w-3.5 h-3.5 text-brand-500 fill-brand-500" />
-                            {repo.stars || 42}
+                            {repo.stars ?? 0}
                           </span>
                           <span className="flex items-center gap-1">
                             <GitFork className="w-3.5 h-3.5" />
-                            {repo.forks || 8}
+                            {repo.forks ?? 0}
                           </span>
                         </div>
                       </div>
@@ -805,6 +815,7 @@ export function HomePage() {
                           onClick={() => {
                             navigator.clipboard.writeText("molobtc@blink.sv");
                             setCopiedLightning(true);
+                            trackLightningSupport("copy_address");
                             setTimeout(() => setCopiedLightning(false), 2500);
                           }}
                           className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-white hover:bg-gray-100 text-gray-800 rounded-xl border border-black/[0.06] transition-colors cursor-pointer shadow-xs"
@@ -825,6 +836,7 @@ export function HomePage() {
                           href="https://blink.sv/molobtc"
                           target="_blank"
                           rel="noreferrer"
+                          onClick={() => trackLightningSupport("donate_click")}
                           className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-orange-500 to-brand-600 hover:from-orange-600 hover:to-brand-700 rounded-xl shadow-sm transition-all"
                         >
                           <span>Open Blink</span>
@@ -846,6 +858,7 @@ export function HomePage() {
                     onClick={() => {
                       navigator.clipboard.writeText("molobtc@blink.sv");
                       setCopiedLightning(true);
+                      trackLightningSupport("copy_address");
                       setTimeout(() => setCopiedLightning(false), 2500);
                     }}
                     className="text-brand-600 hover:text-brand-700 font-semibold inline-flex items-center gap-1 transition-colors hover:underline cursor-pointer shrink-0"
@@ -996,11 +1009,12 @@ export function HomePage() {
                       {/* Suggested prompts displayed as modern chips */}
                       <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         {[
-                          "Explain the Lightning Network",
-                          "What is self-custody?",
-                          "Find Bitcoin communities in Africa",
-                          "How does Bitcoin mining work?",
-                          "Recommend beginner resources"
+                          "Explain the BSRF Sovereignty Framework",
+                          "Why are South African capital controls unenforceable on Bitcoin?",
+                          "What is the BSOL open-source license?",
+                          "How does the BBPP protocol protect node operators?",
+                          "What are the 9 Non-Negotiable Pillars of Bitcoin Sovereignty?",
+                          "How does Bitcoin self-custody secure African financial independence?"
                         ].map((promptText, i) => (
                           <button
                             key={i}
@@ -1021,21 +1035,103 @@ export function HomePage() {
                           key={idx} 
                           className={`flex ${item.role === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
-                          <div className={`max-w-[85%] rounded-2xl p-4 leading-relaxed shadow-sm ${
+                          <div className={`max-w-[90%] sm:max-w-[85%] rounded-2xl p-4 sm:p-5 leading-relaxed shadow-sm relative group ${
                             item.role === 'user' 
                               ? 'bg-brand-600 text-white rounded-br-none font-medium' 
-                              : 'bg-white/[0.03] border border-white/5 text-gray-100 rounded-bl-none'
+                              : 'bg-white/[0.03] border border-white/8 text-gray-100 rounded-bl-none'
                           }`}>
-                            {item.text.split("\n").map((line, lIdx) => {
-                              let parts = line.split("**");
-                              return (
-                                <p key={lIdx} className={lIdx > 0 ? "mt-2" : ""}>
-                                  {parts.map((part, pIdx) => 
-                                    pIdx % 2 === 1 ? <strong key={pIdx} className="text-brand-300 font-bold">{part}</strong> : part
-                                  )}
-                                </p>
-                              );
-                            })}
+                            {item.role === 'user' ? (
+                              <p className="text-xs sm:text-sm">{item.text}</p>
+                            ) : (
+                              <div>
+                                <div className="space-y-3 text-xs sm:text-sm text-gray-200">
+                                  {item.text.split("\n\n").map((block, bIdx) => {
+                                    const trimmed = block.trim();
+                                    if (!trimmed) return null;
+
+                                    // If block is a list of lines
+                                    const lines = trimmed.split("\n");
+                                    
+                                    // Check if it's a section heading (short, no punctuation at end, capitalized or labeled)
+                                    const isHeader = lines.length === 1 && 
+                                      trimmed.length < 60 && 
+                                      !trimmed.endsWith(".") && 
+                                      !trimmed.startsWith("•") && 
+                                      !/^\d+\./.test(trimmed);
+
+                                    if (isHeader) {
+                                      return (
+                                        <h4 key={bIdx} className="font-bold text-amber-300 text-sm tracking-wide pt-2 border-b border-white/5 pb-1">
+                                          {trimmed}
+                                        </h4>
+                                      );
+                                    }
+
+                                    return (
+                                      <div key={bIdx} className="space-y-1.5">
+                                        {lines.map((line, lIdx) => {
+                                          const isNumbered = /^\d+\.\s*/.test(line);
+                                          const isBullet = line.startsWith("• ") || line.startsWith("- ");
+                                          
+                                          if (isNumbered) {
+                                            const match = line.match(/^(\d+\.)\s*(.*)$/);
+                                            return (
+                                              <div key={lIdx} className="flex items-start gap-2 pt-1">
+                                                <span className="font-mono font-bold text-amber-400 shrink-0 text-xs">
+                                                  {match ? match[1] : ""}
+                                                </span>
+                                                <p className="text-gray-200 leading-relaxed">
+                                                  {match ? match[2] : line}
+                                                </p>
+                                              </div>
+                                            );
+                                          }
+
+                                          if (isBullet) {
+                                            const bulletText = line.replace(/^[•\-]\s*/, "");
+                                            return (
+                                              <div key={lIdx} className="flex items-start gap-2 pl-1">
+                                                <span className="text-amber-500 font-bold shrink-0">•</span>
+                                                <p className="text-gray-200 leading-relaxed">{bulletText}</p>
+                                              </div>
+                                            );
+                                          }
+
+                                          return (
+                                            <p key={lIdx} className="leading-relaxed">
+                                              {line}
+                                            </p>
+                                          );
+                                        })}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+
+                                {/* Copy Button */}
+                                <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between text-[11px] text-gray-500">
+                                  <span className="font-medium">Molo AI Research Engine</span>
+                                  <button
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(item.text);
+                                      const btn = document.getElementById(`copy-btn-${idx}`);
+                                      if (btn) {
+                                        btn.innerText = "Copied!";
+                                        setTimeout(() => {
+                                          if (btn) btn.innerText = "Copy";
+                                        }, 2000);
+                                      }
+                                    }}
+                                    id={`copy-btn-${idx}`}
+                                    className="hover:text-amber-400 text-gray-400 transition-colors flex items-center gap-1 cursor-pointer font-medium"
+                                    title="Copy professional response"
+                                  >
+                                    <Copy className="w-3 h-3" />
+                                    <span>Copy</span>
+                                  </button>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -1117,11 +1213,11 @@ export function HomePage() {
                     </span>
                     <span className="text-xs text-gray-400 font-mono flex items-center gap-2">
                       <Star className="w-3.5 h-3.5 text-brand-500 fill-brand-500" />
-                      {selectedRepo.stars || 42} Stars
+                      {selectedRepo.stars ?? 0} Stars
                     </span>
                     <span className="text-xs text-gray-400 font-mono flex items-center gap-2">
                       <GitFork className="w-3.5 h-3.5 text-gray-500" />
-                      {selectedRepo.forks || 8} Forks
+                      {selectedRepo.forks ?? 0} Forks
                     </span>
                   </div>
 
@@ -1174,11 +1270,18 @@ export function HomePage() {
 
                     {activeModalTab === "pdf" ? (
                       <div className="space-y-4">
-                        <PdfPreviewCanvas 
-                          repoId={selectedRepo.id}
-                          repoName={selectedRepo.name}
-                          onDownload={() => handleDownloadPdf(selectedRepo)}
-                        />
+                        <Suspense fallback={
+                          <div className="flex flex-col items-center justify-center h-[580px] bg-gray-900 rounded-2xl text-gray-400 gap-3">
+                            <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                            <span className="text-xs font-mono font-medium text-gray-300">Loading Sovereign PDF Viewer...</span>
+                          </div>
+                        }>
+                          <PdfPreviewCanvas 
+                            repoId={selectedRepo.id}
+                            repoName={selectedRepo.name}
+                            onDownload={() => handleDownloadPdf(selectedRepo)}
+                          />
+                        </Suspense>
                       </div>
                     ) : (
                       <div className="space-y-4">

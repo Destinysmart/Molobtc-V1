@@ -1,20 +1,22 @@
 import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { 
-  TrendingUp, 
-  BookOpen, 
-  Users, 
-  Sparkles, 
+  BarChart3, 
+  Activity, 
+  Globe2, 
+  FileText, 
+  Target, 
+  Laptop, 
+  RefreshCw, 
   Download, 
-  Send,
-  Loader2,
-  FileCheck2,
-  CheckCircle,
-  Clock,
-  ChevronRight,
+  Calendar, 
+  ChevronDown, 
+  Search, 
+  ArrowUpRight, 
+  ArrowDownRight, 
+  Check,
   ShieldCheck,
-  FileText,
-  Activity,
-  Info
+  HelpCircle
 } from "lucide-react";
 import { 
   AreaChart, 
@@ -23,539 +25,1098 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  Legend
+  ResponsiveContainer, 
+  BarChart, 
+  Bar 
 } from "recharts";
 import { motion, AnimatePresence } from "motion/react";
-import { PdfPreviewCanvas } from "../../components/PdfPreviewCanvas";
-import { generateChatResponse } from "../../services/geminiService";
 
-interface GithubRepo {
-  id: string;
-  name: string;
-  description: string;
-  url: string;
-  stars: number;
-  forks: number;
-  updated_at: string;
-  language: string;
+interface AnalyticsStats {
+  totalPageViews: number;
+  uniqueVisitors: number;
+  visitorIds: string[];
+  pages?: Record<string, { path: string; views: number; visitors: number }>;
+  sources?: Record<string, number>;
+  devices?: Record<string, number>;
+  browsers?: Record<string, number>;
+  operatingSystems?: Record<string, number>;
+  countries?: Record<string, number>;
+  whitepaperDownloads: Record<string, number>;
+  aiQueriesCount: number;
+  lightningInteractions: {
+    copy_address: number;
+    donate_click: number;
+  };
+  searchQueries: Array<{ query: string; count: number }>;
+  mediaClicks: Record<string, number>;
+  dailyStats: Array<{
+    date: string;
+    pageviews: number;
+    downloads: number;
+    aiQueries: number;
+    visitors: number;
+  }>;
+  recentEvents: Array<{
+    id: string;
+    type: string;
+    label: string;
+    detail: string;
+    path?: string;
+    device?: string;
+    browser?: string;
+    os?: string;
+    referrer?: string;
+    timestamp: string;
+  }>;
+  realtime?: {
+    activeUsers30m: number;
+    minuteBars: Array<{ minute: string; count: number }>;
+    topActivePages: Array<{ path: string; count: number }>;
+  };
 }
 
 export function AdminDashboard() {
-  const [repos, setRepos] = useState<GithubRepo[]>([]);
-  const [selectedRepoId, setSelectedRepoId] = useState<string>("");
-  const [isReposLoading, setIsReposLoading] = useState(true);
-  const [sandboxPrompt, setSandboxPrompt] = useState("");
-  const [sandboxResponse, setSandboxResponse] = useState("");
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"chart" | "telemetry" | "categories">("chart");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "snapshot";
+
+  const [analytics, setAnalytics] = useState<AnalyticsStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [toastMessage, setToastMessage] = useState("");
+  
+  // Date Range state
+  const [dateRange, setDateRange] = useState<"7d" | "14d" | "30d" | "today" | "all">("7d");
+  const [isDateMenuOpen, setIsDateMenuOpen] = useState(false);
+  const [selectedMetric, setSelectedMetric] = useState<"users" | "newUsers" | "views" | "events" | "conversions">("users");
+
+  // Filters & Search for tables
+  const [tableSearch, setTableSearch] = useState("");
+  const [eventFilter, setEventFilter] = useState<string>("all");
+  const [sortField, setSortField] = useState<string>("views");
+  const [sortAsc, setSortAsc] = useState<boolean>(false);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(""), 4000);
+    setTimeout(() => setToastMessage(""), 3500);
   };
 
-  // Load research papers (GitHub Repos)
-  useEffect(() => {
-    fetch("/api/github/repos")
+  const fetchAnalytics = () => {
+    setIsLoading(true);
+    fetch("/api/analytics/stats")
       .then(res => res.json())
       .then(data => {
-        setRepos(data);
-        if (data.length > 0) {
-          setSelectedRepoId(data[0].id);
+        if (data && data.analytics) {
+          setAnalytics(data.analytics);
         }
-        setIsReposLoading(false);
+        setIsLoading(false);
       })
       .catch(err => {
-        console.error("Error loading papers in dashboard:", err);
-        setIsReposLoading(false);
+        console.error("Failed to load GA4 sovereign analytics:", err);
+        setIsLoading(false);
       });
-  }, []);
-
-  const selectedRepo = useMemo(() => {
-    return repos.find(r => r.id === selectedRepoId);
-  }, [repos, selectedRepoId]);
-
-  // Suggested sandbox prompts for admins to quickly test the AI response format
-  const suggestedPrompts = [
-    { text: "What is the thermodynamic argument for Bitcoin?", icon: "🔥" },
-    { text: "Summarize outbound capital transfer laws.", icon: "⚖️" },
-    { text: "Explain lightning channel funding securely.", icon: "⚡" },
-    { text: "Draft a policy comment on digital asset custody.", icon: "📋" }
-  ];
-
-  // Simulated metrics with beautiful daily breakdowns
-  const telemetryData = [
-    { name: "Mon", downloads: 340, queries: 120, precision: 98 },
-    { name: "Tue", downloads: 550, queries: 210, precision: 99 },
-    { name: "Wed", downloads: 480, queries: 195, precision: 97 },
-    { name: "Thu", downloads: 710, queries: 320, precision: 99 },
-    { name: "Fri", downloads: 980, queries: 410, precision: 99 },
-    { name: "Sat", downloads: 1200, queries: 540, precision: 100 },
-    { name: "Sun", downloads: 1450, queries: 630, precision: 100 },
-  ];
-
-  // Distribution of paper categories for custom charts
-  const categoryChartData = [
-    { name: "Sovereignty & Legal", count: 4, fill: "#ff7a00" },
-    { name: "Physics & Energy", count: 3, fill: "#f59e0b" },
-    { name: "Scaling & Networks", count: 2, fill: "#8b5cf6" },
-  ];
-
-  // Config parameters loaded from localStorage for sandbox feedback
-  const activePersona = localStorage.getItem("molo_tutor_mode") || "ELI5_Beginner";
-  const activeCreativity = localStorage.getItem("molo_tutor_creativity") || "0.4";
-  const labName = localStorage.getItem("molo_lab_name") || "MoloBTC Sovereign Lab";
-
-  const handleTestSandbox = async (e?: React.FormEvent, customPrompt?: string) => {
-    if (e) e.preventDefault();
-    const promptToSend = customPrompt || sandboxPrompt;
-    if (!promptToSend.trim()) return;
-
-    if (customPrompt) {
-      setSandboxPrompt(customPrompt);
-    }
-
-    setIsAiLoading(true);
-    setSandboxResponse("");
-
-    try {
-      const reply = await generateChatResponse(
-        promptToSend,
-        selectedRepo ? `Repository: ${selectedRepo.name}` : undefined
-      );
-      setSandboxResponse(reply);
-      triggerToast("Cognitive response synthesized successfully!");
-    } catch (err: any) {
-      setSandboxResponse(`Error: ${err.message || "Failed to submit sandbox test"}`);
-    } finally {
-      setIsAiLoading(false);
-    }
   };
 
-  const totalDownloads = 5710;
-  const activeResearchers = 5;
+  useEffect(() => {
+    fetchAnalytics();
+  }, []);
+
+  const setTab = (tab: string) => {
+    setSearchParams({ tab });
+  };
+
+  // Real Calculations - 100% computed from real database state
+  const totalDownloads = useMemo(() => {
+    if (!analytics?.whitepaperDownloads) return 0;
+    return Object.values(analytics.whitepaperDownloads).reduce((a, b) => a + (Number(b) || 0), 0);
+  }, [analytics]);
+
+  const totalLightningActions = useMemo(() => {
+    if (!analytics?.lightningInteractions) return 0;
+    return (Number(analytics.lightningInteractions.copy_address) || 0) + (Number(analytics.lightningInteractions.donate_click) || 0);
+  }, [analytics]);
+
+  const totalEvents = useMemo(() => {
+    const pageviews = analytics?.totalPageViews || 0;
+    const downloads = totalDownloads;
+    const aiQueries = analytics?.aiQueriesCount || 0;
+    const lightning = totalLightningActions;
+    const searchEvents = (analytics?.searchQueries || []).reduce((a, b) => a + b.count, 0);
+    return pageviews + downloads + aiQueries + lightning + searchEvents;
+  }, [analytics, totalDownloads, totalLightningActions]);
+
+  const totalConversions = useMemo(() => {
+    return totalDownloads + totalLightningActions + (analytics?.aiQueriesCount || 0);
+  }, [totalDownloads, totalLightningActions, analytics]);
+
+  // Canonical Whitepaper Data - real counts only
+  const paperChartData = useMemo(() => {
+    const canonicalPapers = [
+      { id: "bsrf", name: "BSRF Core", color: "#1A73E8" },
+      { id: "capital-flow-regulations", name: "SA Regulations", color: "#E66E00" },
+      { id: "nine-pillars-sovereignty", name: "9 Pillars", color: "#E11D48" },
+      { id: "bsol", name: "BSOL License", color: "#137333" },
+      { id: "bbpp", name: "BBPP Protocol", color: "#06B6D4" },
+      { id: "sgas", name: "SGAS Agent", color: "#8B5CF6" },
+      { id: "sui-generis-bearer-property", name: "Bearer Property", color: "#F59E0B" },
+      { id: "sovereign-monetary-infrastructure", name: "Tier 1 Infra", color: "#5F6368" },
+      { id: "self-custody-ecosystem", name: "Custody Index", color: "#84CC16" },
+    ];
+
+    return canonicalPapers.map((p) => ({
+      name: p.name,
+      downloads: Number(analytics?.whitepaperDownloads?.[p.id]) || 0,
+      fill: p.color
+    }));
+  }, [analytics]);
+
+  // Real Timeline series based on selectedMetric - 100% real dailyStats entries
+  const timelineData = useMemo(() => {
+    if (!analytics?.dailyStats || analytics.dailyStats.length === 0) {
+      return [];
+    }
+
+    return analytics.dailyStats.map((d) => {
+      let metricVal = d.visitors;
+      if (selectedMetric === "views") metricVal = d.pageviews;
+      else if (selectedMetric === "events") metricVal = d.pageviews + d.downloads + d.aiQueries;
+      else if (selectedMetric === "conversions") metricVal = d.downloads + d.aiQueries;
+      else if (selectedMetric === "newUsers") metricVal = d.visitors;
+
+      return {
+        date: d.date,
+        value: metricVal,
+      };
+    });
+  }, [analytics, selectedMetric]);
+
+  // Real Pages & Screens Table Data from actual tracked paths
+  const pagesData = useMemo(() => {
+    const rawPages = analytics?.pages || {};
+
+    let list = Object.entries(rawPages).map(([p, data]) => {
+      const views = data.views || 0;
+      const visitors = data.visitors || 0;
+      const viewsPerUser = visitors > 0 ? (views / visitors).toFixed(1) : "1.0";
+      const totalPV = analytics?.totalPageViews || 0;
+      const share = totalPV > 0 ? Math.round((views / totalPV) * 100) : 0;
+
+      let title = p;
+      if (p === "/") title = "Home · The Orange Lens";
+      else if (p === "/#research") title = "Research · Sovereign Whitepapers";
+      else if (p === "/#molo-ai") title = "Molo AI Explorer";
+      else if (p === "/#media") title = "Media & Policy";
+      else if (p === "/#support") title = "Support & Lightning Micro-Donations";
+      else if (p === "/admin") title = "Sovereign Analytics Console";
+
+      return {
+        path: p,
+        title,
+        views,
+        visitors,
+        viewsPerUser,
+        share,
+        eventCount: views
+      };
+    });
+
+    if (tableSearch.trim()) {
+      const q = tableSearch.toLowerCase();
+      list = list.filter(item => item.path.toLowerCase().includes(q) || item.title.toLowerCase().includes(q));
+    }
+
+    list.sort((a, b) => {
+      if (sortField === "visitors") {
+        return sortAsc ? a.visitors - b.visitors : b.visitors - a.visitors;
+      }
+      return sortAsc ? a.views - b.views : b.views - a.views;
+    });
+
+    return list;
+  }, [analytics, tableSearch, sortField, sortAsc]);
+
+  // Real Acquisition Channels Data
+  const channelData = useMemo(() => {
+    const rawSources = analytics?.sources || {};
+    const totalViews = Object.values(rawSources).reduce((a, b) => a + b, 0) || 1;
+
+    return Object.entries(rawSources).map(([source, count]) => {
+      let channel = "Direct";
+      if (source.includes("Organic") || source.includes("google")) channel = "Organic Search";
+      else if (source.includes("Referral") || source.includes("github")) channel = "Referral";
+      else if (source.includes("Social") || source.includes("x.com")) channel = "Organic Social";
+      else if (source.includes("Press")) channel = "Press Referral";
+
+      const users = count;
+      const sessions = count;
+      const share = Math.round((count / totalViews) * 100);
+
+      return {
+        source,
+        channel,
+        users,
+        sessions,
+        share
+      };
+    });
+  }, [analytics]);
+
+  // Real Device Ratios
+  const deviceStats = useMemo(() => {
+    const desktop = analytics?.devices?.desktop || 0;
+    const mobile = analytics?.devices?.mobile || 0;
+    const tablet = analytics?.devices?.tablet || 0;
+    const total = desktop + mobile + tablet;
+    const desktopPct = total > 0 ? Math.round((desktop / total) * 100) : 100;
+    const mobilePct = total > 0 ? 100 - desktopPct : 0;
+    return { desktop, mobile, tablet, total, desktopPct, mobilePct };
+  }, [analytics]);
+
+  // Export current report to CSV
+  const handleExportCsv = () => {
+    let filename = `molo_analytics_${activeTab}`;
+    let headers: string[] = [];
+    let rows: (string | number)[][] = [];
+
+    if (activeTab === "engagement" || activeTab === "snapshot") {
+      filename = "molo_pages_and_screens";
+      headers = ["Page Path", "Page Title", "Views", "Active Users", "Views per User", "Share (%)"];
+      rows = pagesData.map(p => [p.path, p.title, p.views, p.visitors, p.viewsPerUser, p.share]);
+    } else if (activeTab === "acquisition") {
+      filename = "molo_traffic_acquisition";
+      headers = ["Source / Medium", "Channel Group", "Users", "Sessions", "Share (%)"];
+      rows = channelData.map(c => [c.source, c.channel, c.users, c.sessions, c.share]);
+    } else if (activeTab === "conversions") {
+      filename = "molo_whitepaper_conversions";
+      headers = ["Research Paper", "Downloads"];
+      rows = paperChartData.map(p => [p.name, p.downloads]);
+    } else if (activeTab === "realtime") {
+      filename = "molo_realtime_events";
+      headers = ["Event ID", "Type", "Label", "Detail", "Device", "Browser", "Timestamp"];
+      rows = (analytics?.recentEvents || []).map(e => [e.id, e.type, e.label, e.detail, e.device || "desktop", e.browser || "Chrome", e.timestamp]);
+    } else {
+      filename = "molo_overview_metrics";
+      headers = ["Metric", "Value"];
+      rows = [
+        ["Total Page Views", analytics?.totalPageViews || 0],
+        ["Unique Readers", analytics?.uniqueVisitors || 0],
+        ["Total Downloads", totalDownloads],
+        ["Molo AI Queries", analytics?.aiQueriesCount || 0],
+        ["Lightning Actions", totalLightningActions],
+        ["Total Events", totalEvents]
+      ];
+    }
+
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + [headers.join(","), ...rows.map(e => e.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${filename}_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    triggerToast("Report exported to CSV");
+  };
+
+  const dateRangeLabels = {
+    "7d": "Last 7 days",
+    "14d": "Last 14 days",
+    "30d": "Last 30 days",
+    "today": "Today",
+    "all": "All time"
+  };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-6 w-full max-w-full font-sans">
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
           <motion.div 
-            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-6 right-6 z-50 bg-gray-950 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.15)] flex items-center gap-2"
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-6 right-6 z-50 bg-[#202124] text-white text-xs font-medium px-4 py-3 rounded-lg shadow-xl flex items-center gap-2 border border-gray-700"
           >
-            <ShieldCheck className="w-4 h-4 text-brand-500" />
+            <ShieldCheck className="w-4 h-4 text-[#1A73E8]" />
             <span>{toastMessage}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Header Row */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6">
+      {/* GA4 Report Header & Action Bar */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-3 border-b border-[#E8EAED]">
         <div>
-          <span className="text-[10px] font-bold text-brand-600 uppercase tracking-widest block mb-1 font-mono">
-            Sovereign telemetry & AI staging
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-950 font-display tracking-tight">
-            Research Command Space
+          <div className="flex items-center gap-2 text-xs text-[#5F6368] mb-1">
+            <span>Reports</span>
+            <span>/</span>
+            <span className="text-[#202124] font-medium capitalize">
+              {activeTab === "snapshot" ? "Reports snapshot" : activeTab === "conversions" ? "Conversions & Events" : activeTab}
+            </span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#202124] tracking-tight">
+            {activeTab === "snapshot" && "Reports snapshot"}
+            {activeTab === "realtime" && "Realtime overview"}
+            {activeTab === "acquisition" && "Traffic acquisition: Session default channel group"}
+            {activeTab === "engagement" && "Pages and screens: Page path and screen class"}
+            {activeTab === "conversions" && "Events & Conversions: Sovereign research downloads"}
+            {activeTab === "tech" && "Tech details: User environment and device category"}
           </h1>
-          <p className="text-xs text-gray-550 mt-1 leading-relaxed">
-            Monitor open-source BSRF papers, analyze visual engagement statistics, and live-test the Molo Socratic AI sandbox.
-          </p>
         </div>
-        
-        <div className="flex items-center gap-3 bg-white p-2.5 px-4 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] text-xs text-gray-600 font-mono">
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="font-bold">Node State: Operational</span>
-        </div>
-      </div>
 
-      {/* KPI Cards Grid with Micro-interactions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {[
-          {
-            title: "Synced Papers",
-            value: isReposLoading ? "..." : repos.length,
-            desc: "Active BSRF repository records",
-            icon: BookOpen,
-            colorClass: "bg-brand-50 text-brand-600",
-            hoverAccent: "hover:shadow-[0_8px_30px_rgba(255,122,0,0.04)]"
-          },
-          {
-            title: "Lab Signatories",
-            value: activeResearchers,
-            desc: "Cleared peer reviewers in workspace",
-            icon: Users,
-            colorClass: "bg-emerald-50 text-emerald-600",
-            hoverAccent: "hover:shadow-[0_8px_30px_rgba(16,185,129,0.04)]"
-          },
-          {
-            title: "Total Downloads",
-            value: totalDownloads.toLocaleString(),
-            desc: "Cumulative public summary exports",
-            icon: Download,
-            colorClass: "bg-blue-50 text-blue-600",
-            hoverAccent: "hover:shadow-[0_8px_30px_rgba(59,130,246,0.04)]"
-          },
-          {
-            title: "Active Staging Mode",
-            value: activePersona.replace("_", " "),
-            desc: `Creativity scale: ${activeCreativity}`,
-            icon: Sparkles,
-            colorClass: "bg-purple-50 text-purple-600",
-            hoverAccent: "hover:shadow-[0_8px_30px_rgba(139,92,246,0.04)]",
-            isTruncated: true
-          }
-        ].map((kpi, idx) => (
-          <motion.div
-            key={kpi.title}
-            whileHover={{ y: -4, transition: { duration: 0.15 } }}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: idx * 0.05 }}
-            className={`bg-white p-5 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.015)] flex items-center gap-4 hover:shadow-md transition-all group cursor-pointer ${kpi.hoverAccent}`}
-          >
-            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${kpi.colorClass}`}>
-              <kpi.icon className="w-5.5 h-5.5" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block font-mono">{kpi.title}</span>
-              <span className={`text-xl sm:text-2xl font-black text-gray-950 leading-none block mt-1 ${kpi.isTruncated ? "truncate" : ""}`}>
-                {kpi.value}
-              </span>
-              <span className="text-[10px] text-gray-400 mt-1 block truncate">{kpi.desc}</span>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+        {/* Global Controls: Date Range, Refresh & Export */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Date Picker Button */}
+          <div className="relative">
+            <button
+              onClick={() => setIsDateMenuOpen(!isDateMenuOpen)}
+              className="flex items-center gap-2 px-3 py-1.5 bg-white hover:bg-[#F8F9FA] text-xs font-medium text-[#3C4043] rounded-md border border-[#DADCE0] shadow-2xs transition-colors cursor-pointer"
+            >
+              <Calendar className="w-3.5 h-3.5 text-[#5F6368]" />
+              <span>{dateRangeLabels[dateRange]}</span>
+              <ChevronDown className="w-3.5 h-3.5 text-[#5F6368]" />
+            </button>
 
-      {/* Main Core Section */}
-      <div className="grid lg:grid-cols-12 gap-8">
-        
-        {/* Left column: Analytics Chart & Config Sandbox */}
-        <div className="lg:col-span-8 space-y-8">
-          
-          {/* Chart Card */}
-          <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-[0_4px_25px_rgba(0,0,0,0.015)] space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pb-4">
-              <div>
-                <h2 className="text-base sm:text-lg font-bold text-gray-950 font-display flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-brand-500" />
-                  Ecosystem Engagement Metrics
-                </h2>
-                <p className="text-xs text-gray-550 mt-0.5 leading-relaxed">
-                  Real-time monitoring of downloaded legal summaries and interactive cognitive tutor queries.
-                </p>
+            {isDateMenuOpen && (
+              <div className="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-[#DADCE0] py-1 z-30">
+                {(["7d", "14d", "30d", "today", "all"] as const).map((range) => (
+                  <button
+                    key={range}
+                    onClick={() => {
+                      setDateRange(range);
+                      setIsDateMenuOpen(false);
+                      triggerToast(`Filtered for ${dateRangeLabels[range]}`);
+                    }}
+                    className={`w-full text-left px-3.5 py-2 text-xs flex items-center justify-between hover:bg-[#F1F3F4] cursor-pointer ${
+                      dateRange === range ? "text-[#1A73E8] font-semibold bg-[#E8F0FE]" : "text-[#3C4043]"
+                    }`}
+                  >
+                    <span>{dateRangeLabels[range]}</span>
+                    {dateRange === range && <Check className="w-3.5 h-3.5 text-[#1A73E8]" />}
+                  </button>
+                ))}
               </div>
-              
-              <div className="flex bg-[#FCFAF7] rounded-xl p-1 shrink-0 text-xs font-mono font-bold self-start sm:self-auto shadow-inner">
-                <button 
-                  onClick={() => setActiveTab("chart")}
-                  className={`px-3 py-1.5 rounded-lg transition-all ${activeTab === "chart" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-900"}`}
-                >
-                  Downloads Chart
-                </button>
-                <button 
-                  onClick={() => setActiveTab("categories")}
-                  className={`px-3 py-1.5 rounded-lg transition-all ${activeTab === "categories" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-900"}`}
-                >
-                  Core Categories
-                </button>
-                <button 
-                  onClick={() => setActiveTab("telemetry")}
-                  className={`px-3 py-1.5 rounded-lg transition-all ${activeTab === "telemetry" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-900"}`}
-                >
-                  System Logs
-                </button>
-              </div>
-            </div>
-
-            {activeTab === "chart" && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="h-64 sm:h-72 w-full pt-2"
-              >
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={telemetryData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorDownloads" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#ff7a00" stopOpacity={0.2}/>
-                        <stop offset="95%" stopColor="#ff7a00" stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorQueries" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.2}/>
-                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f8fafc"/>
-                    <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} fontStyle="italic" />
-                    <YAxis stroke="#94a3b8" fontSize={10} />
-                    <Tooltip contentStyle={{ borderRadius: "16px", border: "none", boxShadow: "0 10px 30px rgba(0,0,0,0.06)", fontFamily: "sans-serif", fontSize: "12px", background: "#ffffff" }} />
-                    <Area type="monotone" dataKey="downloads" name="Summary Exports" stroke="#ff7a00" strokeWidth={2.5} fillOpacity={1} fill="url(#colorDownloads)" />
-                    <Area type="monotone" dataKey="queries" name="Cognitive Chats" stroke="#8b5cf6" strokeWidth={2.5} fillOpacity={1} fill="url(#colorQueries)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </motion.div>
-            )}
-
-            {activeTab === "categories" && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="h-64 sm:h-72 w-full pt-2"
-              >
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={categoryChartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f8fafc"/>
-                    <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} />
-                    <YAxis stroke="#94a3b8" fontSize={10} allowDecimals={false} />
-                    <Tooltip contentStyle={{ borderRadius: "16px", border: "none", boxShadow: "0 10px 30px rgba(0,0,0,0.06)", fontFamily: "sans-serif", fontSize: "12px" }} />
-                    <Bar dataKey="count" name="Published Papers" radius={[6, 6, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </motion.div>
-            )}
-
-            {activeTab === "telemetry" && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-[#FCFAF7] rounded-2xl p-5 space-y-3.5 font-mono text-[11px] text-gray-600 leading-relaxed max-h-64 overflow-y-auto shadow-inner"
-              >
-                <div className="pb-2 border-b border-gray-100">
-                  <span className="text-brand-500 font-bold">[INFRASTRUCTURE INTEGRITY]</span> Staging system boots successfully under Node on port 3000.
-                </div>
-                <div className="flex gap-2">
-                  <span className="text-gray-400">16:59:48</span>
-                  <span>Loaded {repos.length} live academic repositories securely from backend repository proxy.</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="text-gray-400">16:59:52</span>
-                  <span>Configured cognitive assistant temperature parameters dynamically to {activeCreativity}.</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="text-gray-400">16:59:55</span>
-                  <span>Registered security keys for {activeResearchers} verified signatories with strict consent logic.</span>
-                </div>
-                <div className="flex gap-2 text-green-600 font-bold">
-                  <span>[INTEGRITY]</span> Zero compromised signatures detected. Sovereign parameters are active.
-                </div>
-              </motion.div>
             )}
           </div>
 
-          {/* AI Sandbox Card */}
-          <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-[0_4px_25px_rgba(0,0,0,0.015)] space-y-6">
-            <div>
-              <h2 className="text-base sm:text-lg font-bold text-gray-950 font-display flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-purple-600" />
-                Molo Socratic AI Staging Sandbox
-              </h2>
-              <p className="text-xs text-gray-550 mt-0.5 leading-relaxed">
-                Interactively stage model responses to see how the active pedagogical persona (<strong>{activePersona.replace("_", " ")}</strong>) presents complex research papers.
-              </p>
+          {/* Export CSV Button */}
+          <button
+            onClick={handleExportCsv}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-[#F8F9FA] text-xs font-medium text-[#3C4043] rounded-md border border-[#DADCE0] shadow-2xs transition-colors cursor-pointer"
+            title="Download CSV spreadsheet"
+          >
+            <Download className="w-3.5 h-3.5 text-[#5F6368]" />
+            <span>Export CSV</span>
+          </button>
+
+          {/* Refresh Button */}
+          <button
+            onClick={() => {
+              fetchAnalytics();
+              triggerToast("Synchronized live telemetry from database");
+            }}
+            disabled={isLoading}
+            className="p-2 bg-white hover:bg-[#F8F9FA] text-[#3C4043] rounded-md border border-[#DADCE0] shadow-2xs transition-colors cursor-pointer"
+            title="Refresh analytics data"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-[#5F6368] ${isLoading ? "animate-spin text-[#1A73E8]" : ""}`} />
+          </button>
+        </div>
+      </div>
+
+      {/* Navigation Sub-Tabs Bar */}
+      <div className="flex items-center gap-1 border-b border-[#E8EAED] overflow-x-auto pb-0 -mb-2 text-xs font-medium">
+        {[
+          { id: "snapshot", label: "Overview Snapshot", icon: BarChart3 },
+          { id: "realtime", label: "Realtime", icon: Activity },
+          { id: "acquisition", label: "Acquisition", icon: Globe2 },
+          { id: "engagement", label: "Pages & Screens", icon: FileText },
+          { id: "conversions", label: "Conversions & Events", icon: Target },
+          { id: "tech", label: "Tech Details", icon: Laptop },
+        ].map((tab) => {
+          const isActive = activeTab === tab.id;
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setTab(tab.id)}
+              className={`flex items-center gap-2 px-3.5 py-2.5 border-b-2 font-medium transition-colors cursor-pointer whitespace-nowrap ${
+                isActive
+                  ? "border-[#1A73E8] text-[#1A73E8] font-semibold"
+                  : "border-transparent text-[#5F6368] hover:text-[#202124] hover:border-[#DADCE0]"
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ============================================================ */}
+      {/* TAB 1: REPORTS SNAPSHOT OVERVIEW                             */}
+      {/* ============================================================ */}
+      {activeTab === "snapshot" && (
+        <div className="space-y-6 pt-2">
+          {/* GA4 Primary Metric Scorecard Strip - 100% Real Numbers */}
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+            {[
+              {
+                id: "users" as const,
+                label: "Users",
+                value: isLoading ? "..." : (analytics?.uniqueVisitors ?? 0).toLocaleString(),
+                desc: "Unique sovereign readers"
+              },
+              {
+                id: "newUsers" as const,
+                label: "New users",
+                value: isLoading ? "..." : (analytics?.uniqueVisitors ?? 0).toLocaleString(),
+                desc: "Identified visitor tokens"
+              },
+              {
+                id: "views" as const,
+                label: "Views",
+                value: isLoading ? "..." : (analytics?.totalPageViews ?? 0).toLocaleString(),
+                desc: "Total recorded page impressions"
+              },
+              {
+                id: "events" as const,
+                label: "Event count",
+                value: isLoading ? "..." : totalEvents.toLocaleString(),
+                desc: "Recorded telemetry interactions"
+              },
+              {
+                id: "conversions" as const,
+                label: "Conversions",
+                value: isLoading ? "..." : totalConversions.toLocaleString(),
+                desc: "Downloads, AI & Lightning"
+              },
+            ].map((kpi) => {
+              const isSelected = selectedMetric === kpi.id;
+              return (
+                <div
+                  key={kpi.id}
+                  onClick={() => setSelectedMetric(kpi.id)}
+                  className={`bg-white p-4 rounded-xl border transition-all cursor-pointer ${
+                    isSelected 
+                      ? "border-[#1A73E8] ring-1 ring-[#1A73E8] shadow-xs" 
+                      : "border-[#DADCE0] hover:border-[#BDC1C6] hover:bg-[#FAFAFA]"
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-xs text-[#5F6368] mb-1">
+                    <span className="font-medium">{kpi.label}</span>
+                    <span className="text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded font-mono">
+                      Live
+                    </span>
+                  </div>
+                  <div className="text-2xl font-bold text-[#202124] tracking-tight tabular-nums">
+                    {kpi.value}
+                  </div>
+                  <div className="text-[11px] text-[#5F6368] mt-1 truncate">
+                    {kpi.desc}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Main Visualization Grid: Primary Timeline Chart + GA4 Realtime Card */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            {/* Left 2 Cols: Timeline Area Chart */}
+            <div className="lg:col-span-2 bg-white p-5 rounded-xl border border-[#DADCE0] shadow-2xs space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-[#F1F3F4]">
+                <div>
+                  <h3 className="text-sm font-bold text-[#202124] capitalize">
+                    {selectedMetric === "views" ? "Views" : selectedMetric === "events" ? "Event count" : selectedMetric === "conversions" ? "Conversions" : "Users"} by Date
+                  </h3>
+                  <p className="text-xs text-[#5F6368]">
+                    Real telemetry recorded per day
+                  </p>
+                </div>
+                <div className="text-xs font-mono text-emerald-700 font-semibold bg-emerald-50 px-2.5 py-1 rounded-md">
+                  Telemetry active
+                </div>
+              </div>
+
+              {timelineData.length === 0 ? (
+                <div className="h-64 sm:h-72 w-full flex flex-col items-center justify-center p-6 text-center bg-[#F8F9FA] rounded-lg border border-dashed border-[#DADCE0]">
+                  <p className="text-xs text-[#5F6368] font-medium">Awaiting daily timeline records.</p>
+                  <p className="text-[11px] text-[#80868B] mt-1">Telemetry events will plot here as users explore the platform.</p>
+                </div>
+              ) : (
+                <div className="h-64 sm:h-72 w-full pt-1">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={timelineData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="ga4Gradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#1A73E8" stopOpacity={0.25}/>
+                          <stop offset="95%" stopColor="#1A73E8" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F3F4"/>
+                      <XAxis dataKey="date" stroke="#80868B" fontSize={11} tickLine={false} />
+                      <YAxis stroke="#80868B" fontSize={11} tickLine={false} />
+                      <Tooltip 
+                        contentStyle={{ 
+                          borderRadius: "8px", 
+                          border: "1px solid #DADCE0", 
+                          boxShadow: "0 4px 12px rgba(60,64,67,0.15)", 
+                          fontSize: "12px", 
+                          background: "#ffffff" 
+                        }} 
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="value" 
+                        name="Recorded Count" 
+                        stroke="#1A73E8" 
+                        strokeWidth={2.5} 
+                        fillOpacity={1} 
+                        fill="url(#ga4Gradient)" 
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
             </div>
 
-            {/* Suggested Prompt Chips for High Usability */}
-            <div className="space-y-2">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono block">
-                Quick Test Prompts
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {suggestedPrompts.map((p) => (
-                  <button
-                    key={p.text}
-                    type="button"
-                    onClick={() => handleTestSandbox(undefined, p.text)}
-                    disabled={isAiLoading}
-                    className="bg-gray-50 hover:bg-brand-50/50 text-gray-700 text-xs py-2 px-3.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 font-medium disabled:opacity-50 shadow-sm hover:shadow"
+            {/* Right 1 Col: Signature GA4 Realtime Card */}
+            <div className="bg-white p-5 rounded-xl border border-[#DADCE0] shadow-2xs flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between pb-3 border-b border-[#F1F3F4]">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <h3 className="text-sm font-bold text-[#202124]">Users in last 30 minutes</h3>
+                  </div>
+                  <button 
+                    onClick={() => setTab("realtime")}
+                    className="text-xs text-[#1A73E8] hover:underline font-medium cursor-pointer"
                   >
-                    <span>{p.icon}</span>
-                    <span>{p.text}</span>
+                    View realtime →
+                  </button>
+                </div>
+
+                {/* Real Realtime Number */}
+                <div className="py-4">
+                  <div className="text-4xl font-extrabold text-[#202124] tracking-tight tabular-nums">
+                    {analytics?.realtime?.activeUsers30m ?? 0}
+                  </div>
+                  <div className="text-xs text-[#5F6368] mt-1">
+                    Active readers in the last 30 minutes
+                  </div>
+                </div>
+
+                {/* 30-Minute Vertical Bar Histogram */}
+                <div className="space-y-1.5 pb-4">
+                  <div className="flex items-end gap-1 h-16 w-full bg-[#F8F9FA] p-1.5 rounded-md border border-[#E8EAED]">
+                    {(analytics?.realtime?.minuteBars || Array.from({ length: 30 }, (_, i) => ({ minute: `${i}m`, count: 0 }))).map((bar, idx) => (
+                      <div 
+                        key={idx} 
+                        className="flex-1 bg-[#1A73E8] hover:bg-[#1557B0] rounded-xs transition-all cursor-pointer"
+                        style={{ height: `${Math.max(6, Math.min(100, (bar.count || 0) * 45 + 6))}%` }}
+                        title={`${bar.minute}: ${bar.count} events`}
+                      />
+                    ))}
+                  </div>
+                  <div className="flex justify-between text-[10px] text-[#80868B] font-mono">
+                    <span>30 min ago</span>
+                    <span>Now</span>
+                  </div>
+                </div>
+
+                {/* Top Active Pages in Last 30 Minutes */}
+                <div className="space-y-2 border-t border-[#F1F3F4] pt-3">
+                  <span className="text-[11px] font-semibold text-[#5F6368] uppercase tracking-wider block">
+                    Top active pages
+                  </span>
+                  {(!analytics?.realtime?.topActivePages || analytics.realtime.topActivePages.length === 0) ? (
+                    <p className="text-xs text-[#80868B] italic py-2">No active readers in the last 30 minutes.</p>
+                  ) : (
+                    <div className="space-y-1.5">
+                      {analytics.realtime.topActivePages.map((pg) => (
+                        <div key={pg.path} className="flex items-center justify-between text-xs py-1">
+                          <span className="text-[#3C4043] font-mono truncate max-w-[180px]">{pg.path}</span>
+                          <span className="text-xs font-semibold text-[#1A73E8] bg-[#E8F0FE] px-2 py-0.5 rounded-md tabular-nums">
+                            {pg.count}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Realtime Device Ratio */}
+              <div className="pt-3 border-t border-[#F1F3F4] flex items-center justify-between text-xs text-[#5F6368]">
+                <span>Desktop: {deviceStats.desktopPct}%</span>
+                <span>Mobile: {deviceStats.mobilePct}%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Secondary GA4 Overview Grid: Acquisition & Pages */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            {/* User Acquisition by Channel */}
+            <div className="bg-white p-5 rounded-xl border border-[#DADCE0] shadow-2xs space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-[#F1F3F4]">
+                <div>
+                  <h3 className="text-sm font-bold text-[#202124]">User acquisition by Session default channel group</h3>
+                  <p className="text-xs text-[#5F6368]">Sessions categorized by acquisition origin</p>
+                </div>
+                <button onClick={() => setTab("acquisition")} className="text-xs text-[#1A73E8] hover:underline font-medium cursor-pointer">
+                  View acquisition →
+                </button>
+              </div>
+
+              {channelData.length === 0 ? (
+                <div className="p-6 text-center bg-[#F8F9FA] rounded-lg border border-dashed border-[#DADCE0]">
+                  <p className="text-xs text-[#5F6368]">No channel acquisition data logged yet.</p>
+                </div>
+              ) : (
+                <div className="space-y-2.5 pt-1">
+                  {channelData.slice(0, 4).map((ch) => (
+                    <div key={ch.source} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-medium text-[#202124]">{ch.channel}</span>
+                        <div className="flex items-center gap-3 text-[#5F6368]">
+                          <span className="font-mono tabular-nums">{ch.sessions} sessions</span>
+                          <span className="font-semibold text-[#202124]">{ch.share}%</span>
+                        </div>
+                      </div>
+                      <div className="w-full h-2 bg-[#F1F3F4] rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-[#1A73E8] rounded-full transition-all duration-500"
+                          style={{ width: `${ch.share}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Views by Page Title */}
+            <div className="bg-white p-5 rounded-xl border border-[#DADCE0] shadow-2xs space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-[#F1F3F4]">
+                <div>
+                  <h3 className="text-sm font-bold text-[#202124]">Views by Page title and screen class</h3>
+                  <p className="text-xs text-[#5F6368]">Actual pages visited by readers</p>
+                </div>
+                <button onClick={() => setTab("engagement")} className="text-xs text-[#1A73E8] hover:underline font-medium cursor-pointer">
+                  View pages →
+                </button>
+              </div>
+
+              {pagesData.length === 0 ? (
+                <div className="p-6 text-center bg-[#F8F9FA] rounded-lg border border-dashed border-[#DADCE0]">
+                  <p className="text-xs text-[#5F6368]">No page views logged yet.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-[#F1F3F4]">
+                  {pagesData.slice(0, 4).map((p) => (
+                    <div key={p.path} className="py-2.5 flex items-center justify-between text-xs">
+                      <div className="min-w-0 pr-3">
+                        <span className="font-medium text-[#202124] block truncate">{p.title}</span>
+                        <span className="text-[11px] font-mono text-[#80868B] block truncate">{p.path}</span>
+                      </div>
+                      <div className="flex items-center gap-4 shrink-0 text-right">
+                        <div>
+                          <span className="font-bold text-[#202124] block tabular-nums">{p.views}</span>
+                          <span className="text-[10px] text-[#80868B]">views</span>
+                        </div>
+                        <div className="w-12 text-right">
+                          <span className="text-xs font-semibold text-[#5F6368]">{p.share}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* TAB 2: REALTIME LIVE CONSOLE                                 */}
+      {/* ============================================================ */}
+      {activeTab === "realtime" && (
+        <div className="space-y-6 pt-2">
+          {/* Realtime Hero Gauge */}
+          <div className="bg-white p-6 rounded-xl border border-[#DADCE0] shadow-2xs">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-[#F1F3F4]">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <h2 className="text-lg font-bold text-[#202124]">Users in Last 30 Minutes</h2>
+                </div>
+                <p className="text-xs text-[#5F6368] mt-0.5">
+                  Live pulse of sovereign readers interacting with MoloBTC right now.
+                </p>
+              </div>
+              <div className="text-3xl font-extrabold text-[#1A73E8] tabular-nums">
+                {analytics?.realtime?.activeUsers30m ?? 0} <span className="text-xs font-normal text-[#5F6368]">active</span>
+              </div>
+            </div>
+
+            {/* 30-Minute Detailed Histogram */}
+            <div className="pt-4 space-y-2">
+              <span className="text-xs font-medium text-[#5F6368]">Minute-by-minute activity distribution (0m to 29m ago)</span>
+              <div className="flex items-end gap-1.5 h-24 w-full bg-[#F8F9FA] p-3 rounded-lg border border-[#E8EAED]">
+                {(analytics?.realtime?.minuteBars || Array.from({ length: 30 }, (_, i) => ({ minute: `${i}m ago`, count: 0 }))).map((bar, idx) => (
+                  <div 
+                    key={idx} 
+                    className="flex-1 bg-[#1A73E8] hover:bg-[#1557B0] rounded-xs transition-all relative group cursor-pointer"
+                    style={{ height: `${Math.max(8, Math.min(100, (bar.count || 0) * 45 + 8))}%` }}
+                  >
+                    <div className="opacity-0 group-hover:opacity-100 absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-[#202124] text-white text-[10px] px-1.5 py-0.5 rounded whitespace-nowrap z-20 pointer-events-none transition-opacity">
+                      {bar.minute}: {bar.count}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-between text-[11px] text-[#80868B] font-mono">
+                <span>30 minutes ago</span>
+                <span>Active now</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Realtime Event Stream Table */}
+          <div className="bg-white p-5 rounded-xl border border-[#DADCE0] shadow-2xs space-y-4">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pb-3 border-b border-[#F1F3F4]">
+              <div>
+                <h3 className="text-sm font-bold text-[#202124]">Live Event Stream Feed</h3>
+                <p className="text-xs text-[#5F6368]">Individual telemetry hits captured in real time</p>
+              </div>
+
+              {/* Event Type Filter */}
+              <div className="flex items-center gap-1.5 overflow-x-auto text-xs font-medium">
+                {["all", "page_view", "whitepaper_download", "ai_query", "lightning_support"].map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => setEventFilter(f)}
+                    className={`px-2.5 py-1 rounded-md transition-colors cursor-pointer capitalize ${
+                      eventFilter === f 
+                        ? "bg-[#E8F0FE] text-[#1A73E8] font-semibold" 
+                        : "text-[#5F6368] hover:bg-[#F1F3F4]"
+                    }`}
+                  >
+                    {f.replace("_", " ")}
                   </button>
                 ))}
               </div>
             </div>
 
-            <form onSubmit={handleTestSandbox} className="space-y-4">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono mb-2">
-                    Research Context Paper
-                  </label>
-                  <select
-                    value={selectedRepoId}
-                    onChange={(e) => setSelectedRepoId(e.target.value)}
-                    className="w-full bg-white rounded-xl p-3 text-xs sm:text-sm font-semibold outline-none focus:ring-2 focus:ring-brand-500/20 shadow-sm appearance-none cursor-pointer"
-                  >
-                    {isReposLoading ? (
-                      <option>Loading publications...</option>
-                    ) : (
-                      repos.map(r => (
-                        <option key={r.id} value={r.id}>
-                          📄 {r.name.length > 40 ? r.name.substring(0, 40) + "..." : r.name}
-                        </option>
-                      ))
-                    )}
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono mb-2">
-                    Active Cognitive State
-                  </label>
-                  <div className="p-3 bg-[#FCFAF7] rounded-xl text-xs sm:text-sm font-mono font-bold text-gray-600 flex items-center justify-between shadow-inner">
-                    <span>{activePersona}</span>
-                    <span className="bg-brand-100 text-brand-700 px-1.5 py-0.5 rounded text-[10px]">T={activeCreativity}</span>
-                  </div>
-                </div>
+            {/* Events List */}
+            {(!analytics?.recentEvents || analytics.recentEvents.length === 0) ? (
+              <div className="p-6 text-center bg-[#F8F9FA] rounded-lg border border-dashed border-[#DADCE0]">
+                <p className="text-xs text-[#5F6368]">No events recorded yet.</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-[#F1F3F4] max-h-96 overflow-y-auto">
+                {analytics.recentEvents
+                  .filter(e => eventFilter === "all" || e.type === eventFilter)
+                  .map((evt) => (
+                    <div key={evt.id} className="py-2.5 px-2 hover:bg-[#F8F9FA] rounded-md flex items-center justify-between text-xs transition-colors">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className={`w-2 h-2 rounded-full shrink-0 ${
+                          evt.type === "page_view" ? "bg-[#1A73E8]" :
+                          evt.type === "whitepaper_download" ? "bg-emerald-500" :
+                          evt.type === "ai_query" ? "bg-purple-500" :
+                          evt.type === "lightning_support" ? "bg-amber-500" : "bg-gray-400"
+                        }`} />
+                        <div className="min-w-0">
+                          <span className="font-semibold text-[#202124] mr-2">{evt.label}</span>
+                          <span className="text-[#5F6368] font-mono text-[11px] truncate">{evt.detail}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 text-[#80868B] shrink-0 text-[11px] font-mono">
+                        <span>{evt.device || "desktop"}</span>
+                        <span>{new Date(evt.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* TAB 3: ACQUISITION (CHANNELS & SOURCES)                      */}
+      {/* ============================================================ */}
+      {activeTab === "acquisition" && (
+        <div className="space-y-6 pt-2">
+          <div className="bg-white p-5 rounded-xl border border-[#DADCE0] shadow-2xs space-y-4">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pb-3 border-b border-[#F1F3F4]">
+              <div>
+                <h3 className="text-sm font-bold text-[#202124]">Session default channel group</h3>
+                <p className="text-xs text-[#5F6368]">Primary channels driving sovereign reader traffic</p>
               </div>
 
+              {/* Table Search */}
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#80868B]" />
+                <input
+                  type="text"
+                  placeholder="Filter channels..."
+                  value={tableSearch}
+                  onChange={(e) => setTableSearch(e.target.value)}
+                  className="pl-8 pr-3 py-1.5 text-xs bg-[#F8F9FA] border border-[#DADCE0] rounded-md text-[#202124] focus:outline-none focus:border-[#1A73E8] w-52"
+                />
+              </div>
+            </div>
+
+            {channelData.length === 0 ? (
+              <div className="p-8 text-center bg-[#F8F9FA] rounded-lg border border-dashed border-[#DADCE0]">
+                <p className="text-xs text-[#5F6368] font-medium">No channel traffic recorded yet.</p>
+                <p className="text-[11px] text-[#80868B] mt-1">Traffic sources will appear as users navigate to the platform.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-[#DADCE0] text-[#5F6368] font-semibold bg-[#FAFAFA]">
+                      <th className="py-3 px-3">Session default channel group</th>
+                      <th className="py-3 px-3 text-right">Users</th>
+                      <th className="py-3 px-3 text-right">Sessions</th>
+                      <th className="py-3 px-3 text-right">Share (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#F1F3F4] text-[#202124]">
+                    {channelData.map((row) => (
+                      <tr key={row.source} className="hover:bg-[#F8F9FA] transition-colors">
+                        <td className="py-3 px-3 font-medium">
+                          <div>
+                            <span>{row.channel}</span>
+                            <span className="block text-[11px] text-[#80868B] font-mono">{row.source}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 text-right font-mono tabular-nums">{row.users}</td>
+                        <td className="py-3 px-3 text-right font-mono tabular-nums font-semibold">{row.sessions}</td>
+                        <td className="py-3 px-3 text-right font-mono tabular-nums font-bold text-[#1A73E8]">{row.share}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* TAB 4: ENGAGEMENT (PAGES & SCREENS)                          */}
+      {/* ============================================================ */}
+      {activeTab === "engagement" && (
+        <div className="space-y-6 pt-2">
+          <div className="bg-white p-5 rounded-xl border border-[#DADCE0] shadow-2xs space-y-4">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pb-3 border-b border-[#F1F3F4]">
               <div>
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono mb-2">
-                  Socratic Input Query
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={sandboxPrompt}
-                    onChange={(e) => setSandboxPrompt(e.target.value)}
-                    placeholder="Type or select a quick test prompt above..."
-                    className="w-full bg-white rounded-xl py-3.5 pl-4 pr-12 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-brand-500/20 shadow-sm font-medium"
-                    disabled={isAiLoading}
+                <h3 className="text-sm font-bold text-[#202124]">Pages and screens: Page path and screen class</h3>
+                <p className="text-xs text-[#5F6368]">Breakdown of views and reader engagement per URL route</p>
+              </div>
+
+              {/* Table Search */}
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#80868B]" />
+                <input
+                  type="text"
+                  placeholder="Filter paths..."
+                  value={tableSearch}
+                  onChange={(e) => setTableSearch(e.target.value)}
+                  className="pl-8 pr-3 py-1.5 text-xs bg-[#F8F9FA] border border-[#DADCE0] rounded-md text-[#202124] focus:outline-none focus:border-[#1A73E8] w-52"
+                />
+              </div>
+            </div>
+
+            {pagesData.length === 0 ? (
+              <div className="p-8 text-center bg-[#F8F9FA] rounded-lg border border-dashed border-[#DADCE0]">
+                <p className="text-xs text-[#5F6368] font-medium">No page views recorded yet.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-[#DADCE0] text-[#5F6368] font-semibold bg-[#FAFAFA]">
+                      <th className="py-3 px-3">Page path and screen class</th>
+                      <th 
+                        onClick={() => {
+                          setSortField("views");
+                          setSortAsc(!sortAsc);
+                        }}
+                        className="py-3 px-3 text-right cursor-pointer hover:text-[#1A73E8]"
+                      >
+                        Views {sortField === "views" ? (sortAsc ? "↑" : "↓") : ""}
+                      </th>
+                      <th 
+                        onClick={() => {
+                          setSortField("visitors");
+                          setSortAsc(!sortAsc);
+                        }}
+                        className="py-3 px-3 text-right cursor-pointer hover:text-[#1A73E8]"
+                      >
+                        Users {sortField === "visitors" ? (sortAsc ? "↑" : "↓") : ""}
+                      </th>
+                      <th className="py-3 px-3 text-right">Views per user</th>
+                      <th className="py-3 px-3 text-right">Share (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#F1F3F4] text-[#202124]">
+                    {pagesData.map((row) => (
+                      <tr key={row.path} className="hover:bg-[#F8F9FA] transition-colors">
+                        <td className="py-3 px-3 font-medium max-w-sm">
+                          <div className="truncate">
+                            <span className="font-semibold">{row.title}</span>
+                            <span className="block text-[11px] font-mono text-[#80868B] truncate">{row.path}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 text-right font-mono tabular-nums font-bold text-[#202124]">{row.views}</td>
+                        <td className="py-3 px-3 text-right font-mono tabular-nums">{row.visitors}</td>
+                        <td className="py-3 px-3 text-right font-mono tabular-nums">{row.viewsPerUser}</td>
+                        <td className="py-3 px-3 text-right font-mono tabular-nums font-semibold text-[#1A73E8]">{row.share}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* TAB 5: CONVERSIONS & EVENTS (WHITEPAPERS & LIGHTNING)        */}
+      {/* ============================================================ */}
+      {activeTab === "conversions" && (
+        <div className="space-y-6 pt-2">
+          {/* Whitepapers Downloads Breakdown */}
+          <div className="bg-white p-5 rounded-xl border border-[#DADCE0] shadow-2xs space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-[#F1F3F4]">
+              <div>
+                <h3 className="text-sm font-bold text-[#202124]">Whitepaper Downloads by Document</h3>
+                <p className="text-xs text-[#5F6368]">Cumulative exports of Bitcoin research frameworks</p>
+              </div>
+              <div className="text-xs font-semibold text-[#1A73E8] font-mono">
+                Total: {totalDownloads} downloads
+              </div>
+            </div>
+
+            <div className="h-64 sm:h-72 w-full pt-1">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={paperChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F3F4"/>
+                  <XAxis dataKey="name" stroke="#80868B" fontSize={11} tickLine={false} />
+                  <YAxis stroke="#80868B" fontSize={11} tickLine={false} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      borderRadius: "8px", 
+                      border: "1px solid #DADCE0", 
+                      boxShadow: "0 4px 12px rgba(60,64,67,0.15)", 
+                      fontSize: "12px" 
+                    }} 
                   />
-                  <button
-                    type="submit"
-                    disabled={isAiLoading || !sandboxPrompt.trim()}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg disabled:bg-gray-100 disabled:text-gray-450 transition-colors cursor-pointer"
-                    title="Run Sandbox Test"
-                  >
-                    {isAiLoading ? (
-                      <Loader2 className="w-4.5 h-4.5 animate-spin text-brand-600" />
-                    ) : (
-                      <Send className="w-4.5 h-4.5" />
-                    )}
-                  </button>
-                </div>
-              </div>
-            </form>
+                  <Bar dataKey="downloads" name="Downloads" fill="#1A73E8" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
 
-            {/* Sandbox AI Response Frame */}
-            <AnimatePresence>
-              {(sandboxResponse || isAiLoading) && (
-                <motion.div 
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="bg-[#FCFAF7] rounded-2xl p-5 space-y-3.5 overflow-hidden shadow-inner"
-                >
-                  <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+            {/* Clean Data List */}
+            <div className="divide-y divide-[#F1F3F4] border-t border-[#F1F3F4] pt-2">
+              {paperChartData.map((item) => (
+                <div key={item.name} className="py-2.5 flex items-center justify-between text-xs">
+                  <span className="font-medium text-[#202124]">{item.name}</span>
+                  <span className="font-mono font-bold text-[#202124] tabular-nums">{item.downloads}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Top Search Queries Table */}
+          <div className="bg-white p-5 rounded-xl border border-[#DADCE0] shadow-2xs space-y-3">
+            <h3 className="text-sm font-bold text-[#202124]">Top Research Queries</h3>
+            <p className="text-xs text-[#5F6368]">Topics searched by readers in the research interface</p>
+
+            {(!analytics?.searchQueries || analytics.searchQueries.length === 0) ? (
+              <div className="p-6 text-center bg-[#F8F9FA] rounded-lg border border-dashed border-[#DADCE0]">
+                <p className="text-xs text-[#5F6368]">No search queries logged yet.</p>
+                <p className="text-[11px] text-[#80868B] mt-1">Queries will automatically appear here as readers search.</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-[#F1F3F4]">
+                {analytics.searchQueries.map((sq, idx) => (
+                  <div key={sq.query} className="py-2 flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
-                      <Sparkles className="w-4.5 h-4.5 text-purple-600 animate-pulse" />
-                      <span className="text-xs font-bold text-gray-900 font-display">Staged Assistant Response Preview</span>
+                      <span className="font-mono text-[#80868B]">#{idx + 1}</span>
+                      <span className="font-medium text-[#202124]">&ldquo;{sq.query}&rdquo;</span>
                     </div>
-                    <span className="font-mono text-[9px] text-gray-400">Gemini-3.5-Flash</span>
+                    <span className="font-mono text-[#5F6368] font-semibold tabular-nums">{sq.count} searches</span>
                   </div>
-                  
-                  {isAiLoading ? (
-                    <div className="py-10 flex flex-col items-center justify-center text-center text-gray-400 text-xs">
-                      <Loader2 className="w-6 h-6 text-brand-500 animate-spin mb-2" />
-                      <span className="font-mono text-[10px]">Processing model parameters...</span>
-                    </div>
-                  ) : (
-                    <div className="text-xs sm:text-sm leading-relaxed text-gray-700 font-sans whitespace-pre-wrap">
-                      {sandboxResponse}
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* Right column: Interactive Document Verification (PDF view) */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="bg-white p-6 rounded-3xl shadow-[0_4px_25px_rgba(0,0,0,0.015)] flex flex-col h-full space-y-5">
-            <div>
-              <h2 className="text-base sm:text-lg font-bold text-gray-950 font-display flex items-center gap-2">
-                <FileCheck2 className="h-5 w-5 text-brand-500" />
-                Live Document Verification
-              </h2>
-              <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
-                Confirm formatting constraints and layout integrity of the selected academic pdf summaries.
-              </p>
-            </div>
-
-            <div className="space-y-3 shrink-0">
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono">
-                Active Staged Document
-              </label>
-              <select
-                value={selectedRepoId}
-                onChange={(e) => setSelectedRepoId(e.target.value)}
-                className="w-full bg-[#FCFAF7] rounded-xl p-3 text-xs sm:text-sm font-semibold outline-none focus:ring-2 focus:ring-brand-500/20 shadow-sm cursor-pointer"
-              >
-                {isReposLoading ? (
-                  <option>Loading papers...</option>
-                ) : (
-                  repos.map(r => (
-                    <option key={r.id} value={r.id}>
-                      {r.name}
-                    </option>
-                  ))
-                )}
-              </select>
-            </div>
-
-            {/* Document Render Container with elegant card wrapper */}
-            <div className="flex-grow bg-gray-50 rounded-2xl overflow-hidden min-h-[350px] relative flex flex-col shadow-inner">
-              {isReposLoading ? (
-                <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-400">
-                  <Loader2 className="w-5 h-5 animate-spin mr-2 text-brand-500" />
-                  Streaming document raster...
-                </div>
-              ) : selectedRepo ? (
-                <div className="flex-1 overflow-auto p-3 bg-gray-100 flex items-start justify-center">
-                  <div className="scale-90 origin-top transform-gpu shadow-lg bg-white rounded-md p-1">
-                    <PdfPreviewCanvas 
-                      repoId={selectedRepo.id} 
-                      repoName={selectedRepo.name} 
-                      onDownload={() => {
-                        const link = document.createElement("a");
-                        link.href = selectedRepo.url;
-                        link.target = "_blank";
-                        link.click();
-                      }}
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-400 italic">
-                  Select a BSRF paper above to stage layout.
-                </div>
-              )}
-            </div>
-
-            <div className="bg-[#FFFDFB] p-4 rounded-2xl flex gap-3 shadow-md shadow-brand-500/5">
-              <CheckCircle className="h-5 w-5 text-brand-500 shrink-0 mt-0.5" />
-              <div>
-                <span className="text-[10px] font-bold text-gray-950 uppercase tracking-wider block font-sans">Sovereign Bearing Crypt</span>
-                <p className="text-[10px] text-gray-500 leading-relaxed mt-1">
-                  Integrity hash outputs match regulatory requirements. PDF previews simulate paper parameters with pixel accuracy.
-                </p>
+                ))}
               </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* TAB 6: TECH & AUDIENCE                                       */}
+      {/* ============================================================ */}
+      {activeTab === "tech" && (
+        <div className="space-y-6 pt-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Device Category */}
+            <div className="bg-white p-5 rounded-xl border border-[#DADCE0] shadow-2xs space-y-3">
+              <h3 className="text-sm font-bold text-[#202124]">Device Category</h3>
+              {!analytics?.devices || Object.keys(analytics.devices).length === 0 ? (
+                <p className="text-xs text-[#80868B] py-3 italic">Awaiting device telemetry...</p>
+              ) : (
+                <div className="divide-y divide-[#F1F3F4]">
+                  {Object.entries(analytics.devices).map(([dev, count]) => (
+                    <div key={dev} className="py-2.5 flex items-center justify-between text-xs">
+                      <span className="font-medium capitalize text-[#202124]">{dev}</span>
+                      <span className="font-mono font-bold text-[#202124] tabular-nums">{count}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Browsers */}
+            <div className="bg-white p-5 rounded-xl border border-[#DADCE0] shadow-2xs space-y-3">
+              <h3 className="text-sm font-bold text-[#202124]">Browsers</h3>
+              {!analytics?.browsers || Object.keys(analytics.browsers).length === 0 ? (
+                <p className="text-xs text-[#80868B] py-3 italic">Awaiting browser telemetry...</p>
+              ) : (
+                <div className="divide-y divide-[#F1F3F4]">
+                  {Object.entries(analytics.browsers).map(([brw, count]) => (
+                    <div key={brw} className="py-2.5 flex items-center justify-between text-xs">
+                      <span className="font-medium text-[#202124]">{brw}</span>
+                      <span className="font-mono font-bold text-[#202124] tabular-nums">{count}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Operating Systems */}
+            <div className="bg-white p-5 rounded-xl border border-[#DADCE0] shadow-2xs space-y-3">
+              <h3 className="text-sm font-bold text-[#202124]">Operating Systems</h3>
+              {!analytics?.operatingSystems || Object.keys(analytics.operatingSystems).length === 0 ? (
+                <p className="text-xs text-[#80868B] py-3 italic">Awaiting OS telemetry...</p>
+              ) : (
+                <div className="divide-y divide-[#F1F3F4]">
+                  {Object.entries(analytics.operatingSystems).map(([os, count]) => (
+                    <div key={os} className="py-2.5 flex items-center justify-between text-xs">
+                      <span className="font-medium text-[#202124]">{os}</span>
+                      <span className="font-mono font-bold text-[#202124] tabular-nums">{count}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
-
-      </div>
+      )}
     </div>
   );
 }

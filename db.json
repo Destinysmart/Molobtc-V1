@@ -116,13 +116,13 @@
     {
       "id": "admin-1",
       "role": "admin",
-      "name": "Molo BTC Research Lab",
+      "name": "Jacques Strydom, PMP (@jabulanijakes)",
       "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=200&auto=format&fit=crop"
     },
     {
       "id": "pub-1",
-      "role": "publisher",
-      "name": "GitHub Open-Source Syndicate",
+      "role": "contributor",
+      "name": "MoloBTC Open-Source Syndicate",
       "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
     },
     {
@@ -457,5 +457,219 @@
         "Why African builders and treasuries turn to state-proof monetary rails"
       ]
     }
-  ]
+  ],
+  "analytics": {
+    "totalPageViews": 15,
+    "uniqueVisitors": 3,
+    "visitorIds": [
+      "v_local_reader",
+      "v_mvel1y3r_9ho5rc",
+      "v_test_ga4"
+    ],
+    "whitepaperDownloads": {
+      "bsrf": 0,
+      "bsol": 0,
+      "bbpp": 0,
+      "sgas": 0,
+      "capital-flow-regulations": 0,
+      "sui-generis-bearer-property": 0,
+      "self-custody-ecosystem": 0,
+      "sovereign-monetary-infrastructure": 0,
+      "nine-pillars-sovereignty": 0
+    },
+    "aiQueriesCount": 0,
+    "lightningInteractions": {
+      "copy_address": 0,
+      "donate_click": 0
+    },
+    "searchQueries": [],
+    "mediaClicks": {
+      "Bitcoin Africa Story": 0,
+      "Free Market Foundation": 0
+    },
+    "dailyStats": [
+      {
+        "date": "Oct 19",
+        "pageviews": 15,
+        "downloads": 0,
+        "aiQueries": 0,
+        "visitors": 3,
+        "visitorIds": [
+          "v_local_reader",
+          "v_mvel1y3r_9ho5rc",
+          "v_test_ga4"
+        ]
+      }
+    ],
+    "recentEvents": [
+      {
+        "id": "evt_1792415636936_169",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/#research",
+        "path": "/#research",
+        "device": "desktop",
+        "browser": "Chrome",
+        "os": "macOS",
+        "referrer": "Direct / None",
+        "timestamp": "2026-10-19T13:13:56.936Z"
+      },
+      {
+        "id": "evt_1792414484652_688",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/",
+        "timestamp": "2026-10-19T12:54:44.652Z"
+      },
+      {
+        "id": "evt_1792414484644_438",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/",
+        "timestamp": "2026-10-19T12:54:44.644Z"
+      },
+      {
+        "id": "evt_1792372840472_42",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/admin",
+        "timestamp": "2026-10-19T01:20:40.472Z"
+      },
+      {
+        "id": "evt_1792372839503_409",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/admin/articles",
+        "timestamp": "2026-10-19T01:20:39.503Z"
+      },
+      {
+        "id": "evt_1792372838452_165",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/admin/settings",
+        "timestamp": "2026-10-19T01:20:38.452Z"
+      },
+      {
+        "id": "evt_1792372835962_799",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/admin/users",
+        "timestamp": "2026-10-19T01:20:35.962Z"
+      },
+      {
+        "id": "evt_1792372835053_101",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/admin/articles",
+        "timestamp": "2026-10-19T01:20:35.053Z"
+      },
+      {
+        "id": "evt_1792372828827_925",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/admin",
+        "timestamp": "2026-10-19T01:20:28.827Z"
+      },
+      {
+        "id": "evt_1792372828656_328",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/admin",
+        "timestamp": "2026-10-19T01:20:28.656Z"
+      },
+      {
+        "id": "evt_1792372820935_416",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/#molo-ai",
+        "timestamp": "2026-10-19T01:20:20.935Z"
+      },
+      {
+        "id": "evt_1792372820932_201",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/#molo-ai",
+        "timestamp": "2026-10-19T01:20:20.932Z"
+      },
+      {
+        "id": "evt_1792368443650_906",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/",
+        "timestamp": "2026-10-19T00:07:23.650Z"
+      },
+      {
+        "id": "evt_1792368443640_29",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/",
+        "timestamp": "2026-10-19T00:07:23.640Z"
+      },
+      {
+        "id": "evt_1792247034157_276",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/",
+        "timestamp": "2026-10-17T14:23:54.157Z"
+      }
+    ],
+    "pages": {
+      "/": {
+        "path": "/",
+        "views": 12,
+        "visitors": 2
+      },
+      "/#research": {
+        "path": "/#research",
+        "views": 9,
+        "visitors": 2
+      },
+      "/#molo-ai": {
+        "path": "/#molo-ai",
+        "views": 4,
+        "visitors": 1
+      },
+      "/#media": {
+        "path": "/#media",
+        "views": 3,
+        "visitors": 1
+      },
+      "/#support": {
+        "path": "/#support",
+        "views": 2,
+        "visitors": 1
+      },
+      "/admin": {
+        "path": "/admin",
+        "views": 2,
+        "visitors": 1
+      }
+    },
+    "sources": {
+      "Direct / None": 15,
+      "google.com (Organic)": 8,
+      "github.com (Referral)": 5,
+      "x.com (Social)": 3,
+      "bitcoinafricastory.com (Press)": 2
+    },
+    "devices": {
+      "desktop": 19,
+      "mobile": 9,
+      "tablet": 1
+    },
+    "browsers": {
+      "Chrome": 17,
+      "Safari": 8,
+      "Firefox": 3,
+      "Edge": 2,
+      "Opera": 0
+    },
+    "operatingSystems": {
+      "macOS": 15,
+      "Windows": 8,
+      "iOS": 5,
+      "Android": 3,
+      "Linux": 1
+    }
+  }
 }
