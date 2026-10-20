@@ -16,8 +16,14 @@ import {
   ArrowDownRight, 
   Check,
   ShieldCheck,
-  HelpCircle
+  HelpCircle,
+  Radio
 } from "lucide-react";
+import { 
+  getSovereignAnalytics, 
+  subscribeToAnalytics, 
+  syncAnalyticsWithServer 
+} from "../../services/analytics";
 import { 
   AreaChart, 
   Area, 
@@ -79,8 +85,8 @@ export function AdminDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get("tab") || "snapshot";
 
-  const [analytics, setAnalytics] = useState<AnalyticsStats | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [analytics, setAnalytics] = useState<AnalyticsStats>(() => getSovereignAnalytics());
+  const [isLoading, setIsLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   
   // Date Range state
@@ -99,24 +105,37 @@ export function AdminDashboard() {
     setTimeout(() => setToastMessage(""), 3500);
   };
 
-  const fetchAnalytics = () => {
+  const handleManualRefresh = async () => {
     setIsLoading(true);
-    fetch("/api/analytics/stats")
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.analytics) {
-          setAnalytics(data.analytics);
-        }
-        setIsLoading(false);
-      })
-      .catch(err => {
-        console.error("Failed to load GA4 sovereign analytics:", err);
-        setIsLoading(false);
-      });
+    try {
+      const synced = await syncAnalyticsWithServer();
+      setAnalytics(synced);
+      triggerToast("⚡ Live telemetry synchronized across active tabs and server");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchAnalytics();
+    // 1. Subscribe to real-time events across other open tabs
+    const unsubscribe = subscribeToAnalytics((liveStats) => {
+      setAnalytics(liveStats);
+    });
+
+    // 2. Perform background synchronization with server
+    syncAnalyticsWithServer().then((synced) => {
+      setAnalytics(synced);
+    }).catch(() => {});
+
+    // 3. Keep the 30-minute realtime countdown graph smoothly rolling minute-by-minute
+    const intervalTimer = setInterval(() => {
+      setAnalytics(getSovereignAnalytics());
+    }, 4000);
+
+    return () => {
+      unsubscribe();
+      clearInterval(intervalTimer);
+    };
   }, []);
 
   const setTab = (tab: string) => {
@@ -362,8 +381,15 @@ export function AdminDashboard() {
           </h1>
         </div>
 
-        {/* Global Controls: Date Range, Refresh & Export */}
+        {/* Global Controls: Date Range, Live Status, Refresh & Export */}
         <div className="flex items-center gap-2 flex-wrap">
+          {/* Live Cross-Tab Telemetry Badge */}
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-md text-[11px] font-mono font-medium shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="hidden sm:inline">Active Tabs Sync</span>
+            <span className="sm:hidden">Live</span>
+          </div>
+
           {/* Date Picker Button */}
           <div className="relative">
             <button
@@ -409,13 +435,10 @@ export function AdminDashboard() {
 
           {/* Refresh Button */}
           <button
-            onClick={() => {
-              fetchAnalytics();
-              triggerToast("Synchronized live telemetry from database");
-            }}
+            onClick={handleManualRefresh}
             disabled={isLoading}
             className="p-2 bg-white hover:bg-[#F8F9FA] text-[#3C4043] rounded-md border border-[#DADCE0] shadow-2xs transition-colors cursor-pointer"
-            title="Refresh analytics data"
+            title="Synchronize live analytics across tabs and server"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-[#5F6368] ${isLoading ? "animate-spin text-[#1A73E8]" : ""}`} />
           </button>

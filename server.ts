@@ -478,14 +478,31 @@ async function startServer() {
   // ==========================================
   // Built-in Sovereign Analytics Routes (100% Free, Zero Cookies, Privacy-First)
   // ==========================================
+  app.options("/api/analytics/*", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept");
+    res.sendStatus(204);
+  });
+
   app.post("/api/analytics/event", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept");
     try {
       const db = getDb();
       if (!db.analytics) {
         db.analytics = JSON.parse(JSON.stringify(defaultDbStructure.analytics));
       }
 
-      const { eventName, visitorId, props } = req.body || {};
+      let parsedBody = req.body;
+      if (typeof parsedBody === "string") {
+        try {
+          parsedBody = JSON.parse(parsedBody);
+        } catch {
+          parsedBody = {};
+        }
+      }
+      const { eventName, visitorId, props } = parsedBody || {};
       if (!eventName) {
         return res.status(400).json({ error: "eventName is required" });
       }
@@ -652,6 +669,9 @@ async function startServer() {
   });
 
   app.get("/api/analytics/stats", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept");
+    res.setHeader("Content-Type", "application/json");
     try {
       const db = getDb();
       if (!db.analytics) {
