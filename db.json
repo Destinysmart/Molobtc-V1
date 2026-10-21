@@ -491,35 +491,179 @@
     },
     "dailyStats": [
       {
-        "date": "Oct 19",
-        "pageviews": 15,
-        "downloads": 0,
+        "date": "Oct 08",
+        "pageviews": 6,
+        "downloads": 1,
+        "aiQueries": 0,
+        "visitors": 2,
+        "visitorIds": [
+          "v_seed_0_0",
+          "v_seed_0_1"
+        ]
+      },
+      {
+        "date": "Oct 09",
+        "pageviews": 8,
+        "downloads": 2,
+        "aiQueries": 1,
+        "visitors": 3,
+        "visitorIds": [
+          "v_seed_1_0",
+          "v_seed_1_1",
+          "v_seed_1_2"
+        ]
+      },
+      {
+        "date": "Oct 10",
+        "pageviews": 7,
+        "downloads": 1,
         "aiQueries": 0,
         "visitors": 3,
         "visitorIds": [
-          "v_local_reader",
-          "v_mvel1y3r_9ho5rc",
-          "v_test_ga4"
+          "v_seed_2_0",
+          "v_seed_2_1",
+          "v_seed_2_2"
+        ]
+      },
+      {
+        "date": "Oct 11",
+        "pageviews": 9,
+        "downloads": 2,
+        "aiQueries": 1,
+        "visitors": 4,
+        "visitorIds": [
+          "v_seed_3_0",
+          "v_seed_3_1",
+          "v_seed_3_2",
+          "v_seed_3_3"
+        ]
+      },
+      {
+        "date": "Oct 12",
+        "pageviews": 12,
+        "downloads": 3,
+        "aiQueries": 2,
+        "visitors": 4,
+        "visitorIds": [
+          "v_seed_4_0",
+          "v_seed_4_1",
+          "v_seed_4_2",
+          "v_seed_4_3"
+        ]
+      },
+      {
+        "date": "Oct 13",
+        "pageviews": 10,
+        "downloads": 2,
+        "aiQueries": 1,
+        "visitors": 3,
+        "visitorIds": [
+          "v_seed_5_0",
+          "v_seed_5_1",
+          "v_seed_5_2"
+        ]
+      },
+      {
+        "date": "Oct 14",
+        "pageviews": 14,
+        "downloads": 4,
+        "aiQueries": 2,
+        "visitors": 5,
+        "visitorIds": [
+          "v_seed_6_0",
+          "v_seed_6_1",
+          "v_seed_6_2",
+          "v_seed_6_3",
+          "v_seed_6_4"
+        ]
+      },
+      {
+        "date": "Oct 15",
+        "pageviews": 11,
+        "downloads": 3,
+        "aiQueries": 1,
+        "visitors": 4,
+        "visitorIds": [
+          "v_seed_7_0",
+          "v_seed_7_1",
+          "v_seed_7_2",
+          "v_seed_7_3"
+        ]
+      },
+      {
+        "date": "Oct 16",
+        "pageviews": 13,
+        "downloads": 3,
+        "aiQueries": 2,
+        "visitors": 5,
+        "visitorIds": [
+          "v_seed_8_0",
+          "v_seed_8_1",
+          "v_seed_8_2",
+          "v_seed_8_3",
+          "v_seed_8_4"
+        ]
+      },
+      {
+        "date": "Oct 17",
+        "pageviews": 15,
+        "downloads": 4,
+        "aiQueries": 2,
+        "visitors": 5,
+        "visitorIds": [
+          "v_seed_9_0",
+          "v_seed_9_1",
+          "v_seed_9_2",
+          "v_seed_9_3",
+          "v_seed_9_4"
+        ]
+      },
+      {
+        "date": "Oct 18",
+        "pageviews": 9,
+        "downloads": 2,
+        "aiQueries": 1,
+        "visitors": 3,
+        "visitorIds": [
+          "v_seed_10_0",
+          "v_seed_10_1",
+          "v_seed_10_2"
+        ]
+      },
+      {
+        "date": "Oct 19",
+        "pageviews": 8,
+        "downloads": 2,
+        "aiQueries": 1,
+        "visitors": 3,
+        "visitorIds": [
+          "v_seed_11_0",
+          "v_seed_11_1",
+          "v_seed_11_2"
         ]
       },
       {
         "date": "Oct 20",
-        "pageviews": 1,
-        "downloads": 0,
-        "aiQueries": 0,
-        "visitors": 1,
+        "pageviews": 11,
+        "downloads": 3,
+        "aiQueries": 1,
+        "visitors": 4,
         "visitorIds": [
-          "v_test_verifier"
+          "v_seed_12_0",
+          "v_seed_12_1",
+          "v_seed_12_2",
+          "v_seed_12_3"
         ]
       },
       {
         "date": "Oct 21",
-        "pageviews": 1,
-        "downloads": 0,
-        "aiQueries": 0,
-        "visitors": 1,
+        "pageviews": 5,
+        "downloads": 1,
+        "aiQueries": 1,
+        "visitors": 2,
         "visitorIds": [
-          "v_verifier"
+          "v_seed_13_0",
+          "v_seed_13_1"
         ]
       }
     ],

@@ -275,11 +275,36 @@ function createBaselineAnalytics(): AnalyticsStats {
       "Bitcoin Africa Story": 4,
       "Free Market Foundation": 2,
     },
-    dailyStats: [
-      { date: twoDaysAgoStr, pageviews: 8, downloads: 2, aiQueries: 1, visitors: 3 },
-      { date: yesterdayStr, pageviews: 11, downloads: 3, aiQueries: 1, visitors: 4 },
-      { date: todayStr, pageviews: 5, downloads: 1, aiQueries: 1, visitors: 2 },
-    ],
+    dailyStats: (() => {
+      const historyCounts = [
+        { pageviews: 6, downloads: 1, aiQueries: 0, visitors: 2 },
+        { pageviews: 8, downloads: 2, aiQueries: 1, visitors: 3 },
+        { pageviews: 7, downloads: 1, aiQueries: 0, visitors: 3 },
+        { pageviews: 9, downloads: 2, aiQueries: 1, visitors: 4 },
+        { pageviews: 12, downloads: 3, aiQueries: 2, visitors: 4 },
+        { pageviews: 10, downloads: 2, aiQueries: 1, visitors: 3 },
+        { pageviews: 14, downloads: 4, aiQueries: 2, visitors: 5 },
+        { pageviews: 11, downloads: 3, aiQueries: 1, visitors: 4 },
+        { pageviews: 13, downloads: 3, aiQueries: 2, visitors: 5 },
+        { pageviews: 15, downloads: 4, aiQueries: 2, visitors: 5 },
+        { pageviews: 9, downloads: 2, aiQueries: 1, visitors: 3 },
+        { date: twoDaysAgoStr, pageviews: 8, downloads: 2, aiQueries: 1, visitors: 3 },
+        { date: yesterdayStr, pageviews: 11, downloads: 3, aiQueries: 1, visitors: 4 },
+        { date: todayStr, pageviews: 5, downloads: 1, aiQueries: 1, visitors: 2 },
+      ];
+      return historyCounts.map((item, idx) => {
+        if (item.date) return item as { date: string; pageviews: number; downloads: number; aiQueries: number; visitors: number };
+        const daysAgo = historyCounts.length - 1 - idx;
+        const d = new Date(now.getTime() - daysAgo * 24 * 3600 * 1000);
+        return {
+          date: getFormattedDate(d),
+          pageviews: item.pageviews,
+          downloads: item.downloads,
+          aiQueries: item.aiQueries,
+          visitors: item.visitors,
+        };
+      });
+    })(),
     recentEvents: initialEvents,
   };
 }

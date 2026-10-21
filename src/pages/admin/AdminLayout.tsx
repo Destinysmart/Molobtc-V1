@@ -384,8 +384,8 @@ export function AdminLayout() {
             <button
               onClick={toggleCollapse}
               className="p-1.5 rounded-md text-[#5F6368] hover:text-[#202124] hover:bg-[#F1F3F4] transition-colors cursor-pointer shrink-0"
-              title="Collapse drawer for full width view"
-              aria-label="Collapse drawer for full width view"
+              title="Collapse navigation drawer"
+              aria-label="Collapse navigation drawer"
             >
               <PanelLeftClose className="w-4 h-4" />
             </button>
