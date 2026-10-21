@@ -459,13 +459,14 @@
     }
   ],
   "analytics": {
-    "totalPageViews": 16,
-    "uniqueVisitors": 4,
+    "totalPageViews": 17,
+    "uniqueVisitors": 5,
     "visitorIds": [
       "v_local_reader",
       "v_mvel1y3r_9ho5rc",
       "v_test_ga4",
-      "v_test_verifier"
+      "v_test_verifier",
+      "v_verifier"
     ],
     "whitepaperDownloads": {
       "bsrf": 0,
@@ -510,9 +511,31 @@
         "visitorIds": [
           "v_test_verifier"
         ]
+      },
+      {
+        "date": "Oct 21",
+        "pageviews": 1,
+        "downloads": 0,
+        "aiQueries": 0,
+        "visitors": 1,
+        "visitorIds": [
+          "v_verifier"
+        ]
       }
     ],
     "recentEvents": [
+      {
+        "id": "evt_1792571967062_500",
+        "type": "page_view",
+        "label": "Page View",
+        "detail": "/#research",
+        "path": "/#research",
+        "device": "desktop",
+        "browser": "Chrome",
+        "os": "macOS",
+        "referrer": "Direct / None",
+        "timestamp": "2026-10-21T08:39:27.062Z"
+      },
       {
         "id": "evt_1792533564205_846",
         "type": "page_view",
@@ -644,8 +667,8 @@
       },
       "/#research": {
         "path": "/#research",
-        "views": 9,
-        "visitors": 2
+        "views": 10,
+        "visitors": 3
       },
       "/#molo-ai": {
         "path": "/#molo-ai",
@@ -669,26 +692,26 @@
       }
     },
     "sources": {
-      "Direct / None": 16,
+      "Direct / None": 17,
       "google.com (Organic)": 8,
       "github.com (Referral)": 5,
       "x.com (Social)": 3,
       "bitcoinafricastory.com (Press)": 2
     },
     "devices": {
-      "desktop": 20,
+      "desktop": 21,
       "mobile": 9,
       "tablet": 1
     },
     "browsers": {
-      "Chrome": 18,
+      "Chrome": 19,
       "Safari": 8,
       "Firefox": 3,
       "Edge": 2,
       "Opera": 0
     },
     "operatingSystems": {
-      "macOS": 16,
+      "macOS": 17,
       "Windows": 8,
       "iOS": 5,
       "Android": 3,

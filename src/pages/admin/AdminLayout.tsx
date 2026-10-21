@@ -435,23 +435,16 @@ export function AdminLayout() {
         {/* Google Analytics Global Top App Bar */}
         <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md px-4 sm:px-6 py-2.5 flex items-center justify-between border-b border-[#DADCE0]">
           <div className="flex items-center gap-3">
-            <button
-              onClick={toggleCollapse}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#F8F9FA] hover:bg-[#F1F3F4] text-[#3C4043] text-xs font-medium rounded-md border border-[#DADCE0] transition-colors cursor-pointer"
-              title={isCollapsed ? "Open navigation drawer" : "Collapse navigation drawer for full width"}
-            >
-              {isCollapsed ? (
-                <>
-                  <PanelLeftOpen className="w-4 h-4 text-[#1A73E8]" />
-                  <span>Open Reports</span>
-                </>
-              ) : (
-                <>
-                  <PanelLeftClose className="w-4 h-4 text-[#5F6368]" />
-                  <span>Full View</span>
-                </>
-              )}
-            </button>
+            {isCollapsed && (
+              <button
+                onClick={toggleCollapse}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#F8F9FA] hover:bg-[#F1F3F4] text-[#3C4043] text-xs font-medium rounded-md border border-[#DADCE0] transition-colors cursor-pointer"
+                title="Open navigation drawer"
+              >
+                <PanelLeftOpen className="w-4 h-4 text-[#1A73E8]" />
+                <span>Open Reports</span>
+              </button>
+            )}
 
             {/* GA4 Property Pill Selector */}
             <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-[#F8F9FA] border border-[#DADCE0] rounded-md text-xs">
@@ -463,9 +456,34 @@ export function AdminLayout() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden lg:flex items-center gap-2 bg-[#F8F9FA] px-3 py-1.5 rounded-md border border-[#DADCE0] text-xs text-[#5F6368] w-64">
-              <Search className="w-3.5 h-3.5 text-[#80868B]" />
-              <span className="truncate">Search reports, pages, queries...</span>
+            <div className="hidden lg:flex items-center gap-2 bg-[#F8F9FA] focus-within:bg-white focus-within:border-[#1A73E8] px-3 py-1.5 rounded-md border border-[#DADCE0] text-xs text-[#5F6368] w-64 transition-all relative">
+              <Search className="w-3.5 h-3.5 text-[#80868B] shrink-0" />
+              <input
+                type="text"
+                placeholder="Search reports, pages, queries..."
+                value={searchParams.get("q") || ""}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const next = new URLSearchParams(searchParams);
+                  if (val) next.set("q", val);
+                  else next.delete("q");
+                  setSearchParams(next);
+                }}
+                className="bg-transparent border-none outline-none text-xs text-[#202124] w-full pr-4"
+              />
+              {searchParams.get("q") && (
+                <button
+                  onClick={() => {
+                    const next = new URLSearchParams(searchParams);
+                    next.delete("q");
+                    setSearchParams(next);
+                  }}
+                  className="absolute right-2 text-[#80868B] hover:text-[#202124] cursor-pointer"
+                  title="Clear search"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
             </div>
 
             <button
